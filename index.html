@@ -153,6 +153,7 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 <div class="scorebar">
   <span>내 누적 점수 <b id="meTotal">0</b>점</span>
   <span class="sync" id="meSub"></span>
+  <span class="sync" id="allPlays" style="display:none"></span>
 </div>
 <div class="inforow" style="margin:6px 0 4px"><span class="info" id="info"></span></div>
 <main>
@@ -380,6 +381,7 @@ function finish(win){
   if(win){rec.wins++;rec.streak++;rec.best=Math.max(rec.best,rec.streak);}else rec.streak=0;
   rec.hist.unshift({w:answer,d:delta,t:win?tries:0});rec.hist=rec.hist.slice(0,20);
   store.set('rec',rec); updateMe();
+  countPlay('hit');
   document.getElementById('endTitle').textContent=win?'정답이에요!':'아쉬워요';
   document.getElementById('endWord').textContent=answer;
   const g=document.getElementById('endGain');
@@ -388,9 +390,28 @@ function finish(win){
   document.getElementById('endTotal').textContent=`누적 ${rec.total}점`+(rec.streak>1?` · ${rec.streak}문제 연속 정답!`:'');
   open('ovEnd');
 }
+/* 전체 누적 플레이 수 (무료 공개 카운터, 실패해도 게임은 그대로) */
+const COUNTER='https://countapi.mileshilliard.com/api/v1/';
+const COUNTER_KEY='dobbi52_kordle_challenge_plays_v1';
+async function countPlay(mode){
+  try{
+    const ctl=new AbortController();const tm=setTimeout(()=>ctl.abort(),5000);
+    const r=await fetch(COUNTER+mode+'/'+COUNTER_KEY,{signal:ctl.signal,cache:'no-store'});
+    clearTimeout(tm);
+    let n=NaN;
+    try{const j=await r.json();n=parseInt(j.value,10);}catch(e){}
+    if(isNaN(n)&&mode==='get')n=0; /* 아직 아무도 안 풀어서 카운터가 없을 때 */
+    if(!isNaN(n)){
+      const el=document.getElementById('allPlays');
+      el.textContent=`모두 함께 ${n.toLocaleString('ko-KR')}문제`;
+      el.style.display='';updateMe();
+    }
+  }catch(e){}
+}
 function updateMe(){
   document.getElementById('meTotal').textContent=rec.total;
   document.getElementById('meSub').textContent=`${rec.wins}/${rec.games} 맞힘`;
+  document.getElementById('meSub').style.display=document.getElementById('allPlays').style.display==='none'?'':'none';
 }
 function showRec(){
   document.getElementById('rTotal').textContent=rec.total;
@@ -511,6 +532,7 @@ window.addEventListener('resize',fit);
 window.addEventListener('orientationchange',()=>setTimeout(fit,200));
 
 updateMe();
+countPlay('get');
 if(!restoreGame())newGame();else drawAll();
 if(!store.get('seenHelp',false)){open('ovHelp');store.set('seenHelp',true);}
 </script>
