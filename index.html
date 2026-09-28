@@ -139,6 +139,9 @@ main{flex:1 1 auto;min-height:0;width:100%;max-width:640px;display:flex;flex-dir
 main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 #board{padding-bottom:4px}
 .row{scroll-margin:8px}
+.rtabs{display:flex;gap:6px;margin:0 0 8px}
+.rtabs button{flex:1;font-family:var(--b-font);font-size:.95rem;padding:8px;border:1.5px solid var(--line);border-radius:6px;background:transparent;color:var(--ink);cursor:pointer}
+.rtabs button.on{background:var(--ok);border-color:var(--ok);color:#fff}
 </style>
 </head>
 <body>
@@ -174,7 +177,7 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
   <p><b>점수</b> 빨리 맞힐수록 점수가 커요.</p>
   <table class="rule">
     <tr><td>1번 만에</td><td>100점</td></tr>
-    <tr><td>한 번 늦을 때마다</td><td>−5점</td></tr>
+    <tr><td>한 번 늦을 때마다</td><td>−10점</td></tr>
     <tr><td>못 맞히면</td><td>−10점</td></tr>
   </table>
   <p><b>단계</b> 5문제 맞힐 때마다 단계가 올라가요. 기회는 줄지만 맞히면 보너스를 받아요.</p>
@@ -241,7 +244,8 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 </div></div>
 
 <div class="overlay" id="ovRank"><div class="card">
-  <h2>전체 순위 (20위까지)</h2>
+  <h2>순위 (20위까지)</h2>
+  <div class="rtabs"><button id="tabWeek" class="on">이번 주</button><button id="tabAll">전체 누적</button></div>
   <p class="note" id="rankMsg"></p>
   <table class="lb"><thead><tr><th>순위</th><th>이름</th><th>점수</th><th>맞힘</th><th>문제</th></tr></thead><tbody id="rankBody"></tbody></table>
   <p class="note" id="rankMe" style="margin-top:10px"></p>
@@ -321,7 +325,7 @@ let MAX=10, LV=1;
 const levelOf=w=>Math.min(5,Math.floor(w/5)+1);
 const triesOf=l=>11-l;
 const bonusOf=l=>(l-1)*5;
-const pointsFor=t=>100-(t-1)*5+bonusOf(LV);
+const pointsFor=t=>100-(t-1)*10+bonusOf(LV);
 let serverWins=null;
 const curWins=()=>serverWins!==null?serverWins:rec.wins;
 function setLevel(l){LV=l;MAX=triesOf(l);}
@@ -613,7 +617,7 @@ async function sendPending(){
     pending=null;store.set('pending',null);
     applyMe(j);
     document.getElementById('endTotal').textContent=`누적 ${shownTotal()}점`;
-    es.textContent=j.me&&j.me.rank?`순위표에 저장됐어요. 지금 전체 ${j.me.rank}등!`:'순위표에 저장됐어요.';
+    es.textContent=j.me&&j.me.rank?`순위표에 저장됐어요. 이번 주 ${j.me.weekRank}등 · 전체 ${j.me.rank}등`:'순위표에 저장됐어요.';
   }catch(e){
     const m=String(e.message||'');
     if(/비밀번호|없는 닉네임|막아 둔/.test(m)){
@@ -624,22 +628,36 @@ async function sendPending(){
     }
   }
 }
+let rankTab='week', lastBoard=null;
+function drawBoard(){
+  const j=lastBoard;if(!j)return;
+  const body=document.getElementById('rankBody'), msg=document.getElementById('rankMsg'), mine=document.getElementById('rankMe');
+  const wk=rankTab==='week';
+  const list=(wk?j.weekTop:j.top)||[];
+  body.innerHTML='';
+  list.forEach(r=>{
+    const tr=document.createElement('tr');if(r.name===me)tr.className='me';
+    [r.rank,r.name,r.total,r.wins,r.games].forEach((v,k)=>{const td=document.createElement('td');td.textContent=v;if(k===2)td.className='pts';tr.appendChild(td);});
+    body.appendChild(tr);
+  });
+  const cnt=wk?j.weekPlayers:j.players;
+  msg.textContent=wk?`${j.weekStart||'이번 주'} 월요일부터 · 참가자 ${cnt||0}명 · 매주 월요일 0시에 새로 시작`:`처음부터 쌓인 점수 · 참가자 ${cnt||0}명`;
+  if(!list.length)msg.textContent+=' · 아직 기록이 없어요.';
+  const rk=j.me?(wk?j.me.weekRank:j.me.rank):null, tot=j.me?(wk?j.me.weekTotal:j.me.total):0;
+  mine.textContent=rk&&rk>20?`내 순위: ${rk}등 (${tot}점)`:'';
+  document.getElementById('tabWeek').classList.toggle('on',wk);
+  document.getElementById('tabAll').classList.toggle('on',!wk);
+}
+document.getElementById('tabWeek').onclick=()=>{rankTab='week';drawBoard();};
+document.getElementById('tabAll').onclick=()=>{rankTab='all';drawBoard();};
 async function loadBoard(showUI){
   if(!SCRIPT_URL)return;
-  const body=document.getElementById('rankBody'), msg=document.getElementById('rankMsg'), mine=document.getElementById('rankMe');
+  const msg=document.getElementById('rankMsg');
   if(showUI)msg.textContent='불러오는 중…';
   try{
     const j=await api(me?{action:'board',name:me}:{action:'board'});
-    applyMe(j);
-    if(!showUI)return;
-    body.innerHTML='';
-    (j.top||[]).forEach(r=>{
-      const tr=document.createElement('tr');if(r.name===me)tr.className='me';
-      [r.rank,r.name,r.total,r.wins,r.games].forEach((v,k)=>{const td=document.createElement('td');td.textContent=v;if(k===2)td.className='pts';tr.appendChild(td);});
-      body.appendChild(tr);
-    });
-    msg.textContent=(j.top||[]).length?`참가자 ${j.players}명`:'아직 기록이 없어요.';
-    mine.textContent=j.me&&j.me.rank&&j.me.rank>20?`내 순위: ${j.me.rank}등 (${j.me.total}점)`:'';
+    applyMe(j);lastBoard=j;
+    if(showUI)drawBoard();
   }catch(e){if(showUI)msg.textContent='순위를 불러오지 못했어요.';}
 }
 function showRank(){
