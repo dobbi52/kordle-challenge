@@ -183,7 +183,7 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 .fx-word{position:fixed;left:50%;top:38%;z-index:51;pointer-events:none;font-family:var(--t-font);font-size:3.2rem;color:#E8B83C;text-shadow:0 2px 0 #7A5A10,0 0 18px rgba(255,215,90,.8);animation:bigword 1.6s ease-out forwards;white-space:nowrap}
 .tile.bounce{animation:bounce .6s ease both}
 .fxs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:8px 0}
-@media (prefers-reduced-motion:reduce){.confetti,.fx,.fx-flash,.fx-word{display:none}.tile.bounce{animation:none}}
+
 </style>
 </head>
 <body>
@@ -259,8 +259,9 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
   <label style="margin-top:6px">맞힐 때 효과</label>
   <div class="skins" id="fxBox"></div>
   <p class="note">빨리 맞힐수록 효과가 더 크게 나와요. 효과를 누르면 미리 볼 수 있어요.</p>
+  <div class="check"><input type="checkbox" id="cbFx"><label for="cbFx" style="margin:0;font-weight:400">맞힐 때 효과 보기</label></div>
   <div class="check"><input type="checkbox" id="cbSafe"><label for="cbSafe" style="margin:0;font-weight:400">잘 보이는 색 (초록·노랑 구분이 어려울 때)</label></div>
-  <div class="actions"><button class="main" data-close>닫기</button></div>
+  <div class="actions"><button id="bPv" style="font-size:.85rem">선생님 미리 보기</button><button class="main" data-close>닫기</button></div>
 </div></div>
 
 <div class="overlay" id="ovPw"><div class="card" style="max-width:320px">
@@ -580,6 +581,7 @@ function playFx(id,power){
   }
 }
 function winFx(tries){
+  if(!store.get('fxOn',true))return;
   const power=tries<=2?1.8:tries<=4?1.3:1;
   playFx(store.get(skinKey('fx'),'bounce'),power);
 }
@@ -594,7 +596,7 @@ function checkUnlock(){
     store.set(skinKey('skin'),sk.id);applySkin(sk.id);
     setTimeout(()=>{toast(`새 판이 열렸어요! '${sk.name}' 판으로 바뀌었어요`);celebrate();},400);
   }else{
-    if(store.get(skinKey('skin'),null)===null)store.set(skinKey('skin'),SKINS[Math.max(0,opened-1)].id);
+    if(store.get(skinKey('skin'),null)===null||(prev!==null&&opened>prev))store.set(skinKey('skin'),SKINS[Math.max(0,opened-1)].id);
     applySkin(store.get(skinKey('skin'),''));
   }
   const fxOpen=FXS.filter(x=>best>=x.need).length;
@@ -603,7 +605,7 @@ function checkUnlock(){
   if(fxPrev!==null&&fxOpen>fxPrev&&justFinished){
     const f=FXS[fxOpen-1];store.set(skinKey('fx'),f.id);
     setTimeout(()=>toast(`새 효과가 열렸어요! 이제 맞히면 '${f.name}' ${f.icon}`),opened>prev?2200:400);
-  }else if(store.get(skinKey('fx'),null)===null)store.set(skinKey('fx'),FXS[Math.max(0,fxOpen-1)].id);
+  }else if(store.get(skinKey('fx'),null)===null||(fxPrev!==null&&fxOpen>fxPrev))store.set(skinKey('fx'),FXS[Math.max(0,fxOpen-1)].id);
 }
 function nextSkinText(){
   const best=bestScore();
@@ -620,31 +622,44 @@ function celebrate(){
     document.body.appendChild(c);setTimeout(()=>c.remove(),3200);
   }
 }
+let pvMode=false;
 function showSkins(){
   const best=bestScore(), cur=store.get(skinKey('skin'),'');
   const box=document.getElementById('skinBox');box.innerHTML='';
   SKINS.forEach(sk=>{
     const open=best>=sk.need;
     const b=document.createElement('button');b.className='skin'+(open?'':' lock')+(open&&sk.id===cur?' on':'');
-    b.innerHTML=`<span class="sw">${sk.sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><b>${open?'':'🔒 '}${sk.name}</b><small>${open?(sk.id===cur?'사용 중':'누르면 바꿔요'):sk.need+'점에 열려요'}</small>`;
-    if(open)b.onclick=()=>{store.set(skinKey('skin'),sk.id);applySkin(sk.id);showSkins();};
+    b.innerHTML=`<span class="sw">${sk.sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><b>${open?'':'🔒 '}${sk.name}</b><small>${open?(sk.id===cur?'사용 중':'누르면 바꿔요'):sk.need+(pvMode?'점 · 눌러서 미리 보기':'점에 열려요')}</small>`;
+    b.onclick=()=>{
+      if(!open&&!pvMode){toast(`${sk.need}점을 넘으면 열려요`);return;}
+      if(!open){applySkin(sk.id);toast(`미리 보기 · ${sk.need}점에 열려요`);clearTimeout(window._pv);window._pv=setTimeout(()=>applySkin(store.get(skinKey('skin'),'')),2500);return;}
+      store.set(skinKey('skin'),sk.id);applySkin(sk.id);showSkins();};
     box.appendChild(b);
   });
   const fcur=store.get(skinKey('fx'),'bounce'), fbox=document.getElementById('fxBox');fbox.innerHTML='';
   FXS.forEach(f=>{
     const open=best>=f.need;
     const b=document.createElement('button');b.className='skin'+(open?'':' lock')+(open&&f.id===fcur?' on':'');
-    b.innerHTML=`<b>${open?f.icon:'🔒'} ${f.name}</b><small>${open?(f.id===fcur?'사용 중':'누르면 바꿔요'):f.need+'점에 열려요'}</small>`;
-    b.onclick=()=>{if(!open){toast(`${f.need}점을 넘으면 열려요`);return;}store.set(skinKey('fx'),f.id);showSkins();setTimeout(()=>playFx(f.id,1),150);};
+    b.innerHTML=`<b>${open?f.icon:'🔒'} ${f.name}</b><small>${open?(f.id===fcur?'사용 중':'누르면 바꿔요'):f.need+(pvMode?'점 · 눌러서 미리 보기':'점에 열려요')}</small>`;
+    b.onclick=()=>{if(!open&&!pvMode){toast(`${f.need}점을 넘으면 열려요`);return;}if(!open){toast(`미리 보기 · ${f.need}점에 열려요`);playFx(f.id,1.3);return;}store.set(skinKey('fx'),f.id);showSkins();setTimeout(()=>playFx(f.id,1),150);};
     fbox.appendChild(b);
   });
-  document.getElementById('skinMsg').textContent=`최고 누적 ${best}점`+nextSkinText()+'. 한 번 열린 판과 효과는 점수가 줄어도 계속 쓸 수 있어요.';
+  document.getElementById('skinMsg').textContent=`최고 누적 ${best}점`+nextSkinText()+(pvMode?'. 선생님 미리 보기 중: 잠긴 것도 눌러서 볼 수 있어요.':'. 한 번 열린 판과 효과는 점수가 줄어도 계속 쓸 수 있어요.');
   document.getElementById('cbSafe').checked=store.get('safeColors',false);
+  document.getElementById('cbFx').checked=store.get('fxOn',true);
+  document.getElementById('bPv').textContent=pvMode?'미리 보기 끝내기':'선생님 미리 보기';
   open('ovSkin');
 }
 document.getElementById('cbSafe').addEventListener('change',e=>{store.set('safeColors',e.target.checked);applySkin(store.get(skinKey('skin'),''));});
-document.getElementById('bSkin').onclick=showSkins;
-document.getElementById('bRecSkin').onclick=()=>{closeAll();showSkins();};
+document.getElementById('bSkin').onclick=()=>{pvMode=false;showSkins();};
+document.getElementById('bPv').onclick=()=>{
+  if(pvMode){pvMode=false;showSkins();return;}
+  const v=prompt('선생님 비밀번호를 입력하세요');
+  if(v===null)return;
+  if(v.trim()==='9900'){pvMode=true;showSkins();toast('미리 보기: 잠긴 판과 효과를 눌러 보세요');}else toast('비밀번호가 맞지 않아요');
+};
+document.getElementById('cbFx').addEventListener('change',e=>store.set('fxOn',e.target.checked));
+document.getElementById('bRecSkin').onclick=()=>{closeAll();pvMode=false;showSkins();};
 
 function updateMe(){
   checkUnlock();
