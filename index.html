@@ -145,13 +145,14 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 <header>
   <h1>꼬들 챌린지</h1>
   <div class="tools">
+    <button id="bRank">순위</button>
     <button id="bRec">내 기록</button>
-    <button id="bHelp">방법</button>
+    <button id="bHelp" aria-label="방법">?</button>
     <button id="bSet">설정</button>
   </div>
 </header>
 <div class="scorebar">
-  <span>내 누적 점수 <b id="meTotal">0</b>점</span>
+  <span><button class="tbtn" id="bName" style="margin-right:4px">닉네임 쓰기</button> 누적 <b id="meTotal">0</b>점</span>
   <span class="sync" id="meSub"></span>
   <span class="sync" id="allPlays" style="display:none"></span>
 </div>
@@ -196,7 +197,7 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
   <table class="hist"><tbody id="rHist"></tbody></table>
   <p class="note" id="rEmpty"></p>
   <p class="note">기록은 이 기기의 이 브라우저에만 저장돼요.</p>
-  <div class="actions"><button class="main" data-close>닫기</button></div>
+  <div class="actions"><button id="bRestart">처음부터 다시 하기</button><button class="main" data-close>닫기</button></div>
 </div></div>
 
 <div class="overlay" id="ovPw"><div class="card" style="max-width:320px">
@@ -221,16 +222,40 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
   </div>
 </div></div>
 
+<div class="overlay" id="ovName"><div class="card">
+  <h2>닉네임으로 들어가기</h2>
+  <p class="note">처음이면 새로 만들어지고, 전에 쓴 닉네임이면 점수가 이어져요. 진짜 이름 대신 닉네임을 써 주세요.</p>
+  <label for="nickInput">닉네임 (한글·영어·숫자 2~10자)</label>
+  <input type="text" id="nickInput" maxlength="10" autocomplete="off" autocapitalize="off" spellcheck="false">
+  <label for="pinInput">비밀번호 (숫자 4자리)</label>
+  <input type="password" id="pinInput" inputmode="numeric" maxlength="4" autocomplete="off">
+  <p class="note" style="margin-top:6px">다른 기기에서 이어 하려면 같은 닉네임과 비밀번호를 쓰면 돼요. 비밀번호를 잊으면 점수를 이어 갈 수 없으니 꼭 기억해 두세요.</p>
+  <p class="note" id="nameMsg" style="min-height:1.4em;color:#B4442E"></p>
+  <div class="actions"><button class="main" id="bNameOk">들어가기</button></div>
+</div></div>
+
+<div class="overlay" id="ovRank"><div class="card">
+  <h2>전체 순위 (20위까지)</h2>
+  <p class="note" id="rankMsg"></p>
+  <table class="lb"><thead><tr><th>순위</th><th>이름</th><th>점수</th><th>맞힘</th><th>문제</th></tr></thead><tbody id="rankBody"></tbody></table>
+  <p class="note" id="rankMe" style="margin-top:10px"></p>
+  <div class="actions"><button id="bRankRefresh">새로고침</button><button class="main" data-close>닫기</button></div>
+</div></div>
+
 <div class="overlay" id="ovEnd"><div class="card">
   <h2 id="endTitle"></h2>
   <div class="answer" id="endWord"></div>
   <div class="gain" id="endGain"></div>
   <p style="text-align:center" id="endMsg"></p>
   <p class="note" style="text-align:center" id="endTotal"></p>
-  <div class="actions"><button id="bEndRec">내 기록</button><button class="main" id="bNext">다음 문제</button></div>
+  <p class="note" style="text-align:center" id="endSync"></p>
+  <div class="actions"><button id="bRetry" style="display:none">점수 다시 보내기</button><button id="bEndRank">순위</button><button id="bEndRec">내 기록</button><button class="main" id="bNext">다음 문제</button></div>
 </div></div>
 
 <script>
+/* ▼ 선생님: 구글 Apps Script 웹 앱 주소를 따옴표 안에 붙여 넣으세요 ▼ */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzk4JVQN0NTnYRbxmt4xkm9iF9V09TqF47XsxZAY2YzyZ9Bdy9PGM-xRQune3LfaGK0Gw/exec";
+/* ▲ ──────────────────────────────────────────────── ▲ */
 const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
 const JUNG='ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ';
 const JONG=['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
@@ -278,7 +303,7 @@ function compose(js,preferDouble=true){
   return {parts, text:parts.map(p=>p.s).join(''), valid};
 }
 
-const DEFAULT_WORDS=`과학 음악 체육 연필 칠판 급식 방학 졸업 태양 별빛 달빛 창문 숙제 실험 문화 경찰 번개 단풍 열매 곤충 약속 희망 김밥 한글 남강 신발 양말 택시 고구마 당근 참외 딸기 바나나 필통 물감 공룡 인형 블록 동화 요리사 군인 늑대 토마토 계란 설탕 간장 방석 베개 칫솔 전화 선물 명절 설날 한복 송편 팽이 태풍 화산 초원 강물 여행 평화 정의 협동 존중 칭찬 대화 질문 대답 성적 연습 운동 건강 음식 영양 식물 동물 참새 도토리 소나무 국화 목련 촛불 전등 달력 공연 연극 영화 등산 씨름 반장 발명 약국 공항 빌딩 아파트 주택 석탑 탈춤 새해 세계 계절 예절 게임 체험 대회 예술 해님 세상 계단 해변 해양 개울 새벽 점심 과제 날씨 계산 동전 배낭 매화 넓이 속력 태극 한옥 화분 쟁기 체온 체력 예측 세균 어깨 발목 손목 입술 얼굴 배달 행사 합창 리코더`;
+const DEFAULT_WORDS=`과학 음악 체육 연필 칠판 급식 방학 졸업 태양 별빛 달빛 창문 숙제 실험 문화 경찰 번개 단풍 열매 곤충 약속 희망 김밥 한글 신발 양말 택시 고구마 당근 참외 딸기 바나나 필통 물감 공룡 인형 블록 동화 요리사 군인 늑대 토마토 계란 설탕 간장 방석 베개 칫솔 전화 선물 명절 설날 한복 송편 팽이 태풍 화산 초원 강물 여행 평화 정의 협동 존중 칭찬 대화 질문 대답 성적 연습 운동 건강 음식 영양 식물 동물 참새 도토리 소나무 국화 목련 촛불 전등 달력 공연 연극 영화 등산 씨름 반장 발명 약국 공항 빌딩 아파트 주택 석탑 탈춤 새해 세계 계절 예절 게임 체험 대회 예술 해님 세상 계단 해변 해양 개울 새벽 점심 과제 날씨 계산 동전 배낭 매화 넓이 속력 태극 한옥 화분 쟁기 체온 체력 예측 세균 어깨 발목 손목 입술 얼굴 배달 행사 합창 리코더 냄비 대문 물병 선반 식탁 안경 열쇠 옷장 장갑 풍선 분필 매듭 과일 김장 달걀 반찬 간식 공간 농장 덩굴 동굴 동네 등대 빗물 산길 언덕 얼음 연못 천둥 낙엽 들판 반달 북극 날개 벌레 물결 강당 문장 만화 작품 발견 방법 방향 술래 장난 축제 출발 캠프 탐험 낮잠 걸음 기쁨 눈물 성공 소원 손님 심장 영웅 웃음 친절 첫눈`;
 
 
 
@@ -293,7 +318,11 @@ const FAIL=-10;
 let wordText=store.get('words',DEFAULT_WORDS);
 let strict=store.get('strict',false);
 const EMPTY={total:0,games:0,wins:0,streak:0,best:0,hist:[]};
-let rec=Object.assign({},EMPTY,store.get('rec',{}));
+let me=store.get('name',''), pin=store.get('pin','');
+let serverTotal=null, roster=[], pending=store.get('pending',null);
+const recKey=()=>'rec:'+(me||'_');
+let rec=Object.assign({},EMPTY,store.get(recKey(),{}));
+function saveRec(){store.set(recKey(),rec);}
 let pool=[], answer=null, answerJ=[], rows=[], cur=[], done=false, keyState={};
 
 function parseWords(t){
@@ -362,6 +391,7 @@ function score(g){
 }
 function submit(){
   if(done)return;
+  if(SCRIPT_URL&&!me){askName();return;}
   if(cur.length<LEN){shake();toast(`${LEN}칸을 모두 채워 주세요.`);return;}
   if(!compose(cur).valid){shake();toast('글자가 되지 않는 조합이에요.');return;}
   if(strict&&!parseWords(wordText).some(x=>x.j.join('')===cur.join(''))){shake();toast('목록에 없는 낱말이에요.');return;}
@@ -380,16 +410,22 @@ function finish(win){
   rec.total+=delta; rec.games++;
   if(win){rec.wins++;rec.streak++;rec.best=Math.max(rec.best,rec.streak);}else rec.streak=0;
   rec.hist.unshift({w:answer,d:delta,t:win?tries:0});rec.hist=rec.hist.slice(0,20);
-  store.set('rec',rec); updateMe();
+  saveRec();
+  if(serverTotal!==null)serverTotal+=delta;
+  updateMe();
   countPlay('hit');
+  pending={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name:me,pin,delta,win:win?1:0,tries,word:answer};
+  store.set('pending',pending);
   document.getElementById('endTitle').textContent=win?'정답이에요!':'아쉬워요';
   document.getElementById('endWord').textContent=answer;
   const g=document.getElementById('endGain');
   g.textContent=(delta>0?'+':'')+delta+'점';g.className='gain '+(delta>0?'plus':'minus');
   document.getElementById('endMsg').textContent=win?`${tries}번 만에 맞혔어요.`:'다음 문제에서 만회해 봐요.';
-  document.getElementById('endTotal').textContent=`누적 ${rec.total}점`+(rec.streak>1?` · ${rec.streak}문제 연속 정답!`:'');
+  document.getElementById('endTotal').textContent=`누적 ${shownTotal()}점`+(rec.streak>1?` · ${rec.streak}문제 연속 정답!`:'');
   open('ovEnd');
+  sendPending();
 }
+const shownTotal=()=>serverTotal!==null?serverTotal:rec.total;
 /* 전체 누적 플레이 수 (무료 공개 카운터, 실패해도 게임은 그대로) */
 const COUNTER='https://countapi.mileshilliard.com/api/v1/';
 const COUNTER_KEY='dobbi52_kordle_challenge_plays_v1';
@@ -409,7 +445,8 @@ async function countPlay(mode){
   }catch(e){}
 }
 function updateMe(){
-  document.getElementById('meTotal').textContent=rec.total;
+  document.getElementById('bName').textContent=me||'닉네임 쓰기';
+  document.getElementById('meTotal').textContent=shownTotal();
   document.getElementById('meSub').textContent=`${rec.wins}/${rec.games} 맞힘`;
   document.getElementById('meSub').style.display=document.getElementById('allPlays').style.display==='none'?'':'none';
 }
@@ -463,7 +500,7 @@ function mk(label,cls,fn){
 }
 document.addEventListener('keydown',e=>{
   if(document.querySelector('.overlay.open')){
-    if(e.key==='Escape'&&!document.getElementById('ovEnd').classList.contains('open'))closeAll();
+    if(e.key==='Escape'&&!document.getElementById('ovEnd').classList.contains('open')&&!document.getElementById('ovName').classList.contains('open'))closeAll();
     if(e.key==='Enter'&&document.getElementById('ovEnd').classList.contains('open')){e.preventDefault();nextGame();}
     return;
   }
@@ -479,12 +516,16 @@ let tt;function toast(m){const t=document.getElementById('toast');t.textContent=
 function open(id){document.getElementById(id).classList.add('open');}
 function closeAll(){document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('open'));}
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closeAll));
-document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o&&o.id!=='ovEnd')closeAll();}));
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o&&o.id!=='ovEnd'&&o.id!=='ovName')closeAll();}));
 
 function nextGame(){closeAll();newGame();}
-document.getElementById('bNext').onclick=nextGame;
 document.getElementById('bEndRec').onclick=()=>{closeAll();showRec();};
 document.getElementById('bRec').onclick=showRec;
+document.getElementById('bRestart').onclick=()=>{
+  if(!confirm('이 기기의 내 기록을 지우고 새 문제로 시작할까요? (순위표 점수는 그대로예요)'))return;
+  rec=JSON.parse(JSON.stringify(EMPTY));saveRec();updateMe();
+  closeAll();newGame();toast('처음부터 다시 시작해요.');
+};
 document.getElementById('bHelp').onclick=()=>open('ovHelp');
 
 function fillCount(){document.getElementById('wcount').textContent=`문제로 쓸 수 있는 낱말: ${parseWords(document.getElementById('words').value).length}개`;}
@@ -508,7 +549,7 @@ document.getElementById('words').addEventListener('input',fillCount);
 document.getElementById('bReset').onclick=()=>{document.getElementById('words').value=DEFAULT_WORDS;fillCount();};
 document.getElementById('bClear').onclick=()=>{
   if(!confirm('누적 점수와 기록을 모두 지울까요?'))return;
-  rec=JSON.parse(JSON.stringify(EMPTY));store.set('rec',rec);updateMe();toast('점수를 초기화했어요.');
+  rec=JSON.parse(JSON.stringify(EMPTY));saveRec();updateMe();toast('이 기기의 기록을 지웠어요. 순위표 점수는 구글 시트에서 지워 주세요.');
 };
 document.getElementById('bSave').onclick=()=>{
   wordText=document.getElementById('words').value;strict=document.getElementById('strict').checked;
@@ -531,10 +572,107 @@ function fit(){
 window.addEventListener('resize',fit);
 window.addEventListener('orientationchange',()=>setTimeout(fit,200));
 
+/* ── 순위표 (구글 시트) ── */
+async function api(params){
+  const r=await fetch(SCRIPT_URL+'?'+new URLSearchParams(params).toString());
+  const j=await r.json();
+  if(!j.ok)throw new Error(j.error||'error');
+  return j;
+}
+function applyMe(j){
+  if(j&&j.me&&j.me.name===me){serverTotal=j.me.total;updateMe();}
+}
+async function sendPending(){
+  const es=document.getElementById('endSync'), rt=document.getElementById('bRetry');
+  rt.style.display='none';
+  if(!pending){es.textContent='';return;}
+  if(!SCRIPT_URL||!pending.name){pending=null;store.set('pending',null);es.textContent='';return;}
+  es.textContent='순위표에 점수를 보내는 중…';
+  try{
+    const j=await api({action:'add',...pending});
+    pending=null;store.set('pending',null);
+    applyMe(j);
+    document.getElementById('endTotal').textContent=`누적 ${shownTotal()}점`;
+    es.textContent=j.me&&j.me.rank?`순위표에 저장됐어요. 지금 전체 ${j.me.rank}등!`:'순위표에 저장됐어요.';
+  }catch(e){
+    const m=String(e.message||'');
+    if(/비밀번호|없는 닉네임|막아 둔/.test(m)){
+      pending=null;store.set('pending',null);
+      es.textContent=m+' 닉네임으로 다시 들어가 주세요.';
+    }else{
+      es.textContent='점수를 보내지 못했어요. 인터넷을 확인하고 다시 보내 주세요.';rt.style.display='';
+    }
+  }
+}
+async function loadBoard(showUI){
+  if(!SCRIPT_URL)return;
+  const body=document.getElementById('rankBody'), msg=document.getElementById('rankMsg'), mine=document.getElementById('rankMe');
+  if(showUI)msg.textContent='불러오는 중…';
+  try{
+    const j=await api(me?{action:'board',name:me}:{action:'board'});
+    applyMe(j);
+    if(!showUI)return;
+    body.innerHTML='';
+    (j.top||[]).forEach(r=>{
+      const tr=document.createElement('tr');if(r.name===me)tr.className='me';
+      [r.rank,r.name,r.total,r.wins,r.games].forEach((v,k)=>{const td=document.createElement('td');td.textContent=v;if(k===2)td.className='pts';tr.appendChild(td);});
+      body.appendChild(tr);
+    });
+    msg.textContent=(j.top||[]).length?`참가자 ${j.players}명`:'아직 기록이 없어요.';
+    mine.textContent=j.me&&j.me.rank&&j.me.rank>20?`내 순위: ${j.me.rank}등 (${j.me.total}점)`:'';
+  }catch(e){if(showUI)msg.textContent='순위를 불러오지 못했어요.';}
+}
+function showRank(){
+  const msg=document.getElementById('rankMsg');
+  document.getElementById('rankBody').innerHTML='';document.getElementById('rankMe').textContent='';
+  open('ovRank');
+  if(!SCRIPT_URL){msg.textContent='순위표가 아직 연결되지 않았어요.';return;}
+  loadBoard(true);
+}
+function askName(){
+  if(!SCRIPT_URL){toast('순위표가 연결되면 닉네임으로 들어올 수 있어요.');return;}
+  document.getElementById('nickInput').value=me;
+  document.getElementById('pinInput').value='';
+  document.getElementById('nameMsg').textContent='';
+  open('ovName');
+  setTimeout(()=>document.getElementById(me?'pinInput':'nickInput').focus(),50);
+}
+async function doJoin(){
+  const n=document.getElementById('nickInput').value.trim();
+  const p=document.getElementById('pinInput').value.trim();
+  const msg=document.getElementById('nameMsg'), btn=document.getElementById('bNameOk');
+  if(!/^[가-힣A-Za-z0-9_]{2,10}$/.test(n)){msg.textContent='닉네임은 한글·영어·숫자 2~10자로 써 주세요. (띄어쓰기 없이)';return;}
+  if(!/^\d{4}$/.test(p)){msg.textContent='비밀번호는 숫자 4자리로 써 주세요.';return;}
+  msg.textContent='확인하는 중…';btn.disabled=true;
+  try{
+    const j=await api({action:'join',name:n,pin:p});
+    if(n!==me){rec=Object.assign({},EMPTY,store.get('rec:'+n,{}));}
+    me=n;pin=p;store.set('name',me);store.set('pin',pin);
+    serverTotal=null;applyMe(j);updateMe();closeAll();
+    toast(j.created?`${me}님, 새로 참가했어요!`:`${me}님, 다시 왔군요!`);
+  }catch(e){msg.textContent=e.message==='Failed to fetch'?'연결하지 못했어요. 인터넷을 확인해 주세요.':e.message;}
+  btn.disabled=false;
+}
+document.getElementById('bNameOk').onclick=doJoin;
+document.getElementById('pinInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doJoin();}});
+document.getElementById('nickInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();document.getElementById('pinInput').focus();}});
+document.getElementById('bName').onclick=askName;
+document.getElementById('bRank').onclick=showRank;
+document.getElementById('bEndRank').onclick=()=>{closeAll();showRank();};
+document.getElementById('bRankRefresh').onclick=()=>loadBoard(true);
+document.getElementById('bRetry').onclick=sendPending;
+document.getElementById('bNext').onclick=()=>{closeAll();newGame();if(SCRIPT_URL&&!me)askName();};
+
 updateMe();
 countPlay('get');
+if(SCRIPT_URL){
+  if(me)loadBoard(false);
+  if(pending)sendPending().then(()=>{if(!pending)toast('밀린 점수를 보냈어요.');});
+}
 if(!restoreGame())newGame();else drawAll();
 if(!store.get('seenHelp',false)){open('ovHelp');store.set('seenHelp',true);}
+else if(SCRIPT_URL&&!me)askName();
+document.querySelector('#ovHelp [data-close]').addEventListener('click',()=>{if(SCRIPT_URL&&!me)setTimeout(askName,50);});
 </script>
 </body>
 </html>
