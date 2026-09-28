@@ -425,11 +425,12 @@ function submit(){
 }
 function finish(win){
   const tries=rows.length, delta=win?pointsFor(tries):FAIL;
-  rec.total+=delta; rec.games++;
+  const before=shownTotal(), applied=Math.max(delta,-before);
+  rec.total=Math.max(0,rec.total+delta); rec.games++;
   if(win){rec.wins++;rec.streak++;rec.best=Math.max(rec.best,rec.streak);}else rec.streak=0;
-  rec.hist.unshift({w:answer,d:delta,t:win?tries:0});rec.hist=rec.hist.slice(0,20);
+  rec.hist.unshift({w:answer,d:applied,t:win?tries:0});rec.hist=rec.hist.slice(0,20);
   saveRec();
-  if(serverTotal!==null)serverTotal+=delta;
+  if(serverTotal!==null)serverTotal=Math.max(0,serverTotal+delta);
   if(win&&serverWins!==null)serverWins++;
   updateMe();
   countPlay('hit');
@@ -438,9 +439,9 @@ function finish(win){
   document.getElementById('endTitle').textContent=win?'정답이에요!':'아쉬워요';
   document.getElementById('endWord').textContent=answer;
   const g=document.getElementById('endGain');
-  g.textContent=(delta>0?'+':'')+delta+'점';g.className='gain '+(delta>0?'plus':'minus');
+  g.textContent=applied>0?'+'+applied+'점':applied<0?applied+'점':'0점';g.className='gain '+(applied>0?'plus':'minus');
   const nextLv=levelOf(curWins());
-  let em=win?`${tries}번 만에 맞혔어요.`+(bonusOf(LV)?` (단계 보너스 +${bonusOf(LV)}점 포함)`:''):'다음 문제에서 만회해 봐요.';
+  let em=(!win&&applied===0)?'점수는 0점 아래로 내려가지 않아요. 다음 문제에서 힘내요!':win?`${tries}번 만에 맞혔어요.`+(bonusOf(LV)?` (단계 보너스 +${bonusOf(LV)}점 포함)`:''):'다음 문제에서 만회해 봐요.';
   if(nextLv>LV)em+=`\n${nextLv}단계로 올라갔어요! 다음 문제부터 기회 ${triesOf(nextLv)}번, 맞히면 보너스 +${bonusOf(nextLv)}점`;
   else if(win&&LV<5){const left=5-(curWins()%5);em+=`\n${left}문제 더 맞히면 ${LV+1}단계!`;}
   const emEl=document.getElementById('endMsg');emEl.style.whiteSpace='pre-line';emEl.textContent=em;
