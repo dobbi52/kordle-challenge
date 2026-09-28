@@ -159,6 +159,34 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 :root[data-skin="sea"] .tile,:root[data-skin="cherry"] .tile{border-radius:10px}
 :root[data-skin="night"] .tile,:root[data-skin="space"] .tile{border-radius:50%}
 :root[data-skin="gold"] .tile{border-radius:4px;box-shadow:inset 0 0 0 1px rgba(217,178,76,.35)}
+/* ── 황금판 (화려하게) ── */
+@keyframes goldShine{to{background-position:200% 50%}}
+@keyframes goldSweep{0%{background-position:160% 0}60%,100%{background-position:-60% 0}}
+@keyframes goldTwinkle{0%,100%{opacity:.35}50%{opacity:1}}
+:root[data-skin="gold"] body{position:relative;z-index:0;background-color:#1A1307;background-image:
+  radial-gradient(ellipse at 50% -10%,rgba(255,214,120,.38),transparent 55%),
+  radial-gradient(ellipse at 50% 115%,rgba(190,125,25,.40),transparent 60%),
+  repeating-linear-gradient(45deg,rgba(217,178,76,.07) 0 2px,transparent 2px 16px),
+  repeating-linear-gradient(-45deg,rgba(217,178,76,.07) 0 2px,transparent 2px 16px);background-size:auto}
+:root[data-skin="gold"] body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:radial-gradient(1.6px 1.6px at 12% 18%,#FFF3C4,transparent),radial-gradient(1.2px 1.2px at 78% 12%,#FFE08A,transparent),
+  radial-gradient(2px 2px at 88% 64%,#FFF3C4,transparent),radial-gradient(1.4px 1.4px at 30% 82%,#FFE08A,transparent),
+  radial-gradient(1.8px 1.8px at 55% 40%,#FFF3C4,transparent),radial-gradient(1.2px 1.2px at 6% 58%,#FFE08A,transparent);
+  animation:goldTwinkle 3.2s ease-in-out infinite}
+:root[data-skin="gold"] h1{background:linear-gradient(90deg,#FFF1B8,#D4A73A,#FFE9A0,#B8841F,#FFF1B8);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:goldShine 4s linear infinite;filter:drop-shadow(0 1px 0 rgba(0,0,0,.4))}
+:root[data-skin="gold"] header{border-image:linear-gradient(90deg,transparent,#D9B24C,#FFF1B8,#D9B24C,transparent) 1}
+:root[data-skin="gold"] #board{position:relative}
+:root[data-skin="gold"] #board::after{content:"";position:absolute;inset:-4px;pointer-events:none;border-radius:6px;
+  background:linear-gradient(110deg,transparent 42%,rgba(255,232,160,.22) 50%,transparent 58%);background-size:250% 100%;animation:goldSweep 5s ease-in-out infinite}
+:root[data-skin="gold"] .tile{border-radius:5px;background:linear-gradient(160deg,#3B2D12,#1E1609);border-color:#8A6D2A;box-shadow:inset 0 1px 0 rgba(255,230,160,.22)}
+:root[data-skin="gold"] .tile.filled{border-color:#F5D27A;box-shadow:0 0 9px rgba(245,210,122,.55),inset 0 1px 0 rgba(255,230,160,.3)}
+:root[data-skin="gold"] .key{background:linear-gradient(180deg,#4B3B18,#2C210E);border:1px solid rgba(217,178,76,.45);color:#FFE9A8;box-shadow:inset 0 1px 0 rgba(255,230,160,.18)}
+:root[data-skin="gold"] .tile.ok,:root[data-skin="gold"] .tile.near,:root[data-skin="gold"] .tile.miss{border-color:transparent;box-shadow:inset 0 0 0 2px rgba(255,225,140,.55),0 0 10px rgba(255,205,90,.25);background-image:linear-gradient(160deg,rgba(255,255,255,.2),transparent 55%)}
+:root[data-skin="gold"] .tile.ok{background-color:var(--ok)}:root[data-skin="gold"] .tile.near{background-color:var(--near)}:root[data-skin="gold"] .tile.miss{background-color:var(--miss)}
+:root[data-skin="gold"] .key.ok{background:var(--ok);color:#fff}:root[data-skin="gold"] .key.near{background:var(--near);color:#fff}:root[data-skin="gold"] .key.miss{background:var(--miss);color:#fff}
+:root[data-skin="gold"] .key.main{background:linear-gradient(180deg,#6E5216,#3A2A09);color:#FFE9A8;border:1.5px solid #F5D27A;box-shadow:0 0 8px rgba(245,210,122,.4)}
+:root[data-skin="gold"] .card{border-top-color:#D9B24C;box-shadow:0 0 0 1px rgba(217,178,76,.35),0 10px 30px rgba(0,0,0,.5)}
+
 :root[data-safe="1"]{--ok:#0072B2!important;--near:#E69F00!important}
 .skins{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:8px 0}
 .skin{position:relative;border:2px solid var(--line-soft);border-radius:8px;padding:8px;text-align:left;background:transparent;color:var(--ink);font-family:var(--b-font);cursor:pointer}
@@ -533,7 +561,7 @@ const SKINS=[
   {id:'cherry',name:'벚꽃',need:1000,sw:['#FFF3F5','#E297AC','#3E1F2A']},
   {id:'night',name:'밤하늘',need:1800,sw:['#131A33','#6C7FD1','#E6B43F']},
   {id:'space',name:'우주',need:3000,sw:['#0D0A1E','#8F74FF','#35B27A']},
-  {id:'gold',name:'황금판',need:5000,sw:['#1E170A','#D9B24C','#FFF4D6']}
+  {id:'gold',name:'황금판',need:5000,sw:['#1A1307','#D9B24C','#FFF1B8']}
 ];
 const skinKey=k=>`${k}:${me||'_'}`;
 const bestScore=()=>Math.max(store.get(skinKey('best'),0),shownTotal());
