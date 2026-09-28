@@ -212,6 +212,11 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 .tile.bounce{animation:bounce .6s ease both}
 .fxs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:8px 0}
 
+.scorebar>span:first-child{white-space:nowrap;flex:none}
+.crowd{flex:1;min-width:0;text-align:right;line-height:1.35;font-size:.78rem}
+.crowd .cg{display:inline-block;white-space:nowrap}
+@media (max-width:420px){.crowd .csep{display:none}.crowd .cg{display:block}}
+.crowd b{font-family:var(--t-font);font-weight:400;font-size:.95rem;color:var(--ink);opacity:1}
 </style>
 </head>
 <body>
@@ -227,7 +232,7 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 <div class="scorebar">
   <span><button class="tbtn" id="bName" style="margin-right:4px">닉네임 쓰기</button> 누적 <b id="meTotal">0</b>점 <button class="tbtn icon" id="bSkin" aria-label="꾸미기">🎨</button></span>
   <span class="sync" id="meSub"></span>
-  <span class="sync" id="allPlays" style="display:none"></span>
+  <span class="sync crowd" id="crowd"></span>
 </div>
 <div class="inforow" style="margin:6px 0 4px"><span class="info" id="info"></span></div>
 <main>
@@ -537,6 +542,18 @@ const shownTotal=()=>serverTotal!==null?serverTotal:rec.total;
 /* 전체 누적 플레이 수 (무료 공개 카운터, 실패해도 게임은 그대로) */
 const COUNTER='https://countapi.mileshilliard.com/api/v1/';
 const COUNTER_KEY='dobbi52_kordle_challenge_plays_v1';
+const crowd={today:null,total:null,plays:null};
+function renderCrowd(){
+  const f=n=>Number(n).toLocaleString('ko-KR');
+  const g1=[];
+  if(crowd.today!==null)g1.push(`오늘 <b>${f(crowd.today)}</b>명`);
+  if(crowd.total!==null)g1.push(`누적 <b>${f(crowd.total)}</b>명`);
+  const parts=[];
+  if(g1.length)parts.push(`<span class="cg">${g1.join(' · ')}</span>`);
+  if(crowd.plays!==null)parts.push(`<span class="cg"><b>${f(crowd.plays)}</b>문제 풀이</span>`);
+  document.getElementById('crowd').innerHTML=parts.join(' <span class="csep">·</span> ');
+  document.getElementById('meSub').style.display=parts.length?'none':'';
+}
 async function countPlay(mode){
   try{
     const ctl=new AbortController();const tm=setTimeout(()=>ctl.abort(),5000);
@@ -546,9 +563,7 @@ async function countPlay(mode){
     try{const j=await r.json();n=parseInt(j.value,10);}catch(e){}
     if(isNaN(n)&&mode==='get')n=0; /* 아직 아무도 안 풀어서 카운터가 없을 때 */
     if(!isNaN(n)){
-      const el=document.getElementById('allPlays');
-      el.textContent=`모두 함께 ${n.toLocaleString('ko-KR')}문제`;
-      el.style.display='';updateMe();
+      crowd.plays=n;renderCrowd();
     }
   }catch(e){}
 }
@@ -694,7 +709,7 @@ function updateMe(){
   document.getElementById('bName').textContent=me||'닉네임 쓰기';
   document.getElementById('meTotal').textContent=shownTotal();
   document.getElementById('meSub').textContent=`${rec.wins}/${rec.games} 맞힘`;
-  document.getElementById('meSub').style.display=document.getElementById('allPlays').style.display==='none'?'':'none';
+  document.getElementById('meSub').style.display=document.getElementById('crowd').textContent?'none':'';
 }
 function showRec(){
   document.getElementById('rTotal').textContent=shownTotal();
@@ -826,6 +841,7 @@ async function api(params){
   return j;
 }
 function applyMe(j){
+  if(j&&typeof j.players==='number'){crowd.total=j.players;if(typeof j.todayPlayers==='number')crowd.today=j.todayPlayers;renderCrowd();}
   if(j&&j.me&&j.me.name===me){serverTotal=j.me.total;serverWins=j.me.wins||0;updateMe();}
   if(answer&&!done&&!rows.length&&!cur.length&&levelOf(curWins())!==LV){setLevel(levelOf(curWins()));saveGame();drawAll();}
 }
@@ -927,7 +943,7 @@ document.getElementById('bNext').onclick=()=>{closeAll();newGame();if(SCRIPT_URL
 updateMe();
 countPlay('get');
 if(SCRIPT_URL){
-  if(me)loadBoard(false);
+  loadBoard(false);
   if(pending)sendPending().then(()=>{if(!pending)toast('밀린 점수를 보냈어요.');});
 }
 if(!restoreGame())newGame();else drawAll();
