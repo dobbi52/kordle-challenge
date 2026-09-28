@@ -178,15 +178,15 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
   <table class="rule">
     <tr><td>1번 만에</td><td>100점</td></tr>
     <tr><td>한 번 늦을 때마다</td><td>−10점</td></tr>
-    <tr><td>못 맞히면</td><td>−10점</td></tr>
+    <tr><td>못 맞히면</td><td>단계 × 10점 감점</td></tr>
   </table>
-  <p><b>단계</b> 5문제 맞힐 때마다 단계가 올라가요. 기회는 줄지만 맞히면 보너스를 받아요.</p>
+  <p><b>단계</b> 5문제 맞힐 때마다 단계가 올라가요. 기회는 줄고 못 맞혔을 때 감점은 커지지만, 맞히면 보너스를 받아요.</p>
   <table class="rule">
-    <tr><td>1단계 (0~4개 맞힘)</td><td>기회 10번</td></tr>
-    <tr><td>2단계 (5~9개)</td><td>9번 · +5점</td></tr>
-    <tr><td>3단계 (10~14개)</td><td>8번 · +10점</td></tr>
-    <tr><td>4단계 (15~19개)</td><td>7번 · +15점</td></tr>
-    <tr><td>5단계 (20개 이상)</td><td>6번 · +20점</td></tr>
+    <tr><td>1단계 (0~4개 맞힘)</td><td>10번 · 감점 −10</td></tr>
+    <tr><td>2단계 (5~9개)</td><td>9번 · +5 · −20</td></tr>
+    <tr><td>3단계 (10~14개)</td><td>8번 · +10 · −30</td></tr>
+    <tr><td>4단계 (15~19개)</td><td>7번 · +15 · −40</td></tr>
+    <tr><td>5단계 (20개 이상)</td><td>6번 · +20 · −50</td></tr>
   </table>
   <p class="note">새로고침해도 같은 문제가 이어져요. 문제를 끝내야 다음 문제로 넘어가요.</p>
   <div class="actions"><button class="main" data-close>시작하기</button></div>
@@ -226,7 +226,7 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
   <div class="actions">
     <button id="bReset">기본 목록으로</button>
     <button id="bClear">점수 초기화</button>
-    <button id="bGive">정답 보기(−10점)</button>
+    <button id="bGive">정답 보기(감점)</button>
     <button class="main" id="bSave">저장</button>
   </div>
 </div></div>
@@ -329,7 +329,7 @@ const pointsFor=t=>100-(t-1)*10+bonusOf(LV);
 let serverWins=null;
 const curWins=()=>serverWins!==null?serverWins:rec.wins;
 function setLevel(l){LV=l;MAX=triesOf(l);}
-const FAIL=-10;
+const failOf=l=>-10*l;
 
 let wordText=store.get('words',DEFAULT_WORDS);
 let strict=store.get('strict',false);
@@ -374,7 +374,7 @@ function newGame(){
 }
 function drawAll(){board.style.setProperty('--n',LEN);renderBoard();renderKbd();renderPreview();fit();}
 function renderBoard(flipRow=-1){
-  document.getElementById('info').textContent=done?'문제 끝':`${LV}단계 · 남은 기회 ${MAX-rows.length}번 · 지금 맞히면 ${pointsFor(rows.length+1)}점`;
+  document.getElementById('info').textContent=done?'문제 끝':`${LV}단계 · 기회 ${MAX-rows.length}번 · 맞히면 ${pointsFor(rows.length+1)}점 · 못 맞히면 ${failOf(LV)}점`;
   board.innerHTML='';
   for(let r=0;r<MAX;r++){
     const row=document.createElement('div');row.className='row';
@@ -424,7 +424,7 @@ function submit(){
   setTimeout(()=>{renderKbd(); if(done)finish(win);}, 90*LEN+450);
 }
 function finish(win){
-  const tries=rows.length, delta=win?pointsFor(tries):FAIL;
+  const tries=rows.length, delta=win?pointsFor(tries):failOf(LV);
   const before=shownTotal(), applied=Math.max(delta,-before);
   rec.total=Math.max(0,rec.total+delta); rec.games++;
   if(win){rec.wins++;rec.streak++;rec.best=Math.max(rec.best,rec.streak);}else rec.streak=0;
