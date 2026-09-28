@@ -174,10 +174,16 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
   <p><b>점수</b> 빨리 맞힐수록 점수가 커요.</p>
   <table class="rule">
     <tr><td>1번 만에</td><td>100점</td></tr>
-    <tr><td>2번 만에</td><td>95점</td></tr>
     <tr><td>한 번 늦을 때마다</td><td>−5점</td></tr>
-    <tr><td>10번 만에</td><td>55점</td></tr>
-    <tr><td>10번 안에 못 맞히면</td><td>−10점</td></tr>
+    <tr><td>못 맞히면</td><td>−10점</td></tr>
+  </table>
+  <p><b>단계</b> 5문제 맞힐 때마다 단계가 올라가요. 기회는 줄지만 맞히면 보너스를 받아요.</p>
+  <table class="rule">
+    <tr><td>1단계 (0~4개 맞힘)</td><td>기회 10번</td></tr>
+    <tr><td>2단계 (5~9개)</td><td>9번 · +5점</td></tr>
+    <tr><td>3단계 (10~14개)</td><td>8번 · +10점</td></tr>
+    <tr><td>4단계 (15~19개)</td><td>7번 · +15점</td></tr>
+    <tr><td>5단계 (20개 이상)</td><td>6번 · +20점</td></tr>
   </table>
   <p class="note">새로고침해도 같은 문제가 이어져요. 문제를 끝내야 다음 문제로 넘어가요.</p>
   <div class="actions"><button class="main" data-close>시작하기</button></div>
@@ -311,8 +317,14 @@ const store={
   get(k,d){try{const v=localStorage.getItem('kordle-chal2:'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
   set(k,v){try{localStorage.setItem('kordle-chal2:'+k,JSON.stringify(v))}catch(e){}}
 };
-const MAX=10;
-const pointsFor=t=>100-(t-1)*5;
+let MAX=10, LV=1;
+const levelOf=w=>Math.min(5,Math.floor(w/5)+1);
+const triesOf=l=>11-l;
+const bonusOf=l=>(l-1)*5;
+const pointsFor=t=>100-(t-1)*5+bonusOf(LV);
+let serverWins=null;
+const curWins=()=>serverWins!==null?serverWins:rec.wins;
+function setLevel(l){LV=l;MAX=triesOf(l);}
 const FAIL=-10;
 
 let wordText=store.get('words',DEFAULT_WORDS);
@@ -337,11 +349,12 @@ function parseWords(t){
 const board=document.getElementById('board');
 const rank={miss:1,near:2,ok:3};
 
-function saveGame(){store.set('game',{answer,rows,done});}
+function saveGame(){store.set('game',{answer,rows,done,lv:LV});}
 function restoreGame(){
   const g=store.get('game',null);
   if(!g||!g.answer||g.done)return false;
   const j=decompose(g.answer);if(!j||j.length!==LEN)return false;
+  setLevel(g.lv||levelOf(curWins()));
   answer=g.answer;answerJ=j;rows=g.rows||[];cur=[];done=false;keyState={};
   rows.forEach(r=>r.j.forEach((c,i)=>{if(!keyState[c]||rank[r.res[i]]>rank[keyState[c]])keyState[c]=r.res[i];}));
   return true;
@@ -351,12 +364,13 @@ function newGame(){
   if(!pool.length){toast('문제로 낼 낱말이 없어요.');return;}
   let pick;
   do{pick=pool[Math.floor(Math.random()*pool.length)];}while(pool.length>1&&answer&&pick.w===answer);
+  setLevel(levelOf(curWins()));
   answer=pick.w; answerJ=pick.j; rows=[]; cur=[]; done=false; keyState={};
   saveGame(); drawAll();
 }
 function drawAll(){board.style.setProperty('--n',LEN);renderBoard();renderKbd();renderPreview();fit();}
 function renderBoard(flipRow=-1){
-  document.getElementById('info').textContent=done?'문제 끝':`남은 기회 ${MAX-rows.length}번 · 지금 맞히면 ${pointsFor(rows.length+1)}점`;
+  document.getElementById('info').textContent=done?'문제 끝':`${LV}단계 · 남은 기회 ${MAX-rows.length}번 · 지금 맞히면 ${pointsFor(rows.length+1)}점`;
   board.innerHTML='';
   for(let r=0;r<MAX;r++){
     const row=document.createElement('div');row.className='row';
@@ -412,15 +426,20 @@ function finish(win){
   rec.hist.unshift({w:answer,d:delta,t:win?tries:0});rec.hist=rec.hist.slice(0,20);
   saveRec();
   if(serverTotal!==null)serverTotal+=delta;
+  if(win&&serverWins!==null)serverWins++;
   updateMe();
   countPlay('hit');
-  pending={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name:me,pin,delta,win:win?1:0,tries,word:answer};
+  pending={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name:me,pin,delta,win:win?1:0,tries,lv:LV,word:answer};
   store.set('pending',pending);
   document.getElementById('endTitle').textContent=win?'정답이에요!':'아쉬워요';
   document.getElementById('endWord').textContent=answer;
   const g=document.getElementById('endGain');
   g.textContent=(delta>0?'+':'')+delta+'점';g.className='gain '+(delta>0?'plus':'minus');
-  document.getElementById('endMsg').textContent=win?`${tries}번 만에 맞혔어요.`:'다음 문제에서 만회해 봐요.';
+  const nextLv=levelOf(curWins());
+  let em=win?`${tries}번 만에 맞혔어요.`+(bonusOf(LV)?` (단계 보너스 +${bonusOf(LV)}점 포함)`:''):'다음 문제에서 만회해 봐요.';
+  if(nextLv>LV)em+=`\n${nextLv}단계로 올라갔어요! 다음 문제부터 기회 ${triesOf(nextLv)}번, 맞히면 보너스 +${bonusOf(nextLv)}점`;
+  else if(win&&LV<5){const left=5-(curWins()%5);em+=`\n${left}문제 더 맞히면 ${LV+1}단계!`;}
+  const emEl=document.getElementById('endMsg');emEl.style.whiteSpace='pre-line';emEl.textContent=em;
   document.getElementById('endTotal').textContent=`누적 ${shownTotal()}점`+(rec.streak>1?` · ${rec.streak}문제 연속 정답!`:'');
   open('ovEnd');
   sendPending();
@@ -580,7 +599,8 @@ async function api(params){
   return j;
 }
 function applyMe(j){
-  if(j&&j.me&&j.me.name===me){serverTotal=j.me.total;updateMe();}
+  if(j&&j.me&&j.me.name===me){serverTotal=j.me.total;serverWins=j.me.wins||0;updateMe();}
+  if(answer&&!done&&!rows.length&&!cur.length&&levelOf(curWins())!==LV){setLevel(levelOf(curWins()));saveGame();drawAll();}
 }
 async function sendPending(){
   const es=document.getElementById('endSync'), rt=document.getElementById('bRetry');
