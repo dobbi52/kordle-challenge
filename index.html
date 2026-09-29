@@ -249,6 +249,19 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 .medalbar .md{font-size:.85rem;padding:3px 10px;border-radius:999px;background:linear-gradient(180deg,#FFF6D6,#F5DE8A);color:#5A4210;border:1px solid #D9B24C;white-space:nowrap}
 .lb td.medal{font-size:1.2rem}
 .rtabs button{white-space:nowrap;font-size:.85rem;padding:8px 4px}
+
+.last5{display:flex;align-items:center;gap:3px;flex-wrap:wrap;justify-content:center;margin:6px 0 0;font-size:.8rem;color:var(--ink);flex:none;padding:0 10px}
+.last5[hidden]{display:none}
+.last5 .lab{margin-right:3px;white-space:nowrap;opacity:.75}
+.last5 .c{min-width:34px;padding:2px 0;text-align:center;border-radius:7px;border:1.5px solid var(--line-soft);background:var(--panel);font-family:var(--t-font);font-size:.95rem}
+.last5 .c.neg{color:#B4442E;background:transparent}
+.last5 .c.empty{border-style:dashed;opacity:.6;background:transparent}
+.last5 .c.new{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok)}
+.last5 .c.out{border-style:dashed;opacity:.7}
+.last5 .sum{margin-left:4px;white-space:nowrap}
+.last5 .sum b{font-family:var(--t-font);font-weight:400;font-size:1.15rem;color:var(--ok)}
+.last5 .wb{margin-left:8px;white-space:nowrap;font-size:.75rem;opacity:.8}
+.last5 .wb b{font-family:var(--t-font);font-weight:400;font-size:.95rem}
 </style>
 </head>
 <body>
@@ -266,6 +279,7 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
   <span class="sync" id="meSub"></span>
   <span class="sync crowd" id="crowd"></span>
 </div>
+<div class="last5" id="last5" hidden></div>
 <div class="medalbar" id="medalBar" hidden></div>
 <div class="inforow" style="margin:6px 0 4px"><span class="info" id="info"></span></div>
 <main>
@@ -371,7 +385,7 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 
 <div class="overlay" id="ovRank"><div class="card">
   <h2>순위 (50위까지)</h2>
-  <div class="rtabs"><button id="tabRecent" class="on">최근 5게임</button><button id="tabWeek">이번 주 최고</button><button id="tabAll">누적 (노력왕)</button></div>
+  <div class="rtabs"><button id="tabWeek" class="on">이번 주 최고</button><button id="tabAll">누적 (노력왕)</button></div>
   <p class="note" id="rankMsg"></p>
   <table class="lb"><thead id="rankHead"><tr><th>순위</th><th>이름</th><th>점수</th><th>맞힘</th><th>문제</th></tr></thead><tbody id="rankBody"></tbody></table>
   <p class="note" id="rankMe" style="margin-top:10px"></p>
@@ -559,6 +573,7 @@ function finish(win){
   saveRec();
   if(serverTotal!==null)serverTotal=Math.max(0,serverTotal+delta);
   if(win&&serverWins!==null)serverWins++;
+  if(s5){s5=s5.concat([delta]).slice(-5);if(wBest!==null)wBest=Math.max(wBest,sum5(s5));}
   updateMe();
   countPlay('hit');
   pending={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name:me,pin,delta,win:win?1:0,tries,lv:LV,word:answer};
@@ -792,6 +807,7 @@ document.getElementById('cbFx').addEventListener('change',e=>store.set('fxOn',e.
 document.getElementById('bRecSkin').onclick=()=>{closeAll();pvMode=false;document.getElementById('pvBox').style.display='none';showSkins();};
 
 function updateMe(){
+  renderLast5();
   checkUnlock();
   document.getElementById('bName').textContent=me||'닉네임 쓰기';
   document.getElementById('meTotal').textContent=shownTotal();
@@ -927,15 +943,33 @@ async function api(params){
   if(!j.ok)throw new Error(j.error||'error');
   return j;
 }
+let s5=null, wBest=null; // 서버에서 받은 최근 5판 점수, 이번 주 최고 합계
+const sum5=a=>Math.max(0,(a||[]).reduce((x,y)=>x+y,0));
+function localLast5(){return (rec.hist||[]).slice(0,5).map(h=>h.d).reverse();}
+function renderLast5(){
+  const el=document.getElementById('last5');if(!el)return;
+  if(!me&&SCRIPT_URL){el.hidden=true;return;}
+  const L=s5||localLast5();
+  let h='<span class="lab">최근 5판</span>';
+  for(let i=0;i<5;i++){
+    const v=L[i];
+    if(v===undefined){h+='<span class="c empty">-</span>';continue;}
+    const cls=['c',v<=0?'neg':'',i===L.length-1?'new':'',L.length===5&&i===0?'out':''].join(' ');
+    h+=`<span class="${cls}" title="${L.length===5&&i===0?'다음 판을 하면 빠지는 점수':(i+1)+'번째 판'}">${v}</span>`;
+  }
+  h+=`<span class="sum">= <b>${sum5(L)}</b>점</span>`;
+  if(wBest!==null)h+=`<span class="wb">이번 주 최고 <b>${Math.max(wBest,sum5(L))}</b></span>`;
+  el.innerHTML=h;el.hidden=false;
+}
 function renderMedals(m){
   const el=document.getElementById('medalBar');if(!el)return;
   const parts=[];
-  if(m&&m.recentRank>=1&&m.recentRank<=3)parts.push(`<span class="md">${MEDAL[m.recentRank]} 최근 5게임 ${m.recentRank}등</span>`);
+  if(m&&m.weekBestRank>=1&&m.weekBestRank<=3)parts.push(`<span class="md">${MEDAL[m.weekBestRank]} 이번 주 최고 ${m.weekBestRank}등</span>`);
   if(m&&m.rank>=1&&m.rank<=3)parts.push(`<span class="md">${MEDAL[m.rank]} 누적 ${m.rank}등</span>`);
   el.innerHTML=parts.join('');el.hidden=!parts.length;
 }
 function applyMe(j){
-  if(j&&j.me&&j.me.name===me)renderMedals(j.me);
+  if(j&&j.me&&j.me.name===me){renderMedals(j.me);if(Array.isArray(j.me.recentLast5))s5=j.me.recentLast5.slice();if(typeof j.me.weekBest==='number')wBest=j.me.weekBest;renderLast5();}
   if(j&&typeof j.players==='number'){crowd.total=j.players;if(typeof j.todayPlayers==='number')crowd.today=j.todayPlayers;renderCrowd();}
   if(j&&j.me&&j.me.name===me){serverTotal=j.me.total;serverWins=j.me.wins||0;updateMe();}
   if(answer&&!done&&!rows.length&&!cur.length&&levelOf(curWins())!==LV){setLevel(levelOf(curWins()));saveGame();drawAll();}
@@ -951,7 +985,7 @@ async function sendPending(){
     pending=null;store.set('pending',null);
     applyMe(j);
     document.getElementById('endTotal').textContent=`누적 ${shownTotal()}점`+nextSkinText();
-    es.textContent=j.me&&j.me.rank?'순위표에 저장됐어요. '+[j.me.recentRank?`최근 5게임 ${j.me.recentRank}등`:'',j.me.weekBestRank?`이번 주 최고 ${j.me.weekBestRank}등`:'',`누적 ${j.me.rank}등`].filter(Boolean).join(' · '):'순위표에 저장됐어요.';
+    es.textContent=j.me&&j.me.rank?'순위표에 저장됐어요. '+[j.me.weekBestRank?`이번 주 최고 ${j.me.weekBestRank}등`:'',`누적 ${j.me.rank}등`].filter(Boolean).join(' · '):'순위표에 저장됐어요.';
   }catch(e){
     const m=String(e.message||'');
     if(/비밀번호|없는 닉네임|막아 둔/.test(m)){
@@ -962,7 +996,7 @@ async function sendPending(){
     }
   }
 }
-let rankTab='recent', lastBoard=null;
+let rankTab='week', lastBoard=null;
 const MEDAL=['','🥇','🥈','🥉'];
 const medalCell=rk=>rk>=1&&rk<=3?MEDAL[rk]:rk;
 function drawBoard(){
@@ -976,12 +1010,12 @@ function drawBoard(){
   body.innerHTML='';
   list.forEach(r=>{
     const tr=document.createElement('tr');if(r.name===me)tr.className='me';
-    const cells=five?[(rc?medalCell(r.rank):r.rank),r.name,r.sum,rc?`${r.n}/5`:`${r.n}게임`]:[(al?medalCell(r.rank):r.rank),r.name,r.total,r.wins,r.games];
+    const cells=five?[medalCell(r.rank),r.name,r.sum,rc?`${r.n}/5`:`${r.n}게임`]:[(al?medalCell(r.rank):r.rank),r.name,r.total,r.wins,r.games];
     cells.forEach((v,k)=>{const td=document.createElement('td');td.textContent=v;if(k===2)td.className='pts';if(k===0&&typeof v==='string'&&v.length<=2&&isNaN(v))td.className='medal';tr.appendChild(td);});
     body.appendChild(tr);
   });
   if(rc) msg.textContent=typeof j.recentPlayers==='number'?`각자 최근 5게임 점수 합계 · 최근 7일 안에 한 참가자 ${j.recentPlayers}명 · 1~3등 메달`:'순위표 업데이트가 필요해요. 선생님께 알려 주세요.';
-  else if(wk) msg.textContent=wkNew?`${j.weekStart||'이번 주'} 월요일부터 세운 최고 5게임 합계 · 참가자 ${j.weekBestPlayers||0}명 · 매주 월요일 0시에 새로 시작`:`${j.weekStart||'이번 주'} 월요일부터 · 참가자 ${j.weekPlayers||0}명`;
+  else if(wk) msg.textContent=wkNew?`${j.weekStart||'이번 주'} 월요일부터 세운 최고 5게임 합계 · 참가자 ${j.weekBestPlayers||0}명 · 1~3등 메달 · 매주 월요일 0시에 새로 시작`:`${j.weekStart||'이번 주'} 월요일부터 · 참가자 ${j.weekPlayers||0}명`;
   else msg.textContent=`처음부터 쌓인 점수 · 참가자 ${j.players||0}명 · 1~3등 메달`;
   if(!list.length)msg.textContent+=' · 아직 기록이 없어요.';
   const m=j.me;
@@ -990,11 +1024,9 @@ function drawBoard(){
   else mine.textContent=m&&m.rank>50?`내 순위: ${m.rank}등 (${m.total}점)`:'';
   document.getElementById('tabWeek').classList.toggle('on',wk);
   document.getElementById('tabAll').classList.toggle('on',al);
-  document.getElementById('tabRecent').classList.toggle('on',rc);
 }
 document.getElementById('tabWeek').onclick=()=>{rankTab='week';drawBoard();};
 document.getElementById('tabAll').onclick=()=>{rankTab='all';drawBoard();};
-document.getElementById('tabRecent').onclick=()=>{rankTab='recent';drawBoard();};
 async function loadBoard(showUI){
   if(!SCRIPT_URL)return;
   const msg=document.getElementById('rankMsg');
