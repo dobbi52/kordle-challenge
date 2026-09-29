@@ -385,7 +385,7 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 
 <div class="overlay" id="ovRank"><div class="card">
   <h2>순위 (50위까지)</h2>
-  <div class="rtabs"><button id="tabWeek" class="on">3판 합산 최고점</button><button id="tabAll">누적 (노력왕)</button></div>
+  <div class="rtabs"><button id="tabWeek" class="on">3콤보 최고점</button><button id="tabAll">누적 (노력왕)</button></div>
   <p class="note" id="rankMsg"></p>
   <table class="lb"><thead id="rankHead"><tr><th>순위</th><th>이름</th><th>점수</th><th>맞힘</th><th>문제</th></tr></thead><tbody id="rankBody"></tbody></table>
   <p class="note" id="rankMe" style="margin-top:10px"></p>
@@ -965,7 +965,7 @@ function renderLast5(){
 function renderMedals(m){
   const el=document.getElementById('medalBar');if(!el)return;
   const parts=[];
-  if(m&&m.weekBestRank>=1&&m.weekBestRank<=3)parts.push(`<span class="md">${MEDAL[m.weekBestRank]} 3판 합산 ${m.weekBestRank}등</span>`);
+  if(m&&m.weekBestRank>=1&&m.weekBestRank<=3)parts.push(`<span class="md">${MEDAL[m.weekBestRank]} 3콤보 ${m.weekBestRank}등</span>`);
   if(m&&m.rank>=1&&m.rank<=3)parts.push(`<span class="md">${MEDAL[m.rank]} 누적 ${m.rank}등</span>`);
   el.innerHTML=parts.join('');el.hidden=!parts.length;
 }
@@ -986,7 +986,7 @@ async function sendPending(){
     pending=null;store.set('pending',null);
     applyMe(j);
     document.getElementById('endTotal').textContent=`누적 ${shownTotal()}점`+nextSkinText();
-    es.textContent=j.me&&j.me.rank?'순위표에 저장됐어요. '+[j.me.weekBestRank?`3판 합산 최고점 ${j.me.weekBestRank}등`:'',`누적 ${j.me.rank}등`].filter(Boolean).join(' · '):'순위표에 저장됐어요.';
+    es.textContent=j.me&&j.me.rank?'순위표에 저장됐어요. '+[j.me.weekBestRank?`3콤보 최고점 ${j.me.weekBestRank}등`:'',`누적 ${j.me.rank}등`].filter(Boolean).join(' · '):'순위표에 저장됐어요.';
   }catch(e){
     const m=String(e.message||'');
     if(/비밀번호|없는 닉네임|막아 둔/.test(m)){
@@ -1007,7 +1007,7 @@ function drawBoard(){
   const wkNew=wk&&Array.isArray(j.weekBestTop);
   const list=(rc?j.recentTop:wk?(wkNew?j.weekBestTop:j.weekTop):j.top)||[];
   const five=rc||wkNew;
-  document.getElementById('rankHead').innerHTML=five?`<tr><th>순위</th><th>이름</th><th>${rc?'5게임 합계':'3판 합산'}</th><th>${rc?'게임':'이번 주'}</th></tr>`:'<tr><th>순위</th><th>이름</th><th>점수</th><th>맞힘</th><th>문제</th></tr>';
+  document.getElementById('rankHead').innerHTML=five?`<tr><th>순위</th><th>이름</th><th>${rc?'5게임 합계':'3콤보'}</th><th>${rc?'게임':'이번 주'}</th></tr>`:'<tr><th>순위</th><th>이름</th><th>점수</th><th>맞힘</th><th>문제</th></tr>';
   body.innerHTML='';
   list.forEach(r=>{
     const tr=document.createElement('tr');if(r.name===me)tr.className='me';
@@ -1016,7 +1016,7 @@ function drawBoard(){
     body.appendChild(tr);
   });
   if(rc) msg.textContent=typeof j.recentPlayers==='number'?`각자 최근 5게임 점수 합계 · 최근 7일 안에 한 참가자 ${j.recentPlayers}명 · 1~3등 메달`:'순위표 업데이트가 필요해요. 선생님께 알려 주세요.';
-  else if(wk) msg.textContent=wkNew?`이번 주(${j.weekStart||''} 월요일부터) 연속 3판 합산 최고점 · 참가자 ${j.weekBestPlayers||0}명 · 1~3등 메달 · 매주 월요일 0시에 새로 시작`:`${j.weekStart||'이번 주'} 월요일부터 · 참가자 ${j.weekPlayers||0}명`;
+  else if(wk) msg.textContent=wkNew?`이번 주(${j.weekStart||''} 월요일부터) 연속 3판 점수를 더한 3콤보 최고점 · 참가자 ${j.weekBestPlayers||0}명 · 1~3등 메달 · 매주 월요일 0시에 새로 시작`:`${j.weekStart||'이번 주'} 월요일부터 · 참가자 ${j.weekPlayers||0}명`;
   else msg.textContent=`처음부터 쌓인 점수 · 참가자 ${j.players||0}명 · 1~3등 메달`;
   if(!list.length)msg.textContent+=' · 아직 기록이 없어요.';
   const m=j.me;
