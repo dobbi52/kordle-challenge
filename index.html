@@ -6,7 +6,7 @@
 <title>꼬들 챌린지</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&family=Nanum+Brush+Script&family=Song+Myung&display=swap" rel="stylesheet">
 <style>
 :root{
   --paper:#F6F8F3; --ink:#1F2A24; --line:#7FB59A; --line-soft:#CFE3D6;
@@ -262,6 +262,40 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 .last5 .sum b{font-family:var(--t-font);font-weight:400;font-size:1.15rem;color:var(--ok)}
 .last5 .wb{margin-left:8px;white-space:nowrap;font-size:.75rem;opacity:.8}
 .last5 .wb b{font-family:var(--t-font);font-weight:400;font-size:.95rem}
+/* ── 판마다 달라지는 자판 ── */
+.key{transition:transform .08s ease,box-shadow .15s ease}
+.key:active{transform:translateY(2px)}
+/* 한지: 손으로 뜯은 종이 조각 */
+:root[data-skin="hanji"] .key{background:linear-gradient(160deg,#FFFBF2,#EFE3CC);border:1px solid #CDB894;border-radius:9px 5px 10px 6px/6px 10px 5px 9px;box-shadow:0 2px 0 #CDB894,0 3px 6px rgba(90,60,20,.12);color:#3B2A18}
+:root[data-skin="hanji"] .key::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background-image:radial-gradient(ellipse 10px 1.5px at 30% 30%,rgba(140,110,60,.18),transparent),radial-gradient(ellipse 8px 1px at 70% 70%,rgba(140,110,60,.14),transparent)}
+:root[data-skin="hanji"] .key{position:relative}
+/* 먹과 붓: 먹물 번진 붓글씨 자판 */
+:root[data-skin="ink"] .key{background:radial-gradient(ellipse at 50% 55%,rgba(20,20,20,.14),rgba(20,20,20,.04) 60%,transparent 75%),#F4F2EE;border:1.5px solid #2A2A2A;border-radius:12px 4px 12px 4px;color:#111;font-family:"Nanum Brush Script",var(--t-font);font-size:1.6rem;box-shadow:2px 2px 0 rgba(0,0,0,.18)}
+:root[data-skin="ink"] .key.wide,:root[data-skin="ink"] .key.clear{font-family:"Nanum Brush Script",var(--b-font);font-size:1.15rem;font-weight:400}
+:root[data-skin="ink"] .key.main{background:#151515;color:#F4F2EE}
+/* 단청: 줄마다 다른 단청 띠를 두른 나무 자판 */
+:root[data-skin="dancheong"] .key{background:linear-gradient(#FFFDF7,#F1E9D6);border:none;border-radius:4px 4px 8px 8px;color:#1F2A24;box-shadow:inset 0 -3px 0 rgba(0,0,0,.08),0 2px 0 #8A5A2B}
+:root[data-skin="dancheong"] .krow:nth-child(1) .key{border-top:6px solid #2E7D6B}
+:root[data-skin="dancheong"] .krow:nth-child(2) .key{border-top:6px solid #C0392B}
+:root[data-skin="dancheong"] .krow:nth-child(3) .key{border-top:6px solid #1F4E8C}
+:root[data-skin="dancheong"] .krow:nth-child(4) .key{border-top:6px solid #E0A33A}
+:root[data-skin="dancheong"] .key.main{background:linear-gradient(#C0392B,#9A2A20);color:#FFF4E0}
+/* 훈민정음 해례본: 목판에 새긴 옛 글자 */
+:root[data-skin="haerye"] .key{background:linear-gradient(#EFE1BC,#E2CD9C);border:3px double #6B4A22;border-radius:2px;color:#3B2A14;font-family:"Song Myung",serif;font-size:1.45rem;box-shadow:1px 2px 0 rgba(80,50,20,.35)}
+:root[data-skin="haerye"] .key.wide,:root[data-skin="haerye"] .key.clear{font-family:"Song Myung",serif;font-weight:400;font-size:.95rem}
+:root[data-skin="haerye"] .key.main{background:#7A2E1C;color:#F3E7C8;border-color:#3B1A0E}
+/* 궁궐의 밤: 은은하게 빛나는 청사초롱 */
+:root[data-skin="palace"] .key{background:radial-gradient(ellipse at 50% 35%,#3A4C8C,#1C2750 70%);border:1px solid #C9A45C;border-radius:14px 14px 10px 10px;color:#FFE3A8;text-shadow:0 0 6px rgba(255,190,90,.8);box-shadow:0 0 10px rgba(255,170,70,.25),inset 0 -6px 10px rgba(0,0,0,.35)}
+:root[data-skin="palace"] .krow:nth-child(odd) .key:nth-child(odd),:root[data-skin="palace"] .krow:nth-child(even) .key:nth-child(even){background:radial-gradient(ellipse at 50% 35%,#C0392B,#6E1A14 72%)}
+:root[data-skin="palace"] .key.main{background:radial-gradient(ellipse at 50% 35%,#FFB45A,#C06A1C 72%);color:#2A1405;text-shadow:none}
+/* 금박 한글: 반짝이는 금박 자판 */
+:root[data-skin="gold"] .key{position:relative;overflow:hidden}
+:root[data-skin="gold"] .key::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(255,240,190,.45) 50%,transparent 65%);background-size:250% 100%;animation:goldSweep 4s ease-in-out infinite}
+/* 힌트 색은 어느 판에서도 또렷하게 */
+:root[data-skin] .key.ok{background:var(--ok)!important;color:#fff!important;text-shadow:none}
+:root[data-skin] .key.near{background:var(--near)!important;color:#fff!important;text-shadow:none}
+:root[data-skin] .key.miss{background:var(--miss)!important;color:#fff!important;text-shadow:none}
+
 </style>
 </head>
 <body>
@@ -471,7 +505,7 @@ const curWins=()=>serverWins!==null?serverWins:rec.wins;
 function setLevel(l){LV=l;MAX=triesOf(l);}
 const failOf=l=>-10*l;
 
-let wordText=store.get('words',DEFAULT_WORDS);
+let wordText=store.get('words2',DEFAULT_WORDS); /* 예전 기기에 저장된 낱말 목록(남강 포함)은 쓰지 않음 */
 let strict=store.get('strict',false);
 const EMPTY={total:0,games:0,wins:0,streak:0,best:0,hist:[]};
 let me=store.get('name',''), pin=store.get('pin','');
@@ -917,7 +951,7 @@ document.getElementById('bClear').onclick=()=>{
 };
 document.getElementById('bSave').onclick=()=>{
   wordText=document.getElementById('words').value;strict=document.getElementById('strict').checked;
-  store.set('words',wordText);store.set('strict',strict);closeAll();
+  store.set('words2',wordText);store.set('strict',strict);closeAll();
 };
 document.getElementById('bGive').onclick=()=>{
   closeAll();if(done||!answer)return;done=true;saveGame();renderBoard();renderPreview();renderKbd();finish(false);
