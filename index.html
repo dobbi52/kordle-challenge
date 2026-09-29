@@ -243,6 +243,12 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 .fx-scroll{position:fixed;left:50%;top:36%;z-index:51;pointer-events:none;min-width:200px;padding:18px 26px;border-radius:8px;background:linear-gradient(#F6E7BE,#E9D29A);border-left:12px solid #8A5A2B;border-right:12px solid #8A5A2B;box-shadow:0 8px 30px rgba(0,0,0,.35);text-align:center;font-family:var(--t-font);color:#5A2A12;animation:scrollopen 2.4s ease-out forwards}
 .fx-scroll b{display:block;font-weight:400;font-size:2.4rem;color:#B8261E} .fx-scroll span{font-size:1.1rem}
 @keyframes scrollopen{0%{transform:translate(-50%,-50%) scaleX(.05);opacity:0}25%{transform:translate(-50%,-50%) scaleX(1);opacity:1}85%{opacity:1}100%{transform:translate(-50%,-50%) scaleX(1);opacity:0}}
+
+.medalbar{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:6px 0 0;flex:none}
+.medalbar[hidden]{display:none}
+.medalbar .md{font-size:.85rem;padding:3px 10px;border-radius:999px;background:linear-gradient(180deg,#FFF6D6,#F5DE8A);color:#5A4210;border:1px solid #D9B24C;white-space:nowrap}
+.lb td.medal{font-size:1.2rem}
+.rtabs button{white-space:nowrap;font-size:.85rem;padding:8px 4px}
 </style>
 </head>
 <body>
@@ -260,6 +266,7 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
   <span class="sync" id="meSub"></span>
   <span class="sync crowd" id="crowd"></span>
 </div>
+<div class="medalbar" id="medalBar" hidden></div>
 <div class="inforow" style="margin:6px 0 4px"><span class="info" id="info"></span></div>
 <main>
   <div id="board" aria-live="polite"></div>
@@ -363,8 +370,8 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 </div></div>
 
 <div class="overlay" id="ovRank"><div class="card">
-  <h2>순위 (30위까지)</h2>
-  <div class="rtabs"><button id="tabWeek" class="on">이번 주</button><button id="tabAll">전체 누적</button><button id="tabRecent">최근 5게임</button></div>
+  <h2>순위 (50위까지)</h2>
+  <div class="rtabs"><button id="tabRecent" class="on">최근 5게임</button><button id="tabWeek">이번 주 최고</button><button id="tabAll">누적 (노력왕)</button></div>
   <p class="note" id="rankMsg"></p>
   <table class="lb"><thead id="rankHead"><tr><th>순위</th><th>이름</th><th>점수</th><th>맞힘</th><th>문제</th></tr></thead><tbody id="rankBody"></tbody></table>
   <p class="note" id="rankMe" style="margin-top:10px"></p>
@@ -920,7 +927,15 @@ async function api(params){
   if(!j.ok)throw new Error(j.error||'error');
   return j;
 }
+function renderMedals(m){
+  const el=document.getElementById('medalBar');if(!el)return;
+  const parts=[];
+  if(m&&m.recentRank>=1&&m.recentRank<=3)parts.push(`<span class="md">${MEDAL[m.recentRank]} 최근 5게임 ${m.recentRank}등</span>`);
+  if(m&&m.rank>=1&&m.rank<=3)parts.push(`<span class="md">${MEDAL[m.rank]} 누적 ${m.rank}등</span>`);
+  el.innerHTML=parts.join('');el.hidden=!parts.length;
+}
 function applyMe(j){
+  if(j&&j.me&&j.me.name===me)renderMedals(j.me);
   if(j&&typeof j.players==='number'){crowd.total=j.players;if(typeof j.todayPlayers==='number')crowd.today=j.todayPlayers;renderCrowd();}
   if(j&&j.me&&j.me.name===me){serverTotal=j.me.total;serverWins=j.me.wins||0;updateMe();}
   if(answer&&!done&&!rows.length&&!cur.length&&levelOf(curWins())!==LV){setLevel(levelOf(curWins()));saveGame();drawAll();}
@@ -936,7 +951,7 @@ async function sendPending(){
     pending=null;store.set('pending',null);
     applyMe(j);
     document.getElementById('endTotal').textContent=`누적 ${shownTotal()}점`+nextSkinText();
-    es.textContent=j.me&&j.me.rank?`순위표에 저장됐어요. 이번 주 ${j.me.weekRank}등 · 전체 ${j.me.rank}등`+(j.me.recentRank?` · 최근 5게임 ${j.me.recentRank}등`:''):'순위표에 저장됐어요.';
+    es.textContent=j.me&&j.me.rank?'순위표에 저장됐어요. '+[j.me.recentRank?`최근 5게임 ${j.me.recentRank}등`:'',j.me.weekBestRank?`이번 주 최고 ${j.me.weekBestRank}등`:'',`누적 ${j.me.rank}등`].filter(Boolean).join(' · '):'순위표에 저장됐어요.';
   }catch(e){
     const m=String(e.message||'');
     if(/비밀번호|없는 닉네임|막아 둔/.test(m)){
@@ -947,35 +962,34 @@ async function sendPending(){
     }
   }
 }
-let rankTab='week', lastBoard=null;
+let rankTab='recent', lastBoard=null;
+const MEDAL=['','🥇','🥈','🥉'];
+const medalCell=rk=>rk>=1&&rk<=3?MEDAL[rk]:rk;
 function drawBoard(){
   const j=lastBoard;if(!j)return;
   const body=document.getElementById('rankBody'), msg=document.getElementById('rankMsg'), mine=document.getElementById('rankMe');
-  const wk=rankTab==='week', rc=rankTab==='recent';
-  const list=(rc?j.recentTop:wk?j.weekTop:j.top)||[];
-  document.getElementById('rankHead').innerHTML=rc?'<tr><th>순위</th><th>이름</th><th>5게임 합계</th><th>게임</th></tr>':'<tr><th>순위</th><th>이름</th><th>점수</th><th>맞힘</th><th>문제</th></tr>';
+  const rc=rankTab==='recent', wk=rankTab==='week', al=rankTab==='all';
+  const wkNew=wk&&Array.isArray(j.weekBestTop);
+  const list=(rc?j.recentTop:wk?(wkNew?j.weekBestTop:j.weekTop):j.top)||[];
+  const five=rc||wkNew;
+  document.getElementById('rankHead').innerHTML=five?`<tr><th>순위</th><th>이름</th><th>5게임 합계</th><th>${rc?'게임':'이번 주'}</th></tr>`:'<tr><th>순위</th><th>이름</th><th>점수</th><th>맞힘</th><th>문제</th></tr>';
   body.innerHTML='';
   list.forEach(r=>{
     const tr=document.createElement('tr');if(r.name===me)tr.className='me';
-    (rc?[r.rank,r.name,r.sum,`${r.n}/5`]:[r.rank,r.name,r.total,r.wins,r.games]).forEach((v,k)=>{const td=document.createElement('td');td.textContent=v;if(k===2)td.className='pts';tr.appendChild(td);});
+    const cells=five?[(rc?medalCell(r.rank):r.rank),r.name,r.sum,rc?`${r.n}/5`:`${r.n}게임`]:[(al?medalCell(r.rank):r.rank),r.name,r.total,r.wins,r.games];
+    cells.forEach((v,k)=>{const td=document.createElement('td');td.textContent=v;if(k===2)td.className='pts';if(k===0&&typeof v==='string'&&v.length<=2&&isNaN(v))td.className='medal';tr.appendChild(td);});
     body.appendChild(tr);
   });
-  if(rc){
-    msg.textContent=typeof j.recentPlayers==='number'?`각자 최근 5게임 점수 합계 · 최근 7일 안에 한 참가자 ${j.recentPlayers}명`:'순위표 업데이트가 필요해요. 선생님께 알려 주세요.';
-  }else{
-    const cnt=wk?j.weekPlayers:j.players;
-    msg.textContent=wk?`${j.weekStart||'이번 주'} 월요일부터 · 참가자 ${cnt||0}명 · 매주 월요일 0시에 새로 시작`:`처음부터 쌓인 점수 · 참가자 ${cnt||0}명`;
-  }
+  if(rc) msg.textContent=typeof j.recentPlayers==='number'?`각자 최근 5게임 점수 합계 · 최근 7일 안에 한 참가자 ${j.recentPlayers}명 · 1~3등 메달`:'순위표 업데이트가 필요해요. 선생님께 알려 주세요.';
+  else if(wk) msg.textContent=wkNew?`${j.weekStart||'이번 주'} 월요일부터 세운 최고 5게임 합계 · 참가자 ${j.weekBestPlayers||0}명 · 매주 월요일 0시에 새로 시작`:`${j.weekStart||'이번 주'} 월요일부터 · 참가자 ${j.weekPlayers||0}명`;
+  else msg.textContent=`처음부터 쌓인 점수 · 참가자 ${j.players||0}명 · 1~3등 메달`;
   if(!list.length)msg.textContent+=' · 아직 기록이 없어요.';
-  if(rc){
-    const m=j.me;
-    mine.textContent=m&&m.recentN?`내 최근 5게임: ${m.recentLast5.map(v=>(v>0?'+':'')+v).join(' · ')} = ${m.recentSum}점`+(m.recentRank&&m.recentRank>30?` (${m.recentRank}등)`:''):'';
-  }else{
-    const rk=j.me?(wk?j.me.weekRank:j.me.rank):null, tot=j.me?(wk?j.me.weekTotal:j.me.total):0;
-    mine.textContent=rk&&rk>30?`내 순위: ${rk}등 (${tot}점)`:'';
-  }
+  const m=j.me;
+  if(rc) mine.textContent=m&&m.recentN?`내 최근 5게임: ${m.recentLast5.map(v=>(v>0?'+':'')+v).join(' · ')} = ${m.recentSum}점`+(m.recentRank&&m.recentRank>50?` (${m.recentRank}등)`:''):'';
+  else if(wk) mine.textContent=m&&wkNew&&m.weekBestRank>50?`내 순위: ${m.weekBestRank}등 (${m.weekBest}점)`:'';
+  else mine.textContent=m&&m.rank>50?`내 순위: ${m.rank}등 (${m.total}점)`:'';
   document.getElementById('tabWeek').classList.toggle('on',wk);
-  document.getElementById('tabAll').classList.toggle('on',rankTab==='all');
+  document.getElementById('tabAll').classList.toggle('on',al);
   document.getElementById('tabRecent').classList.toggle('on',rc);
 }
 document.getElementById('tabWeek').onclick=()=>{rankTab='week';drawBoard();};
