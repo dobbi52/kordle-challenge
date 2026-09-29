@@ -332,8 +332,8 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
   <p style="margin-top:12px">ㄲ은 ㄱ+ㄱ, ㅐ는 ㅏ+ㅣ, ㅘ는 ㅗ+ㅏ, 겹받침 ㄺ은 ㄹ+ㄱ처럼 나눠 넣어요.</p>
   <p><b>점수</b> 빨리 맞힐수록 점수가 커요.</p>
   <table class="rule">
-    <tr><td>1번 만에</td><td>100점</td></tr>
-    <tr><td>한 번 늦을 때마다</td><td>−10점</td></tr>
+    <tr><td>1~2번 만에</td><td>90점</td></tr>
+    <tr><td>그다음 한 번 늦을 때마다</td><td>−10점</td></tr>
     <tr><td>못 맞히면</td><td>단계 × 10점 감점</td></tr>
   </table>
   <p><b>단계</b> 5문제 맞힐 때마다 단계가 올라가요. 기회는 줄고 못 맞혔을 때 감점은 커지지만, 맞히면 보너스를 받아요.</p>
@@ -437,6 +437,8 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 </div></div>
 
 <script>
+(()=>{ /* 정답 등 게임 정보가 바깥(개발자 도구)에서 바로 보이지 않도록 감쌈 */
+
 /* ▼ 선생님: 구글 Apps Script 웹 앱 주소를 따옴표 안에 붙여 넣으세요 ▼ */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzk4JVQN0NTnYRbxmt4xkm9iF9V09TqF47XsxZAY2YzyZ9Bdy9PGM-xRQune3LfaGK0Gw/exec";
 /* ▲ ──────────────────────────────────────────────── ▲ */
@@ -499,7 +501,7 @@ let MAX=10, LV=1;
 const levelOf=w=>Math.min(5,Math.floor(w/5)+1);
 const triesOf=l=>11-l;
 const bonusOf=l=>(l-1)*5;
-const pointsFor=t=>100-(t-1)*10+bonusOf(LV);
+const pointsFor=t=>100-(Math.max(t,2)-1)*10+bonusOf(LV); /* 1번 만에 맞혀도 2번과 같은 점수 */
 let serverWins=null;
 const curWins=()=>serverWins!==null?serverWins:rec.wins;
 function setLevel(l){LV=l;MAX=triesOf(l);}
@@ -527,13 +529,18 @@ function parseWords(t){
 const board=document.getElementById('board');
 const rank={miss:1,near:2,ok:3};
 
-function saveGame(){store.set('game',{answer,rows,done,lv:LV});}
+const EK='kordle*challenge';
+function enc(w){const b=[...w].map((ch,i)=>ch.charCodeAt(0)^EK.charCodeAt(i%EK.length));return btoa(String.fromCharCode(...b.flatMap(v=>[v>>8,v&255]))).split('').reverse().join('');}
+function dec(x){try{const r=atob(x.split('').reverse().join(''));let o='';for(let i=0;i<r.length;i+=2){const v=(r.charCodeAt(i)<<8)|r.charCodeAt(i+1);o+=String.fromCharCode(v^EK.charCodeAt((i/2)%EK.length));}return o;}catch(e){return '';}}
+let ticket=null;
+function saveGame(){store.set('game',{a:enc(answer),rows,done,lv:LV,tk:ticket});}
 function restoreGame(){
   const g=store.get('game',null);
-  if(!g||!g.answer||g.done)return false;
-  const j=decompose(g.answer);if(!j||j.length!==LEN)return false;
+  const ga=g&&(g.a?dec(g.a):g.answer);
+  if(!g||!ga||g.done)return false;
+  const j=decompose(ga);if(!j||j.length!==LEN)return false;
   setLevel(g.lv||levelOf(curWins()));
-  answer=g.answer;answerJ=j;rows=g.rows||[];cur=[];done=false;keyState={};
+  answer=ga;answerJ=j;rows=g.rows||[];cur=[];done=false;keyState={};ticket=g.tk||null;
   rows.forEach(r=>r.j.forEach((c,i)=>{if(!keyState[c]||rank[r.res[i]]>rank[keyState[c]])keyState[c]=r.res[i];}));
   return true;
 }
@@ -543,8 +550,8 @@ function newGame(){
   let pick;
   do{pick=pool[Math.floor(Math.random()*pool.length)];}while(pool.length>1&&answer&&pick.w===answer);
   setLevel(levelOf(curWins()));
-  answer=pick.w; answerJ=pick.j; rows=[]; cur=[]; done=false; keyState={};
-  saveGame(); drawAll();
+  answer=pick.w; answerJ=pick.j; rows=[]; cur=[]; done=false; keyState={}; ticket=null;
+  saveGame(); drawAll(); getTicket();
 }
 function drawAll(){board.style.setProperty('--n',LEN);renderBoard();renderKbd();renderPreview();fit();}
 function renderBoard(flipRow=-1){
@@ -583,6 +590,7 @@ function score(g){
 }
 function submit(){
   if(done)return;
+  if(!ticket)getTicket();
   if(SCRIPT_URL&&!me){askName();return;}
   if(cur.length<LEN){shake();toast(`${LEN}칸을 모두 채워 주세요.`);return;}
   if(!compose(cur).valid){shake();toast('글자가 되지 않는 조합이에요.');return;}
@@ -610,7 +618,7 @@ function finish(win){
   if(s5){s5=s5.concat([delta]).slice(-RN);if(wBest!==null)wBest=Math.max(wBest,sum5(s5));}
   updateMe();
   countPlay('hit');
-  pending={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name:me,pin,delta,win:win?1:0,tries,lv:LV,word:answer};
+  pending={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name:me,pin,delta,win:win?1:0,tries,lv:LV,word:answer,tk:ticket||''};ticket=null;
   store.set('pending',pending);
   document.getElementById('endTitle').textContent=win?'정답이에요!':'아쉬워요';
   document.getElementById('endWord').textContent=answer;
@@ -1009,6 +1017,10 @@ function applyMe(j){
   if(j&&j.me&&j.me.name===me){serverTotal=j.me.total;serverWins=j.me.wins||0;updateMe();}
   if(answer&&!done&&!rows.length&&!cur.length&&levelOf(curWins())!==LV){setLevel(levelOf(curWins()));saveGame();drawAll();}
 }
+async function getTicket(){
+  if(!SCRIPT_URL||!me||!pin||done||ticket)return;
+  try{const j=await api({action:'start',name:me,pin});if(j.tk&&!done&&!ticket){ticket=j.tk;saveGame();}}catch(e){}
+}
 async function sendPending(){
   const es=document.getElementById('endSync'), rt=document.getElementById('bRetry');
   rt.style.display='none';
@@ -1023,9 +1035,9 @@ async function sendPending(){
     es.textContent=j.me&&j.me.rank?'순위표에 저장됐어요. '+[j.me.weekBestRank?`3콤보 최고점 ${j.me.weekBestRank}등`:'',`누적 ${j.me.rank}등`].filter(Boolean).join(' · '):'순위표에 저장됐어요.';
   }catch(e){
     const m=String(e.message||'');
-    if(/비밀번호|없는 닉네임|막아 둔/.test(m)){
+    if(/비밀번호|없는 닉네임|막아 둔|입장권|너무 빨리 끝난/.test(m)){
       pending=null;store.set('pending',null);
-      es.textContent=m+' 닉네임으로 다시 들어가 주세요.';
+      es.textContent=/입장권|너무 빨리/.test(m)?m:m+' 닉네임으로 다시 들어가 주세요.';
     }else{
       es.textContent='점수를 보내지 못했어요. 인터넷을 확인하고 다시 보내 주세요.';rt.style.display='';
     }
@@ -1100,6 +1112,7 @@ async function doJoin(){
     me=n;pin=p;store.set('name',me);store.set('pin',pin);
     serverTotal=null;applyMe(j);updateMe();closeAll();
     toast(j.created?`${me}님, 새로 참가했어요!`:`${me}님, 다시 왔군요!`);
+    ticket=null;getTicket();
   }catch(e){msg.textContent=e.message==='Failed to fetch'?'연결하지 못했어요. 인터넷을 확인해 주세요.':e.message;}
   btn.disabled=false;
 }
@@ -1117,12 +1130,15 @@ updateMe();
 countPlay('get');
 if(SCRIPT_URL){
   loadBoard(false);
+  setTimeout(getTicket,300);
   if(pending)sendPending().then(()=>{if(!pending)toast('밀린 점수를 보냈어요.');});
 }
 if(!restoreGame())newGame();else drawAll();
 if(!store.get('seenHelp',false)){open('ovHelp');store.set('seenHelp',true);}
 else if(SCRIPT_URL&&!me)askName();
 document.querySelector('#ovHelp [data-close]').addEventListener('click',()=>{if(SCRIPT_URL&&!me)setTimeout(askName,50);});
+
+})();
 </script>
 </body>
 </html>
