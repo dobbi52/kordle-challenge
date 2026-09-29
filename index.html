@@ -363,7 +363,7 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 </div></div>
 
 <div class="overlay" id="ovRank"><div class="card">
-  <h2>순위 (20위까지)</h2>
+  <h2>순위 (30위까지)</h2>
   <div class="rtabs"><button id="tabWeek" class="on">이번 주</button><button id="tabAll">전체 누적</button><button id="tabRecent">최근 5게임</button></div>
   <p class="note" id="rankMsg"></p>
   <table class="lb"><thead id="rankHead"><tr><th>순위</th><th>이름</th><th>점수</th><th>맞힘</th><th>문제</th></tr></thead><tbody id="rankBody"></tbody></table>
@@ -969,10 +969,10 @@ function drawBoard(){
   if(!list.length)msg.textContent+=' · 아직 기록이 없어요.';
   if(rc){
     const m=j.me;
-    mine.textContent=m&&m.recentN?`내 최근 5게임: ${m.recentLast5.map(v=>(v>0?'+':'')+v).join(' · ')} = ${m.recentSum}점`+(m.recentRank&&m.recentRank>20?` (${m.recentRank}등)`:''):'';
+    mine.textContent=m&&m.recentN?`내 최근 5게임: ${m.recentLast5.map(v=>(v>0?'+':'')+v).join(' · ')} = ${m.recentSum}점`+(m.recentRank&&m.recentRank>30?` (${m.recentRank}등)`:''):'';
   }else{
     const rk=j.me?(wk?j.me.weekRank:j.me.rank):null, tot=j.me?(wk?j.me.weekTotal:j.me.total):0;
-    mine.textContent=rk&&rk>20?`내 순위: ${rk}등 (${tot}점)`:'';
+    mine.textContent=rk&&rk>30?`내 순위: ${rk}등 (${tot}점)`:'';
   }
   document.getElementById('tabWeek').classList.toggle('on',wk);
   document.getElementById('tabAll').classList.toggle('on',rankTab==='all');
