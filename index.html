@@ -314,7 +314,8 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 .champ-word.c3{color:#E8A970;text-shadow:0 2px 0 #6A3A12,0 0 16px rgba(232,169,112,.9)}
 @keyframes champdrop{0%{transform:translateY(-25vh) scale(.6);opacity:0}40%{transform:translateY(0) scale(1.15);opacity:1}80%{opacity:1}100%{transform:translateY(0) scale(1);opacity:0}}
 .lb tr.top1 td,.lb tr.top2 td,.lb tr.top3 td{position:relative;font-weight:700}
-.lb tr.top1 td{background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%) 0 0/250% 100%,linear-gradient(90deg,rgba(245,200,74,.35),rgba(255,241,184,.18));animation:goldSweep 3.5s ease-in-out infinite}
+.lb tr.top1 td{background:linear-gradient(90deg,rgba(245,200,74,.35),rgba(255,241,184,.18))}
+.lb tr.top1 td::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.75) 50%,transparent 70%);background-size:250% 100%;animation:goldSweep 3s ease-in-out infinite}
 .lb tr.top2 td{background:linear-gradient(90deg,rgba(174,184,196,.35),rgba(242,245,248,.18))}
 .lb tr.top3 td{background:linear-gradient(90deg,rgba(208,138,78,.30),rgba(243,192,143,.15))}
 
