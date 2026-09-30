@@ -571,7 +571,7 @@ const failOf=l=>-10*l;
 let wordText=store.get('words2',DEFAULT_WORDS); /* 예전 기기에 저장된 낱말 목록(남강 포함)은 쓰지 않음 */
 let strict=store.get('strict',false);
 const EMPTY={total:0,games:0,wins:0,streak:0,best:0,hist:[]};
-let me=store.get('name',''), pin=store.get('pin',''), sid=store.get('sid','');
+let me=store.get('name',''), pin=store.get('pin','');
 let serverTotal=null, roster=[], pending=store.get('pending',null);
 const recKey=()=>'rec:'+(me||'_');
 let rec=Object.assign({},EMPTY,store.get(recKey(),{}));
@@ -679,7 +679,7 @@ function finish(win){
   if(s5){s5=s5.concat([delta]).slice(-RN);if(wBest!==null)wBest=Math.max(wBest,sum5(s5));}
   updateMe();
   countPlay('hit');
-  pending={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name:me,pin,delta,win:win?1:0,tries,lv:LV,word:answer,tk:ticket||'',sid};ticket=null;
+  pending={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name:me,pin,delta,win:win?1:0,tries,lv:LV,word:answer,tk:ticket||''};ticket=null;
   store.set('pending',pending);
   document.getElementById('endTitle').textContent=win?'정답이에요!':'아쉬워요';
   document.getElementById('endWord').textContent=answer;
@@ -1133,27 +1133,9 @@ function applyMe(j){
   if(j&&j.me&&j.me.name===me){serverTotal=j.me.total;serverWins=j.me.wins||0;updateMe();}
   if(answer&&!done&&!rows.length&&!cur.length&&levelOf(curWins())!==LV){setLevel(levelOf(curWins()));saveGame();drawAll();}
 }
-let kickedShown=false;
-function kicked(){
-  sid='';pin='';store.set('sid','');store.set('pin','');ticket=null;
-  if(kickedShown)return;kickedShown=true;
-  setTimeout(()=>{
-    closeAll();askName();
-    document.getElementById('nameMsg').textContent='다른 기기에서 같은 닉네임으로 접속해서 로그아웃됐어요. 계속하려면 비밀번호를 다시 입력하세요.';
-    kickedShown=false;
-  },document.getElementById('ovEnd').classList.contains('open')?2500:0);
-}
-async function pingSession(){
-  if(!SCRIPT_URL||!me||!sid||document.hidden)return;
-  try{await api({action:'ping',name:me,sid});}catch(e){if(/로그아웃/.test(String(e.message)))kicked();}
-}
-async function silentJoin(){ /* 업데이트 전부터 들어와 있던 학생: 한 번 자동으로 접속 번호 받기 */
-  if(!SCRIPT_URL||!me||!pin||sid)return;
-  try{const j=await api({action:'join',name:me,pin});sid=j.sid||'';store.set('sid',sid);applyMe(j);}catch(e){}
-}
 async function getTicket(){
   if(!SCRIPT_URL||!me||!pin||done||ticket)return;
-  try{const j=await api({action:'start',name:me,pin,sid});if(j.tk&&!done&&!ticket){ticket=j.tk;saveGame();}}catch(e){if(/로그아웃/.test(String(e.message)))kicked();}
+  try{const j=await api({action:'start',name:me,pin});if(j.tk&&!done&&!ticket){ticket=j.tk;saveGame();}}catch(e){}
 }
 async function sendPending(){
   const es=document.getElementById('endSync'), rt=document.getElementById('bRetry');
@@ -1172,9 +1154,8 @@ async function sendPending(){
     if(/비밀번호|없는 닉네임|막아 둔|입장권|너무 빨리 끝난|로그아웃/.test(m)){
       pending=null;store.set('pending',null);
       es.textContent=/입장권|너무 빨리|로그아웃/.test(m)?m+(/로그아웃/.test(m)?' 이 판 점수는 저장되지 않았어요.':''):m+' 닉네임으로 다시 들어가 주세요.';
-      if(/로그아웃/.test(m))kicked();
     }else{
-      es.textContent='점수를 보내지 못했어요. 인터넷을 확인하고 다시 보내 주세요.';rt.style.display='';
+      es.textContent='점수를 보내지 못했어요. 인터넷을 확인하고 다시 보내 주세요.'+(m&&!/abort|Failed to fetch|NetworkError|Load failed/i.test(m)?` (${m.slice(0,60)})`:'');rt.style.display='';
     }
   }
 }
@@ -1254,7 +1235,7 @@ async function doJoin(){
   try{
     const j=await api({action:'join',name:n,pin:p});
     if(n!==me){rec=Object.assign({},EMPTY,store.get('rec:'+n,{}));}
-    me=n;pin=p;store.set('name',me);store.set('pin',pin);sid=j.sid||'';store.set('sid',sid);
+    me=n;pin=p;store.set('name',me);store.set('pin',pin);
     serverTotal=null;applyMe(j);updateMe();closeAll();
     toast(j.created?`${me}님, 새로 참가했어요!`:`${me}님, 다시 왔군요!`);
     ticket=null;getTicket();
@@ -1275,9 +1256,7 @@ updateMe();
 countPlay('get');
 if(SCRIPT_URL){
   loadBoard(false);
-  (async()=>{await silentJoin();getTicket();})();
-  setInterval(pingSession,60000);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)pingSession();});
+  setTimeout(getTicket,300);
   if(pending)sendPending().then(()=>{if(!pending)toast('밀린 점수를 보냈어요.');});
 }
 if(!restoreGame())newGame();else drawAll();
