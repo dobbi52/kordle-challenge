@@ -300,6 +300,31 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 :root[data-skin="hanji"] .key.miss{background:#7A6E5E!important}
 :root[data-skin] .key.ok,:root[data-skin] .key.near,:root[data-skin] .key.miss{font-family:var(--t-font)!important}
 
+
+/* ── 1~3등 장식 ── */
+#bName.champ1,#bName.champ2,#bName.champ3{position:relative;border:2px solid transparent;font-weight:700;background-clip:padding-box}
+#bName.champ1{background:linear-gradient(var(--panel),var(--panel)) padding-box,conic-gradient(from var(--ca,0deg),#FFF1B8,#D4A73A,#FFE9A0,#B8841F,#FFF1B8) border-box;animation:champspin 3s linear infinite;box-shadow:0 0 10px rgba(245,200,74,.55)}
+#bName.champ2{background:linear-gradient(var(--panel),var(--panel)) padding-box,linear-gradient(135deg,#FFFFFF,#AEB8C4,#F2F5F8,#8A96A3) border-box;box-shadow:0 0 8px rgba(174,184,196,.6)}
+#bName.champ3{background:linear-gradient(var(--panel),var(--panel)) padding-box,linear-gradient(135deg,#F3C08F,#B06A32,#E8A970,#8A4E22) border-box;box-shadow:0 0 8px rgba(208,138,78,.5)}
+@property --ca{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes champspin{to{--ca:360deg}}
+.champ-word{position:fixed;left:50%;top:26%;z-index:52;pointer-events:none;font-family:var(--t-font);font-size:2.6rem;white-space:nowrap;animation:bigword 1.9s ease-out forwards}
+.champ-word.c1{color:#F5C84A;text-shadow:0 2px 0 #7A5A10,0 0 18px rgba(255,210,80,.9)}
+.champ-word.c2{color:#EEF2F6;text-shadow:0 2px 0 #5A6470,0 0 16px rgba(220,230,240,.9)}
+.champ-word.c3{color:#E8A970;text-shadow:0 2px 0 #6A3A12,0 0 16px rgba(232,169,112,.9)}
+@keyframes champdrop{0%{transform:translateY(-25vh) scale(.6);opacity:0}40%{transform:translateY(0) scale(1.15);opacity:1}80%{opacity:1}100%{transform:translateY(0) scale(1);opacity:0}}
+.lb tr.top1 td,.lb tr.top2 td,.lb tr.top3 td{position:relative;font-weight:700}
+.lb tr.top1 td{background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%) 0 0/250% 100%,linear-gradient(90deg,rgba(245,200,74,.35),rgba(255,241,184,.18));animation:goldSweep 3.5s ease-in-out infinite}
+.lb tr.top2 td{background:linear-gradient(90deg,rgba(174,184,196,.35),rgba(242,245,248,.18))}
+.lb tr.top3 td{background:linear-gradient(90deg,rgba(208,138,78,.30),rgba(243,192,143,.15))}
+
+/* ── 누적 등급 ── */
+.tierline{margin:6px 0 2px;padding:8px 10px;border-radius:8px;background:var(--line-soft);font-size:.92rem;line-height:1.5;text-align:center}
+.tierline b{font-family:var(--t-font);font-weight:400;font-size:1.1rem}
+.tierline small{font-size:.72rem;opacity:.75}
+.tier-up{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);z-index:53;pointer-events:none;background:var(--panel);border:3px solid var(--ok);border-radius:18px;padding:16px 22px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3);animation:bigword 2.6s ease-out forwards;white-space:nowrap}
+.tier-up b{display:block;font-size:3.2rem;line-height:1.1}
+.tier-up span{font-family:var(--t-font);font-size:1.3rem;color:var(--ink)}
 </style>
 </head>
 <body>
@@ -362,6 +387,7 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
     <div><b id="rStreak">0</b>연속 정답</div>
     <div><b id="rBest">0</b>최고 연속</div>
   </div>
+  <p class="tierline" id="rTier"></p>
   <label style="margin-top:4px">최근 기록</label>
   <table class="hist"><tbody id="rHist"></tbody></table>
   <p class="note" id="rEmpty"></p>
@@ -765,6 +791,13 @@ function winFx(tries){
   if(!store.get('fxOn',true))return;
   const power=tries<=2?1.8:tries<=4?1.3:1;
   playFx(store.get(skinKey('fx'),'bounce'),power);
+  if(myMedal)setTimeout(()=>champFx(myMedal),650);
+}
+function champFx(lv){
+  const col=['','#F5C84A','#DCE3EA','#D08A4E'][lv], label=['','🥇 챔피언!','🥈 은메달!','🥉 동메달!'][lv];
+  spawn(lv===1?40:26,(e,i)=>{e.textContent=i%3?'✦':'★';e.style.cssText=`left:${rnd(0,100)}vw;top:${rnd(-5,35)}vh;font-size:${rnd(14,28)}px;color:${col};text-shadow:0 0 10px ${col};animation:twinkle ${rnd(1.2,2)}s ease-in ${rnd(0,.4)}s forwards`;});
+  const w=document.createElement('div');w.className='champ-word c'+lv;w.textContent=label;document.body.appendChild(w);setTimeout(()=>w.remove(),1900);
+  if(lv===1){spawn(1,e=>{e.textContent='🏆';e.style.cssText='left:calc(50vw - 34px);top:14vh;font-size:68px;animation:champdrop 1.6s ease-out both';});}
 }
 function checkUnlock(){
   const os=store.get(skinKey('skin'),null); if(os&&OLD_SKIN[os])store.set(skinKey('skin'),OLD_SKIN[os]);
@@ -852,15 +885,33 @@ document.getElementById('pvPw').addEventListener('keydown',e=>{if(e.key==='Enter
 document.getElementById('cbFx').addEventListener('change',e=>store.set('fxOn',e.target.checked));
 document.getElementById('bRecSkin').onclick=()=>{closeAll();pvMode=false;document.getElementById('pvBox').style.display='none';showSkins();};
 
+/* ── 누적 등급 ── */
+const TIERS=[{n:'새싹',i:'🌱',need:0},{n:'떡잎',i:'🌿',need:300},{n:'잎새',i:'🍃',need:800},{n:'나무',i:'🌳',need:1500},{n:'숲',i:'🌲',need:2500},{n:'한글 박사',i:'📜',need:4000}];
+const tierOf=t=>{let k=0;TIERS.forEach((x,i)=>{if((t||0)>=x.need)k=i;});return k;};
+function checkTier(){
+  if(!me)return;
+  const k=tierOf(shownTotal()), key='tier:'+me, prev=store.get(key,null);
+  store.set(key,Math.max(k,prev||0));
+  if(prev!==null&&k>prev&&justFinished){
+    const T=TIERS[k];
+    setTimeout(()=>{
+      const w=document.createElement('div');w.className='tier-up';w.innerHTML=`<b>${T.i}</b><span>${T.n} 등급이 되었어요!</span>`;document.body.appendChild(w);setTimeout(()=>w.remove(),2600);
+      spawn(30,(e,i)=>{e.textContent=T.i;e.style.cssText=`left:${rnd(0,100)}vw;top:-40px;font-size:${rnd(18,32)}px;animation:fall ${rnd(1.5,2.4)}s ease-in ${rnd(0,.5)}s forwards`;});
+    },1600);
+  }
+}
 function updateMe(){
   renderLast5();
   checkUnlock();
-  document.getElementById('bName').textContent=me||'닉네임 쓰기';
+  checkTier();
+  {const T=TIERS[tierOf(shownTotal())];document.getElementById('bName').textContent=me?`${T.i} ${me}`:'닉네임 쓰기';}
   document.getElementById('meTotal').textContent=shownTotal();
   document.getElementById('meSub').textContent=`${rec.wins}/${rec.games} 맞힘`;
   document.getElementById('meSub').style.display=document.getElementById('crowd').textContent?'none':'';
 }
 function showRec(){
+  {const tot=shownTotal(),k=tierOf(tot),T=TIERS[k],N=TIERS[k+1];
+   document.getElementById('rTier').innerHTML=`<b>${T.i} ${T.n}</b> 등급`+(N?` · 다음 등급 '${N.i} ${N.n}'까지 ${N.need-tot}점`:' · 가장 높은 등급이에요!')+`<br><small>${TIERS.map(x=>x.i+' '+x.n+' '+x.need.toLocaleString('ko-KR')).join(' · ')}</small>`;}
   document.getElementById('rTotal').textContent=shownTotal();
   document.getElementById('rWins').textContent=rec.wins;
   document.getElementById('rGames').textContent=rec.games;
@@ -1011,7 +1062,12 @@ function renderMedals(m){
   if(m&&m.weekBestRank>=1&&m.weekBestRank<=3)parts.push(`<span class="md">${MEDAL[m.weekBestRank]} 3콤보 ${m.weekBestRank}등</span>`);
   if(m&&m.rank>=1&&m.rank<=3)parts.push(`<span class="md">${MEDAL[m.rank]} 누적 ${m.rank}등</span>`);
   el.innerHTML=parts.join('');el.hidden=!parts.length;
+  const rs=[m&&m.weekBestRank,m&&m.rank].filter(r=>r>=1&&r<=3);
+  myMedal=rs.length?Math.min(...rs):0;
+  const nb=document.getElementById('bName');
+  if(nb){nb.classList.remove('champ1','champ2','champ3');if(myMedal)nb.classList.add('champ'+myMedal);}
 }
+let myMedal=0;
 function applyMe(j){
   if(j&&j.me&&j.me.name===me){renderMedals(j.me);if(Array.isArray(j.me.recentLast5))s5=j.me.recentLast5.slice();if(typeof j.me.weekBest==='number')wBest=j.me.weekBest;renderLast5();}
   if(j&&typeof j.players==='number'){crowd.total=j.players;if(typeof j.todayPlayers==='number')crowd.today=j.todayPlayers;renderCrowd();}
@@ -1058,8 +1114,10 @@ function drawBoard(){
   body.innerHTML='';
   list.forEach(r=>{
     const tr=document.createElement('tr');if(r.name===me)tr.className='me';
+    if(r.rank>=1&&r.rank<=3&&(five||al))tr.classList.add('top'+r.rank);
     const cells=five?[medalCell(r.rank),r.name,r.sum,rc?`${r.n}/5`:`${r.n}게임`]:[(al?medalCell(r.rank):r.rank),r.name,r.total,r.wins,r.games];
-    cells.forEach((v,k)=>{const td=document.createElement('td');td.textContent=v;if(k===2)td.className='pts';if(k===0&&typeof v==='string'&&v.length<=2&&isNaN(v))td.className='medal';tr.appendChild(td);});
+    const tt=al?r.total:(typeof r.tot==='number'?r.tot:null);
+    cells.forEach((v,k)=>{const td=document.createElement('td');td.textContent=k===1?((r.rank===1&&(five||al))?'👑 ':'')+(tt!==null?TIERS[tierOf(tt)].i+' ':'')+v:v;if(k===2)td.className='pts';if(k===0&&typeof v==='string'&&v.length<=2&&isNaN(v))td.className='medal';tr.appendChild(td);});
     body.appendChild(tr);
   });
   if(rc) msg.textContent=typeof j.recentPlayers==='number'?`각자 최근 5게임 점수 합계 · 최근 7일 안에 한 참가자 ${j.recentPlayers}명 · 1~3등 메달`:'순위표 업데이트가 필요해요. 선생님께 알려 주세요.';
