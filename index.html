@@ -348,6 +348,12 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 .royalcard b{display:block;font-family:var(--t-font);font-weight:400;font-size:1.1rem}
 .royalcard small{display:block;font-size:.75rem;opacity:.9}
 .royalcard button{flex:none;border:0;border-radius:8px;padding:8px 10px;background:#F2CE62;color:#6E0E0E;font-weight:700;font-family:var(--b-font);cursor:pointer}
+
+/* 제목 줄: 좁은 화면에서도 버튼 4개가 한 줄에 */
+header .tools{flex-wrap:nowrap}
+header .tools button{white-space:nowrap}
+@media (max-width:420px){header h1{font-size:1.25rem;white-space:nowrap}header .tools{gap:4px}header .tools button{padding:6px 8px;font-size:.85rem}}
+@media (max-width:340px){header h1{font-size:1.05rem}header .tools button{padding:5px 6px;font-size:.78rem}}
 </style>
 </head>
 <body>
@@ -355,13 +361,14 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
   <h1>꼬들 챌린지</h1>
   <div class="tools">
     <button id="bRank">순위</button>
+    <button id="bSkin" aria-label="꾸미기">🎨 보상</button>
     <button id="bRec">내 기록</button>
     <button id="bHelp" aria-label="방법">?</button>
-    <button id="bSet">설정</button>
+    <button id="bSet" hidden>설정</button>
   </div>
 </header>
 <div class="scorebar">
-  <span><button class="tbtn" id="bName" style="margin-right:4px">닉네임 쓰기</button> 누적 <b id="meTotal">0</b>점 <button class="tbtn icon" id="bSkin" aria-label="꾸미기">🎨</button></span>
+  <span><button class="tbtn" id="bName" style="margin-right:4px">닉네임 쓰기</button> 누적 <b id="meTotal">0</b>점</span>
   <span class="sync" id="meSub"></span>
   <span class="sync crowd" id="crowd"></span>
 </div>
@@ -414,7 +421,7 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
   <label style="margin-top:4px">최근 기록</label>
   <table class="hist"><tbody id="rHist"></tbody></table>
   <p class="note" id="rEmpty"></p>
-  <p class="note">기록은 이 기기의 이 브라우저에만 저장돼요.</p>
+  <p class="note" id="recNote">기록은 이 기기의 이 브라우저에만 저장돼요.</p>
   <div class="actions"><button id="bRestart">처음부터 다시 하기</button><button id="bRecSkin">꾸미기</button><button class="main" data-close>닫기</button></div>
 </div></div>
 
@@ -699,7 +706,6 @@ function renderCrowd(){
   if(crowd.total!==null)g1.push(`누적 <b>${f(crowd.total)}</b>명`);
   const parts=[];
   if(g1.length)parts.push(`<span class="cg">${g1.join(' · ')}</span>`);
-  if(crowd.plays!==null)parts.push(`<span class="cg"><b>${f(crowd.plays)}</b>문제 풀이</span>`);
   document.getElementById('crowd').innerHTML=parts.join(' <span class="csep">·</span> ');
   document.getElementById('meSub').style.display=parts.length?'none':'';
 }
@@ -951,25 +957,28 @@ function updateMe(){
   document.getElementById('meSub').textContent=`${rec.wins}/${rec.games} 맞힘`;
   document.getElementById('meSub').style.display=document.getElementById('crowd').textContent?'none':'';
 }
-function showRec(){
+function showRec(noFetch){
+  const R=srvRec||{total:shownTotal(),wins:rec.wins,games:rec.games,streak:rec.streak,best:rec.best,hist:rec.hist};
   {const tot=shownTotal(),k=tierOf(tot),T=TIERS[k],N=TIERS[k+1];
    document.getElementById('rTier').innerHTML=`<b>${T.i} ${T.n}</b> 등급`+(N?` · 다음 등급 '${N.i} ${N.n}'까지 ${N.need-tot}점`:' · 가장 높은 등급이에요!')+`<br><small>${TIERS.map(x=>x.i+' '+x.n+' '+x.need.toLocaleString('ko-KR')).join(' · ')}</small>`;}
   document.getElementById('rTotal').textContent=shownTotal();
-  document.getElementById('rWins').textContent=rec.wins;
-  document.getElementById('rGames').textContent=rec.games;
-  document.getElementById('rRate').textContent=(rec.games?Math.round(rec.wins/rec.games*100):0)+'%';
-  document.getElementById('rStreak').textContent=rec.streak;
-  document.getElementById('rBest').textContent=rec.best;
+  document.getElementById('rWins').textContent=R.wins;
+  document.getElementById('rGames').textContent=R.games;
+  document.getElementById('rRate').textContent=(R.games?Math.round(R.wins/R.games*100):0)+'%';
+  document.getElementById('rStreak').textContent=R.streak;
+  document.getElementById('rBest').textContent=R.best;
   const tb=document.getElementById('rHist');tb.innerHTML='';
-  rec.hist.forEach(h=>{
+  R.hist.forEach(h=>{
     const tr=document.createElement('tr');
     const a=document.createElement('td');a.textContent=h.w;
     const b=document.createElement('td');b.textContent=h.t?`${h.t}번 만에`:'못 맞힘';
     const c=document.createElement('td');c.textContent=(h.d>0?'+':'')+h.d;c.className=h.d>0?'p':'m';
     tr.append(a,b,c);tb.appendChild(tr);
   });
-  document.getElementById('rEmpty').textContent=rec.hist.length?'':'아직 푼 문제가 없어요.';
+  document.getElementById('rEmpty').textContent=R.hist.length?'':'아직 푼 문제가 없어요.';
+  document.getElementById('recNote').textContent=srvRec?'같은 닉네임이면 어느 기기에서나 같은 기록이 보여요.':'기록은 이 기기의 이 브라우저에만 저장돼요.';
   open('ovRec');
+  if(!noFetch&&SCRIPT_URL&&me)loadBoard(false).then(()=>{if(srvRec&&document.getElementById('ovRec').classList.contains('open'))showRec(true);});
 }
 
 function shake(){const r=board.children[rows.length];if(!r)return;r.classList.remove('shake');void r.offsetWidth;r.classList.add('shake');}
@@ -1020,7 +1029,7 @@ document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{
 
 function nextGame(){closeAll();newGame();}
 document.getElementById('bEndRec').onclick=()=>{closeAll();showRec();};
-document.getElementById('bRec').onclick=showRec;
+document.getElementById('bRec').onclick=()=>showRec();
 document.getElementById('bRestart').onclick=()=>{
   if(!confirm('이 기기의 내 기록을 지우고 새 문제로 시작할까요? (순위표 점수는 그대로예요)'))return;
   rec=JSON.parse(JSON.stringify(EMPTY));saveRec();updateMe();
@@ -1116,7 +1125,9 @@ function renderMedals(m){
   }else if(!isKing&&wasKing){toast('1등에서 밀려나 원래 판으로 돌아왔어요. 다시 도전해 봐요!',2400);}
 }
 let myMedal=0;
+let srvRec=null;
 function applyMe(j){
+  if(j&&j.me&&j.me.name===me&&Array.isArray(j.me.hist))srvRec={total:j.me.total,wins:j.me.wins,games:j.me.games,streak:j.me.streak,best:j.me.bestStreak,hist:j.me.hist};
   if(j&&j.me&&j.me.name===me){renderMedals(j.me);if(Array.isArray(j.me.recentLast5))s5=j.me.recentLast5.slice();if(typeof j.me.weekBest==='number')wBest=j.me.weekBest;renderLast5();}
   if(j&&typeof j.players==='number'){crowd.total=j.players;if(typeof j.todayPlayers==='number')crowd.today=j.todayPlayers;renderCrowd();}
   if(j&&j.me&&j.me.name===me){serverTotal=j.me.total;serverWins=j.me.wins||0;updateMe();}
@@ -1177,13 +1188,13 @@ function drawBoard(){
   const wkNew=wk&&Array.isArray(j.weekBestTop);
   const list=(rc?j.recentTop:wk?(wkNew?j.weekBestTop:j.weekTop):j.top)||[];
   const five=rc||wkNew;
-  document.getElementById('rankHead').innerHTML=five?`<tr><th>순위</th><th>이름</th><th>${rc?'5게임 합계':'3콤보'}</th><th>${rc?'게임':'이번 주'}</th></tr>`:'<tr><th>순위</th><th>이름</th><th>점수</th><th>맞힘</th><th>문제</th></tr>';
+  document.getElementById('rankHead').innerHTML=five?`<tr><th>순위</th><th>이름</th><th>${rc?'5게임 합계':'3콤보'}</th></tr>`:'<tr><th>순위</th><th>이름</th><th>점수</th></tr>';
   body.innerHTML='';
   list.forEach(r=>{
     const tr=document.createElement('tr');if(r.name===me)tr.className='me';
     if(r.rank>=1&&r.rank<=3&&(five||al))tr.classList.add('top'+r.rank);
     if(r.rank===1&&(five||al))tr.classList.add('royalrow');
-    const cells=five?[medalCell(r.rank),r.name,r.sum,rc?`${r.n}/5`:`${r.n}게임`]:[(al?medalCell(r.rank):r.rank),r.name,r.total,r.wins,r.games];
+    const cells=five?[medalCell(r.rank),r.name,r.sum]:[(al?medalCell(r.rank):r.rank),r.name,r.total];
     const tt=al?r.total:(typeof r.tot==='number'?r.tot:null);
     cells.forEach((v,k)=>{const td=document.createElement('td');td.textContent=k===1?((r.rank===1&&(five||al))?'👑 ':'')+(tt!==null?TIERS[tierOf(tt)].i+' ':'')+v:v;if(k===1&&r.rank===1&&(five||al)){const tg=document.createElement('span');tg.className='royaltag';tg.textContent='어좌 사용 중';td.appendChild(tg);}if(k===2)td.className='pts';if(k===0&&typeof v==='string'&&v.length<=2&&isNaN(v))td.className='medal';tr.appendChild(td);});
     body.appendChild(tr);
