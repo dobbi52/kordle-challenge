@@ -886,7 +886,7 @@ document.getElementById('cbFx').addEventListener('change',e=>store.set('fxOn',e.
 document.getElementById('bRecSkin').onclick=()=>{closeAll();pvMode=false;document.getElementById('pvBox').style.display='none';showSkins();};
 
 /* ── 누적 등급 ── */
-const TIERS=[{n:'새싹',i:'🌱',need:0},{n:'떡잎',i:'🌿',need:300},{n:'잎새',i:'🍃',need:800},{n:'나무',i:'🌳',need:1500},{n:'숲',i:'🌲',need:2500},{n:'한글 박사',i:'📜',need:4000}];
+const TIERS=[{n:'새내기',i:'🐣',need:0},{n:'책벌레',i:'📘',need:300},{n:'열공왕',i:'🔥',need:800},{n:'낱말 보석',i:'💎',need:1500},{n:'한글 박사',i:'🎓',need:2500},{n:'한글 대왕',i:'🌟',need:4000}];
 const tierOf=t=>{let k=0;TIERS.forEach((x,i)=>{if((t||0)>=x.need)k=i;});return k;};
 function checkTier(){
   if(!me)return;
