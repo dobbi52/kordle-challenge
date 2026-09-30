@@ -325,6 +325,29 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 .tier-up{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);z-index:53;pointer-events:none;background:var(--panel);border:3px solid var(--ok);border-radius:18px;padding:16px 22px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3);animation:bigword 2.6s ease-out forwards;white-space:nowrap}
 .tier-up b{display:block;font-size:3.2rem;line-height:1.1}
 .tier-up span{font-family:var(--t-font);font-size:1.3rem;color:var(--ink)}
+
+/* ── 1등 전용: 어좌 판 · 옥새 자판 ── */
+:root[data-skin="royal"]{--paper:#7A1414;--ink:#FFF1C9;--line:#E8B83C;--line-soft:#9E2A22;--panel:#8E1E1A;--key:#F2CE62;--key-ink:#6E0E0E;--ok:#2FAE6A;--near:#E8B83C;--miss:#5A3A2E;--shade:rgba(30,0,0,.6)}
+:root[data-skin="royal"] body{position:relative;z-index:0;background-image:radial-gradient(circle at 50% 100%,transparent 55%,rgba(232,184,60,.28) 57%,transparent 60%),radial-gradient(ellipse at 50% -10%,rgba(255,214,120,.35),transparent 55%);background-size:34px 22px,100% 100%}
+:root[data-skin="royal"] h1{background:linear-gradient(90deg,#FFF1B8,#D4A73A,#FFE9A0,#B8841F,#FFF1B8);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:goldShine 4s linear infinite}
+:root[data-skin="royal"] header{border-bottom:3px double #E8B83C}
+:root[data-skin="royal"] .tile{background:rgba(255,241,201,.12);border-color:#E8B83C;color:#FFF1C9}
+:root[data-skin="royal"] .key{background:radial-gradient(circle at 35% 30%,#FFF1B8,#E8B83C 55%,#B8841F);border:3px double #9E1A14;border-radius:6px;color:#6E0E0E;box-shadow:0 3px 0 #5A0C0A;font-family:var(--t-font)}
+:root[data-skin="royal"] .key:active{transform:translateY(3px) scale(.94);box-shadow:0 0 0 #5A0C0A}
+:root[data-skin="royal"] .key.wide{font-family:var(--b-font);font-weight:700}
+:root[data-skin="royal"] .key.main{background:radial-gradient(circle at 35% 30%,#E0554A,#B3261E 60%,#7A0F0B);color:#FFF1C9;border-color:#F2CE62}
+.fx-royal{position:fixed;left:50%;top:34%;z-index:52;pointer-events:none;min-width:250px;white-space:nowrap;padding:16px 26px;border-radius:8px;background:linear-gradient(#FBEFC8,#EBD28E);border-left:14px solid #9E1A14;border-right:14px solid #9E1A14;box-shadow:0 10px 30px rgba(0,0,0,.4);text-align:center;font-family:var(--t-font);color:#5A0C0A;animation:scrollopen 2.6s ease-out forwards}
+.fx-royal b{display:block;font-weight:400;font-size:2.2rem;color:#B3261E;white-space:nowrap} .fx-royal span{font-size:1.2rem}
+.fx-seal{position:fixed;left:62%;top:44%;z-index:53;pointer-events:none;width:90px;height:90px;border:6px solid #C0392B;border-radius:10px;display:grid;place-items:center;color:#C0392B;background:rgba(255,255,255,.35);font-family:var(--t-font);animation:sealstamp 1.5s ease-out forwards}
+.fx-seal b{font-weight:400;font-size:1.8rem}
+@keyframes sealstamp{0%{transform:translate(-50%,-50%) rotate(-12deg) scale(2.4);opacity:0}30%{transform:translate(-50%,-50%) rotate(-12deg) scale(1);opacity:1}85%{opacity:1}100%{opacity:0}}
+@keyframes dragonfly{0%{transform:translate(0,0) scaleX(-1)}50%{transform:translate(55vw,8vh) scaleX(-1)}100%{transform:translate(calc(100vw + 180px),-4vh) scaleX(-1);opacity:.2}}
+.lb tr.royalrow td{background:radial-gradient(circle at 50% 100%,transparent 55%,rgba(232,184,60,.35) 57%,transparent 60%) 0 0/24px 16px,linear-gradient(90deg,rgba(158,26,20,.28),rgba(245,200,74,.25))!important}
+.royaltag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:#9E1A14;color:#FFF1C9;font-size:.7rem;font-weight:700;vertical-align:middle}
+.royalcard{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;padding:10px 12px;border-radius:10px;background:linear-gradient(135deg,#8E1E1A,#B3261E);color:#FFF1C9;border:2px solid #E8B83C}
+.royalcard b{display:block;font-family:var(--t-font);font-weight:400;font-size:1.1rem}
+.royalcard small{display:block;font-size:.75rem;opacity:.9}
+.royalcard button{flex:none;border:0;border-radius:8px;padding:8px 10px;background:#F2CE62;color:#6E0E0E;font-weight:700;font-family:var(--b-font);cursor:pointer}
 </style>
 </head>
 <body>
@@ -397,6 +420,7 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 
 <div class="overlay" id="ovSkin"><div class="card">
   <h2>꾸미기</h2>
+  <div class="royalcard" id="royalCard"><div><b>👑 1등 전용</b><small>어좌 판 · 옥새 자판 · 어명이오! 효과</small><small id="royalState">3콤보 또는 누적 1등이 되면 쓸 수 있어요</small></div><button id="bRoyal">3초 구경</button></div>
   <p class="note" id="skinMsg"></p>
   <label style="margin-top:6px">판</label>
   <div class="skins" id="skinBox"></div>
@@ -540,7 +564,7 @@ const failOf=l=>-10*l;
 let wordText=store.get('words2',DEFAULT_WORDS); /* 예전 기기에 저장된 낱말 목록(남강 포함)은 쓰지 않음 */
 let strict=store.get('strict',false);
 const EMPTY={total:0,games:0,wins:0,streak:0,best:0,hist:[]};
-let me=store.get('name',''), pin=store.get('pin','');
+let me=store.get('name',''), pin=store.get('pin',''), sid=store.get('sid','');
 let serverTotal=null, roster=[], pending=store.get('pending',null);
 const recKey=()=>'rec:'+(me||'_');
 let rec=Object.assign({},EMPTY,store.get(recKey(),{}));
@@ -648,7 +672,7 @@ function finish(win){
   if(s5){s5=s5.concat([delta]).slice(-RN);if(wBest!==null)wBest=Math.max(wBest,sum5(s5));}
   updateMe();
   countPlay('hit');
-  pending={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name:me,pin,delta,win:win?1:0,tries,lv:LV,word:answer,tk:ticket||''};ticket=null;
+  pending={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name:me,pin,delta,win:win?1:0,tries,lv:LV,word:answer,tk:ticket||'',sid};ticket=null;
   store.set('pending',pending);
   document.getElementById('endTitle').textContent=win?'정답이에요!':'아쉬워요';
   document.getElementById('endWord').textContent=answer;
@@ -709,6 +733,8 @@ const OLD_FX={confetti:'jamo',bubble:'stamp',petal:'words',star:'inkblot',firewo
 const skinKey=k=>`${k}:${me||'_'}`;
 const bestScore=()=>Math.max(store.get(skinKey('best'),0),shownTotal());
 function applySkin(id){
+  let king=false;try{king=(myMedal===1&&!previewing)||royalPreview;}catch(e){}
+  if(king)id='royal';
   if(id)document.documentElement.setAttribute('data-skin',id);else document.documentElement.removeAttribute('data-skin');
   document.documentElement.setAttribute('data-safe',store.get('safeColors',false)?'1':'0');
 }
@@ -790,8 +816,22 @@ function playFx(id,power){
 function winFx(tries){
   if(!store.get('fxOn',true))return;
   const power=tries<=2?1.8:tries<=4?1.3:1;
+  if(myMedal===1){playFx('bounce',power);royalFx(power);return;}
   playFx(store.get(skinKey('fx'),'bounce'),power);
   if(myMedal)setTimeout(()=>champFx(myMedal),650);
+}
+let royalPreview=false,previewing=false;
+function royalFx(k){
+  const f=document.createElement('div');f.className='fx-flash';document.body.appendChild(f);setTimeout(()=>f.remove(),1300);
+  const sc=document.createElement('div');sc.className='fx-royal';sc.innerHTML=`<b>어명이오!</b><span>${done&&answer?answer+' 장원!':'장원 급제!'}</span>`;document.body.appendChild(sc);setTimeout(()=>sc.remove(),2600);
+  setTimeout(()=>{const st=document.createElement('div');st.className='fx-seal';st.innerHTML='<b>옥새</b>';document.body.appendChild(st);setTimeout(()=>st.remove(),1500);},700);
+  spawn(1,e=>{e.textContent='🐉';e.style.cssText='left:-90px;top:12vh;font-size:72px;animation:dragonfly 2.4s ease-in-out .2s forwards';});
+  spawn(Math.round(30*(k||1)),e=>{e.textContent='✦';e.style.cssText=`left:${rnd(0,100)}vw;top:${rnd(-5,35)}vh;font-size:${rnd(14,26)}px;color:#F5C84A;text-shadow:0 0 10px rgba(255,210,80,1);animation:twinkle ${rnd(1.3,2.2)}s ease-in ${rnd(0,.5)}s forwards`;});
+}
+function royalPeek(){
+  closeAll();royalPreview=true;applySkin('');royalFx(1);
+  toast('👑 1등 전용 판을 3초 동안 구경해요');
+  setTimeout(()=>{royalPreview=false;applySkin(store.get(skinKey('skin'),''));},3200);
 }
 function champFx(lv){
   const col=['','#F5C84A','#DCE3EA','#D08A4E'][lv], label=['','🥇 챔피언!','🥈 은메달!','🥉 동메달!'][lv];
@@ -840,6 +880,7 @@ function celebrate(){
 }
 let pvMode=false;
 function showSkins(){
+  {const el=document.getElementById('royalState');if(el)el.textContent=myMedal===1?'지금 1등이라 사용 중이에요!':'3콤보 또는 누적 1등이 되면 쓸 수 있어요';}
   const best=bestScore(), cur=store.get(skinKey('skin'),'');
   const box=document.getElementById('skinBox');box.innerHTML='';
   SKINS.forEach(sk=>{
@@ -867,6 +908,7 @@ function showSkins(){
   open('ovSkin');
 }
 document.getElementById('cbSafe').addEventListener('change',e=>{store.set('safeColors',e.target.checked);applySkin(store.get(skinKey('skin'),''));});
+document.getElementById('bRoyal').onclick=royalPeek;
 document.getElementById('bSkin').onclick=()=>{pvMode=false;document.getElementById('pvBox').style.display='none';showSkins();};
 document.getElementById('bPv').onclick=()=>{
   const box=document.getElementById('pvBox');
@@ -1066,6 +1108,12 @@ function renderMedals(m){
   myMedal=rs.length?Math.min(...rs):0;
   const nb=document.getElementById('bName');
   if(nb){nb.classList.remove('champ1','champ2','champ3');if(myMedal)nb.classList.add('champ'+myMedal);}
+  const wasKing=store.get('king:'+me,false), isKing=myMedal===1;
+  store.set('king:'+me,isKing);
+  applySkin(store.get(skinKey('skin'),''));
+  if(isKing&&!wasKing){
+    setTimeout(()=>{const w=document.createElement('div');w.className='tier-up';w.innerHTML='<b>👑</b><span>1등 전용 판이 열렸어요!</span>';document.body.appendChild(w);setTimeout(()=>w.remove(),2600);royalFx(1);},900);
+  }else if(!isKing&&wasKing){toast('1등에서 밀려나 원래 판으로 돌아왔어요. 다시 도전해 봐요!',2400);}
 }
 let myMedal=0;
 function applyMe(j){
@@ -1074,9 +1122,27 @@ function applyMe(j){
   if(j&&j.me&&j.me.name===me){serverTotal=j.me.total;serverWins=j.me.wins||0;updateMe();}
   if(answer&&!done&&!rows.length&&!cur.length&&levelOf(curWins())!==LV){setLevel(levelOf(curWins()));saveGame();drawAll();}
 }
+let kickedShown=false;
+function kicked(){
+  sid='';pin='';store.set('sid','');store.set('pin','');ticket=null;
+  if(kickedShown)return;kickedShown=true;
+  setTimeout(()=>{
+    closeAll();askName();
+    document.getElementById('nameMsg').textContent='다른 기기에서 같은 닉네임으로 접속해서 로그아웃됐어요. 계속하려면 비밀번호를 다시 입력하세요.';
+    kickedShown=false;
+  },document.getElementById('ovEnd').classList.contains('open')?2500:0);
+}
+async function pingSession(){
+  if(!SCRIPT_URL||!me||!sid||document.hidden)return;
+  try{await api({action:'ping',name:me,sid});}catch(e){if(/로그아웃/.test(String(e.message)))kicked();}
+}
+async function silentJoin(){ /* 업데이트 전부터 들어와 있던 학생: 한 번 자동으로 접속 번호 받기 */
+  if(!SCRIPT_URL||!me||!pin||sid)return;
+  try{const j=await api({action:'join',name:me,pin});sid=j.sid||'';store.set('sid',sid);applyMe(j);}catch(e){}
+}
 async function getTicket(){
   if(!SCRIPT_URL||!me||!pin||done||ticket)return;
-  try{const j=await api({action:'start',name:me,pin});if(j.tk&&!done&&!ticket){ticket=j.tk;saveGame();}}catch(e){}
+  try{const j=await api({action:'start',name:me,pin,sid});if(j.tk&&!done&&!ticket){ticket=j.tk;saveGame();}}catch(e){if(/로그아웃/.test(String(e.message)))kicked();}
 }
 async function sendPending(){
   const es=document.getElementById('endSync'), rt=document.getElementById('bRetry');
@@ -1092,9 +1158,10 @@ async function sendPending(){
     es.textContent=j.me&&j.me.rank?'순위표에 저장됐어요. '+[j.me.weekBestRank?`3콤보 최고점 ${j.me.weekBestRank}등`:'',`누적 ${j.me.rank}등`].filter(Boolean).join(' · '):'순위표에 저장됐어요.';
   }catch(e){
     const m=String(e.message||'');
-    if(/비밀번호|없는 닉네임|막아 둔|입장권|너무 빨리 끝난/.test(m)){
+    if(/비밀번호|없는 닉네임|막아 둔|입장권|너무 빨리 끝난|로그아웃/.test(m)){
       pending=null;store.set('pending',null);
-      es.textContent=/입장권|너무 빨리/.test(m)?m:m+' 닉네임으로 다시 들어가 주세요.';
+      es.textContent=/입장권|너무 빨리|로그아웃/.test(m)?m+(/로그아웃/.test(m)?' 이 판 점수는 저장되지 않았어요.':''):m+' 닉네임으로 다시 들어가 주세요.';
+      if(/로그아웃/.test(m))kicked();
     }else{
       es.textContent='점수를 보내지 못했어요. 인터넷을 확인하고 다시 보내 주세요.';rt.style.display='';
     }
@@ -1115,9 +1182,10 @@ function drawBoard(){
   list.forEach(r=>{
     const tr=document.createElement('tr');if(r.name===me)tr.className='me';
     if(r.rank>=1&&r.rank<=3&&(five||al))tr.classList.add('top'+r.rank);
+    if(r.rank===1&&(five||al))tr.classList.add('royalrow');
     const cells=five?[medalCell(r.rank),r.name,r.sum,rc?`${r.n}/5`:`${r.n}게임`]:[(al?medalCell(r.rank):r.rank),r.name,r.total,r.wins,r.games];
     const tt=al?r.total:(typeof r.tot==='number'?r.tot:null);
-    cells.forEach((v,k)=>{const td=document.createElement('td');td.textContent=k===1?((r.rank===1&&(five||al))?'👑 ':'')+(tt!==null?TIERS[tierOf(tt)].i+' ':'')+v:v;if(k===2)td.className='pts';if(k===0&&typeof v==='string'&&v.length<=2&&isNaN(v))td.className='medal';tr.appendChild(td);});
+    cells.forEach((v,k)=>{const td=document.createElement('td');td.textContent=k===1?((r.rank===1&&(five||al))?'👑 ':'')+(tt!==null?TIERS[tierOf(tt)].i+' ':'')+v:v;if(k===1&&r.rank===1&&(five||al)){const tg=document.createElement('span');tg.className='royaltag';tg.textContent='어좌 사용 중';td.appendChild(tg);}if(k===2)td.className='pts';if(k===0&&typeof v==='string'&&v.length<=2&&isNaN(v))td.className='medal';tr.appendChild(td);});
     body.appendChild(tr);
   });
   if(rc) msg.textContent=typeof j.recentPlayers==='number'?`각자 최근 5게임 점수 합계 · 최근 7일 안에 한 참가자 ${j.recentPlayers}명 · 1~3등 메달`:'순위표 업데이트가 필요해요. 선생님께 알려 주세요.';
@@ -1141,6 +1209,13 @@ async function loadBoard(showUI){
     const j=await api(me?{action:'board',name:me}:{action:'board'});
     applyMe(j);lastBoard=j;
     if(showUI)drawBoard();
+    {const k1=(j.weekBestTop&&j.weekBestTop[0]&&j.weekBestTop[0].name)||'', k2=(j.top&&j.top[0]&&j.top[0].name)||'';
+     const prev=store.get('lastKings',null);
+     if(prev&&!showUI){
+       const news=[];if(k1&&k1!==prev.k1&&k1!==me)news.push(`3콤보는 ${k1}님`);if(k2&&k2!==prev.k2&&k2!==me)news.push(`누적은 ${k2}님`);
+       if(news.length)setTimeout(()=>toast(`👑 새 1등이 나타났어요! ${news.join(', ')}이 어좌를 차지했어요`,3200),1200);
+     }
+     store.set('lastKings',{k1,k2});}
   }catch(e){if(showUI)msg.textContent='순위를 불러오지 못했어요.';}
 }
 function showRank(){
@@ -1168,7 +1243,7 @@ async function doJoin(){
   try{
     const j=await api({action:'join',name:n,pin:p});
     if(n!==me){rec=Object.assign({},EMPTY,store.get('rec:'+n,{}));}
-    me=n;pin=p;store.set('name',me);store.set('pin',pin);
+    me=n;pin=p;store.set('name',me);store.set('pin',pin);sid=j.sid||'';store.set('sid',sid);
     serverTotal=null;applyMe(j);updateMe();closeAll();
     toast(j.created?`${me}님, 새로 참가했어요!`:`${me}님, 다시 왔군요!`);
     ticket=null;getTicket();
@@ -1189,7 +1264,9 @@ updateMe();
 countPlay('get');
 if(SCRIPT_URL){
   loadBoard(false);
-  setTimeout(getTicket,300);
+  (async()=>{await silentJoin();getTicket();})();
+  setInterval(pingSession,60000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)pingSession();});
   if(pending)sendPending().then(()=>{if(!pending)toast('밀린 점수를 보냈어요.');});
 }
 if(!restoreGame())newGame();else drawAll();
