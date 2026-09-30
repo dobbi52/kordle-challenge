@@ -375,6 +375,13 @@ header .tools button{white-space:nowrap}
 .lb tr.royalrow td:first-child{box-shadow:inset 5px 0 0 #B8261E}
 .lb tr.royalrow td.pts{color:#8A1C12!important;font-size:1.15em}
 .lb tr.royalrow{filter:drop-shadow(0 2px 6px rgba(212,162,26,.55))}
+
+/* 보상 창 1등 전용 칸: 계속 빛나기 */
+.royalcard{position:relative;overflow:hidden;animation:royalglow 2.4s ease-in-out infinite}
+.royalcard::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 35%,rgba(255,240,190,.55) 50%,transparent 65%);background-size:250% 100%;animation:goldSweep 3s ease-in-out infinite}
+.royalcard .royalcrown{flex:none;font-size:2.2rem;filter:drop-shadow(0 0 8px rgba(255,215,90,.9));animation:crownfloat 2.4s ease-in-out infinite}
+@keyframes royalglow{0%,100%{box-shadow:0 0 6px rgba(245,200,74,.45)}50%{box-shadow:0 0 18px 4px rgba(245,200,74,.85)}}
+@keyframes crownfloat{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-4px) rotate(6deg)}}
 </style>
 </head>
 <body>
@@ -448,7 +455,7 @@ header .tools button{white-space:nowrap}
 
 <div class="overlay" id="ovSkin"><div class="card">
   <h2>꾸미기</h2>
-  <div class="royalcard" id="royalCard"><div><b>👑 1등 전용</b><small>어좌 판 · 옥새 자판 · 어명이오! 효과</small><small id="royalState">3콤보 또는 누적 1등이 되면 쓸 수 있어요</small></div><button id="bRoyal">3초 구경</button></div>
+  <div class="royalcard" id="royalCard"><div><b>👑 1등 전용</b><small>어좌 판 · 옥새 자판 · 어명이오! 효과</small><small id="royalState">3콤보 또는 누적 1등이 되면 쓸 수 있어요</small></div><span class="royalcrown">👑</span></div>
   <p class="note" id="skinMsg"></p>
   <label style="margin-top:6px">판</label>
   <div class="skins" id="skinBox"></div>
@@ -935,7 +942,6 @@ function showSkins(){
   open('ovSkin');
 }
 document.getElementById('cbSafe').addEventListener('change',e=>{store.set('safeColors',e.target.checked);applySkin(store.get(skinKey('skin'),''));});
-document.getElementById('bRoyal').onclick=royalPeek;
 document.getElementById('bSkin').onclick=()=>{pvMode=false;document.getElementById('pvBox').style.display='none';showSkins();};
 document.getElementById('bPv').onclick=()=>{
   const box=document.getElementById('pvBox');
