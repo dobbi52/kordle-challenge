@@ -317,7 +317,7 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 .lb tr.top1 td{background:linear-gradient(90deg,rgba(245,200,74,.35),rgba(255,241,184,.18))}
 .lb tr.top1 td::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.75) 50%,transparent 70%);background-size:250% 100%;animation:goldSweep 3s ease-in-out infinite}
 .lb tr.top2 td{background:linear-gradient(90deg,rgba(174,184,196,.35),rgba(242,245,248,.18))}
-.lb tr.top3 td{background:linear-gradient(90deg,rgba(208,138,78,.30),rgba(243,192,143,.15))}
+.lb tr.top3 td{background:rgba(160,110,70,.14)}
 
 /* ── 누적 등급 ── */
 .tierline{margin:6px 0 2px;padding:8px 10px;border-radius:8px;background:var(--line-soft);font-size:.92rem;line-height:1.5;text-align:center}
@@ -343,7 +343,7 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 .fx-seal b{font-weight:400;font-size:1.8rem}
 @keyframes sealstamp{0%{transform:translate(-50%,-50%) rotate(-12deg) scale(2.4);opacity:0}30%{transform:translate(-50%,-50%) rotate(-12deg) scale(1);opacity:1}85%{opacity:1}100%{opacity:0}}
 @keyframes dragonfly{0%{transform:translate(0,0) scaleX(-1)}50%{transform:translate(55vw,8vh) scaleX(-1)}100%{transform:translate(calc(100vw + 180px),-4vh) scaleX(-1);opacity:.2}}
-.lb tr.royalrow td{background:radial-gradient(circle at 50% 100%,transparent 55%,rgba(232,184,60,.35) 57%,transparent 60%) 0 0/24px 16px,linear-gradient(90deg,rgba(158,26,20,.28),rgba(245,200,74,.25))!important}
+.lb tr.royalrow td{background:radial-gradient(circle at 50% 100%,transparent 55%,rgba(255,255,255,.35) 57%,transparent 60%) 0 0/24px 16px,linear-gradient(90deg,#FFD84D,#FFE98A 55%,#F5C84A)!important;color:#4A2E00!important;border-top:2px solid #D4A21A;border-bottom:2px solid #D4A21A;font-size:1.05em}
 .royaltag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:#9E1A14;color:#FFF1C9;font-size:.7rem;font-weight:700;vertical-align:middle}
 .royalcard{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;padding:10px 12px;border-radius:10px;background:linear-gradient(135deg,#8E1E1A,#B3261E);color:#FFF1C9;border:2px solid #E8B83C}
 .royalcard b{display:block;font-family:var(--t-font);font-weight:400;font-size:1.1rem}
@@ -371,6 +371,10 @@ header .tools button{white-space:nowrap}
 :root[data-skin="royal"] .krow:nth-child(3) .key::after{animation-delay:.5s}
 :root[data-skin="royal"] .key.ok::after,:root[data-skin="royal"] .key.near::after,:root[data-skin="royal"] .key.miss::after{opacity:.35}
 .fx-seal{background:rgba(255,245,230,.4)!important;border:0!important;padding:4px;width:100px!important;height:100px!important}
+
+.lb tr.royalrow td:first-child{box-shadow:inset 5px 0 0 #B8261E}
+.lb tr.royalrow td.pts{color:#8A1C12!important;font-size:1.15em}
+.lb tr.royalrow{filter:drop-shadow(0 2px 6px rgba(212,162,26,.55))}
 </style>
 </head>
 <body>
@@ -633,7 +637,7 @@ function newGame(){
 }
 function drawAll(){board.style.setProperty('--n',LEN);renderBoard();renderKbd();renderPreview();fit();}
 function renderBoard(flipRow=-1){
-  document.getElementById('info').textContent=done?'문제 끝':`${LV}단계 · 기회 ${MAX-rows.length}번 · 맞히면 ${pointsFor(rows.length+1)}점 · 못 맞히면 ${failOf(LV)}점`;
+  document.getElementById('info').textContent=done?'문제 끝':`${LV}단계 · 기회 ${MAX-rows.length}번 · 맞히면 ${pointsFor(rows.length+1)}점`;
   board.innerHTML='';
   for(let r=0;r<MAX;r++){
     const row=document.createElement('div');row.className='row';
