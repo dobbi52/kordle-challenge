@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>꼬들 챌린지</title>
+<title>꼬들</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&family=Nanum+Brush+Script&family=Song+Myung&display=swap" rel="stylesheet">
@@ -139,6 +139,12 @@ main{flex:1 1 auto;min-height:0;width:100%;max-width:640px;display:flex;flex-dir
 main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 #board{padding-bottom:4px}
 .row{scroll-margin:8px}
+.coopbanner{margin:0 0 10px;padding:12px 14px;border-radius:10px;background:linear-gradient(135deg,#EAF7EF,#F4FAF2);border:1px solid #BFE6CF}
+.coopbanner .ttl{font-size:.82rem;color:#2F6B45;font-weight:700;text-align:center;margin-bottom:8px}
+.coopbanner .nums{display:flex;gap:8px;justify-content:center}
+.coopbanner .nums>div{flex:1;min-width:0;text-align:center}
+.coopbanner .nums b{font-family:var(--t-font);font-weight:400;font-size:1.3rem;color:var(--ok)}
+.coopbanner .nums span{display:block;font-size:.7rem;opacity:.7;margin-top:2px}
 .rtabs{display:flex;gap:6px;margin:0 0 8px}
 .rtabs button{flex:1;font-family:var(--b-font);font-size:.95rem;padding:8px;border:1.5px solid var(--line);border-radius:6px;background:transparent;color:var(--ink);cursor:pointer}
 .rtabs button.on{background:var(--ok);border-color:var(--ok);color:#fff}
@@ -383,12 +389,12 @@ header .tools button{white-space:nowrap}
 @keyframes royalglow{0%,100%{box-shadow:0 0 6px rgba(245,200,74,.45)}50%{box-shadow:0 0 18px 4px rgba(245,200,74,.85)}}
 @keyframes crownfloat{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-4px) rotate(6deg)}}
 
-.lb td small.dayn{display:block;font-size:.68rem;font-weight:400;opacity:.7;font-family:var(--b-font)}
+.lb td small.dayn{display:inline;margin-left:5px;font-size:.72rem;font-weight:400;opacity:.65;font-family:var(--b-font)}
 </style>
 </head>
 <body>
 <header>
-  <h1>꼬들 챌린지</h1>
+  <h1>꼬들</h1>
   <div class="tools">
     <button id="bRank">순위</button>
     <button id="bSkin" aria-label="꾸미기">🎨 보상</button>
@@ -510,6 +516,7 @@ header .tools button{white-space:nowrap}
 
 <div class="overlay" id="ovRank"><div class="card">
   <h2>순위 (50위까지)</h2>
+  <div class="coopbanner" id="coopBanner"></div>
   <div class="rtabs"><button id="tabWeek" class="on">3콤보 최고점</button><button id="tabDay">오늘의 10판</button><button id="tabAll">누적 (노력왕)</button></div>
   <p class="note" id="rankMsg"></p>
   <table class="lb"><thead id="rankHead"><tr><th>순위</th><th>이름</th><th>점수</th><th>맞힘</th><th>문제</th></tr></thead><tbody id="rankBody"></tbody></table>
@@ -1222,9 +1229,26 @@ function drawBoard(){
   else if(rc) mine.textContent=m&&m.recentN?`내 최근 5게임: ${m.recentLast5.map(v=>(v>0?'+':'')+v).join(' · ')} = ${m.recentSum}점`+(m.recentRank&&m.recentRank>50?` (${m.recentRank}등)`:''):'';
   else if(wk) mine.textContent=m&&wkNew&&m.weekBestRank>50?`내 순위: ${m.weekBestRank}등 (${m.weekBest}점)`:'';
   else mine.textContent=m&&m.rank>50?`내 순위: ${m.rank}등 (${m.total}점)`:'';
+  renderCoop(j);
   document.getElementById('tabWeek').classList.toggle('on',wk);
   document.getElementById('tabAll').classList.toggle('on',al);
   document.getElementById('tabDay').classList.toggle('on',dy);
+}
+function renderCoop(j){
+  const el=document.getElementById('coopBanner');if(!el||!j)return;
+  const list=j.top||[];
+  const num=v=>typeof v==='number'&&isFinite(v)?v:null;
+  const sum=k=>list.reduce((a,r)=>a+(Number(r[k])||0),0);
+  const games=num(j.allGames)??num(j.totalGames)??sum('games');
+  const total=num(j.allTotal)??sum('total');
+  const players=num(j.players)??list.length;
+  const fmt=n=>Number(n||0).toLocaleString('ko-KR');
+  el.innerHTML=`<div class="ttl">🤝 우리가 함께 만든 기록</div>
+    <div class="nums">
+      <div><b>${fmt(games)}</b>문제<span>다 같이 푼 문제</span></div>
+      <div><b>${fmt(total)}</b>점<span>다 같이 모은 점수</span></div>
+      <div><b>${fmt(players)}</b>명<span>함께한 친구</span></div>
+    </div>`;
 }
 document.getElementById('tabWeek').onclick=()=>{rankTab='week';drawBoard();};
 document.getElementById('tabDay').onclick=()=>{rankTab='day';drawBoard();};
