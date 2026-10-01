@@ -139,12 +139,15 @@ main{flex:1 1 auto;min-height:0;width:100%;max-width:640px;display:flex;flex-dir
 main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 #board{padding-bottom:4px}
 .row{scroll-margin:8px}
-.coopbanner{margin:0 0 10px;padding:12px 14px;border-radius:10px;background:linear-gradient(135deg,#EAF7EF,#F4FAF2);border:1px solid #BFE6CF}
+.coopbanner{margin:0 0 10px;padding:12px 14px;border-radius:10px;background:linear-gradient(135deg,#EAF7EF,#F4FAF2);border:1px solid #BFE6CF;color:#2F5A41}
 .coopbanner .ttl{font-size:.82rem;color:#2F6B45;font-weight:700;text-align:center;margin-bottom:8px}
 .coopbanner .nums{display:flex;gap:8px;justify-content:center}
 .coopbanner .nums>div{flex:1;min-width:0;text-align:center}
-.coopbanner .nums b{font-family:var(--t-font);font-weight:400;font-size:1.3rem;color:var(--ok)}
-.coopbanner .nums span{display:block;font-size:.7rem;opacity:.7;margin-top:2px}
+.coopbanner .nums b{font-family:var(--t-font);font-weight:400;font-size:1.3rem;color:#2F7D5B;display:block}
+.coopbanner .nums span{display:block;font-size:.7rem;color:#3C6A4E;margin-top:2px}
+.coopbanner .gbar{height:8px;border-radius:999px;background:#D7EBDD;overflow:hidden;margin:10px 0 4px}
+.coopbanner .gbar>span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#FF6FB5,#FFC24B,#7CF2A6,#5AC8FF,#B18CFF);background-size:200% 100%;animation:goldShine 5s linear infinite}
+.coopbanner .gmsg{text-align:center;font-size:.74rem;color:#2F6B45;font-weight:700}
 .rtabs{display:flex;gap:6px;margin:0 0 8px}
 .rtabs button{flex:1;font-family:var(--b-font);font-size:.95rem;padding:8px;border:1.5px solid var(--line);border-radius:6px;background:transparent;color:var(--ink);cursor:pointer}
 .rtabs button.on{background:var(--ok);border-color:var(--ok);color:#fff}
@@ -390,6 +393,41 @@ header .tools button{white-space:nowrap}
 @keyframes crownfloat{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-4px) rotate(6deg)}}
 
 .lb td small.dayn{display:inline;margin-left:5px;font-size:.72rem;font-weight:400;opacity:.65;font-family:var(--b-font)}
+/* 어좌(1등) 판 결과 색 복원 */
+:root[data-skin="royal"] .tile.ok,:root[data-skin="royal"] .tile.near,:root[data-skin="royal"] .tile.miss{border-color:transparent;color:#fff;box-shadow:inset 0 0 0 2px rgba(255,225,140,.5),0 0 10px rgba(255,205,90,.25)}
+:root[data-skin="royal"] .tile.ok{background:var(--ok)}:root[data-skin="royal"] .tile.near{background:var(--near)}:root[data-skin="royal"] .tile.miss{background:var(--miss)}
+:root[data-skin="royal"] .key.ok{background:var(--ok);color:#fff}:root[data-skin="royal"] .key.near{background:var(--near);color:#fff}:root[data-skin="royal"] .key.miss{background:var(--miss);color:#fff}
+/* 다 같이(공동 보상) 판 */
+:root[data-skin="together"]{--paper:#140E2A;--ink:#F3EEFF;--line:#9B8CFF;--line-soft:#2C2550;--panel:#1E1740;--key:#272052;--key-ink:#F3EEFF;--ok:#2FB27A;--near:#E8B84A;--miss:#565079;--shade:rgba(0,0,0,.6)}
+:root[data-skin="together"] body{background-color:#0E0A20;background-image:radial-gradient(ellipse at 15% 0%,rgba(255,90,160,.25),transparent 45%),radial-gradient(ellipse at 85% 10%,rgba(90,200,255,.22),transparent 45%),radial-gradient(ellipse at 50% 100%,rgba(120,255,180,.18),transparent 55%),radial-gradient(1.2px 1.2px at 30px 40px,#fff,transparent),radial-gradient(1px 1px at 120px 90px,#cfe,transparent);background-size:100% 100%,100% 100%,100% 100%,160px 120px,200px 140px}
+:root[data-skin="together"] h1{background:linear-gradient(90deg,#FF6FB5,#FFC24B,#7CF2A6,#5AC8FF,#B18CFF,#FF6FB5);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:goldShine 5s linear infinite}
+:root[data-skin="together"] #board{position:relative}
+:root[data-skin="together"] #board::after{content:"";position:absolute;inset:-4px;pointer-events:none;border-radius:8px;background:linear-gradient(110deg,transparent 40%,rgba(255,255,255,.28) 50%,transparent 60%);background-size:250% 100%;animation:goldSweep 4s ease-in-out infinite}
+:root[data-skin="together"] .tile{border-radius:10px;background:rgba(255,255,255,.05);border-color:#6E63B8}
+:root[data-skin="together"] .tile.filled{border-color:#B9ACFF;box-shadow:0 0 8px rgba(155,140,255,.4)}
+:root[data-skin="together"] .tile.ok,:root[data-skin="together"] .tile.near,:root[data-skin="together"] .tile.miss{border-color:transparent;color:#fff;box-shadow:0 0 10px rgba(255,255,255,.18)}
+:root[data-skin="together"] .tile.ok{background:var(--ok)}:root[data-skin="together"] .tile.near{background:var(--near)}:root[data-skin="together"] .tile.miss{background:var(--miss)}
+:root[data-skin="together"] .key{background:linear-gradient(180deg,#2A2358,#1C1740);border:1px solid rgba(155,140,255,.4);color:#F3EEFF}
+:root[data-skin="together"] .key.ok{background:var(--ok);color:#fff}:root[data-skin="together"] .key.near{background:var(--near);color:#fff}:root[data-skin="together"] .key.miss{background:var(--miss);color:#fff}
+:root[data-skin="together"] .key.main{background:linear-gradient(180deg,#8A5CFF,#5A3AD6);color:#fff;border:1.5px solid #B9ACFF}
+/* 다 같이 목표 바 (메인 화면) */
+.goalbar{margin:6px 10px 2px;padding:8px 12px;border-radius:12px;background:linear-gradient(135deg,#EEF0FF,#F2FBF4);border:1px solid #CBD0F0;font-size:.8rem;color:#2A2E5A}
+.goalbar .gtop{text-align:center;line-height:1.35}
+.goalbar .gbar{height:9px;border-radius:999px;background:#DADFF2;overflow:hidden;margin:6px 0 4px}
+.goalbar .gbar>span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#FF6FB5,#FFC24B,#7CF2A6,#5AC8FF,#B18CFF);background-size:200% 100%;animation:goldShine 5s linear infinite}
+.goalbar .gnum{text-align:center;font-weight:700;color:#4A4E7A;font-size:.76rem}
+.goalbar.done{background:linear-gradient(135deg,#FFF0F8,#EEFBF2);border-color:#F2B9D8;text-align:center;color:#8A2E6A;font-weight:700;line-height:1.4}
+/* 다 같이 보상 카드 (보상 창) */
+.coopcard{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;padding:10px 12px;border-radius:10px;background:linear-gradient(135deg,#6A3AD6,#3AA0D6 55%,#2FB27A);color:#fff;border:2px solid #CBB6FF}
+.coopcard b{display:block;font-family:var(--t-font);font-weight:400;font-size:1.1rem}
+.coopcard small{display:block;font-size:.74rem;opacity:.92}
+.coopcard .coopbtns{display:flex;gap:6px;flex:none}
+.coopcard .coopbtns button{border:0;border-radius:8px;padding:8px 12px;background:rgba(255,255,255,.92);color:#4A2E8A;font-weight:700;font-family:var(--b-font);cursor:pointer}
+.coopcard .coopbtns button.on{background:#FFE9A8;color:#6E3A00}
+.coopcard.locked{filter:grayscale(.45) brightness(.92)}
+.coopcard.locked .coopbtns button{background:rgba(255,255,255,.5);color:#777}
+/* 건의 입력 */
+#ovSuggest textarea{width:100%;box-sizing:border-box;font-family:var(--b-font);font-size:1rem;padding:10px;border:1.5px solid var(--line);border-radius:10px;background:var(--panel,#fff);color:var(--ink);resize:vertical}
 </style>
 </head>
 <body>
@@ -397,8 +435,9 @@ header .tools button{white-space:nowrap}
   <h1>꼬들</h1>
   <div class="tools">
     <button id="bRank">순위</button>
-    <button id="bSkin" aria-label="꾸미기">🎨 보상</button>
+    <button id="bSkin" aria-label="보상 꾸미기">🎨</button>
     <button id="bRec">내 기록</button>
+    <button id="bSuggest" aria-label="건의·요청">💬</button>
     <button id="bHelp" aria-label="방법">?</button>
     <button id="bSet" hidden>설정</button>
   </div>
@@ -408,6 +447,7 @@ header .tools button{white-space:nowrap}
   <span class="sync" id="meSub"></span>
   <span class="sync crowd" id="crowd"></span>
 </div>
+<div class="goalbar" id="goalBar"></div>
 <div class="last5" id="last5" hidden></div>
 <div class="medalbar" id="medalBar" hidden></div>
 <div class="inforow" style="margin:6px 0 4px"><span class="info" id="info"></span></div>
@@ -443,6 +483,14 @@ header .tools button{white-space:nowrap}
   <div class="actions"><button class="main" data-close>시작하기</button></div>
 </div></div>
 
+<div class="overlay" id="ovSuggest"><div class="card">
+  <h2>💬 건의 · 요청</h2>
+  <p class="note">선생님께 전할 건의나 요청을 남겨 주세요. 닉네임과 함께 전달돼요.</p>
+  <textarea id="sugText" rows="4" maxlength="300" placeholder="예: 낱말에 '무지개'도 넣어 주세요"></textarea>
+  <p class="note" id="sugMsg" style="min-height:1.2em;color:#B4442E"></p>
+  <div class="actions"><button class="main" id="bSugSend">보내기</button><button data-close>닫기</button></div>
+</div></div>
+
 <div class="overlay" id="ovRec"><div class="card">
   <h2>내 기록</h2>
   <div class="stat">
@@ -464,6 +512,7 @@ header .tools button{white-space:nowrap}
 <div class="overlay" id="ovSkin"><div class="card">
   <h2>꾸미기</h2>
   <div class="royalcard" id="royalCard"><div><b>👑 1등 전용</b><small>어좌 판 · 옥새 자판 · 어명이오! 효과</small><small id="royalState">3콤보·오늘의 10판·누적 중 하나라도 1등이 되면 쓸 수 있어요</small></div><span class="royalcrown">👑</span></div>
+  <div class="coopcard" id="coopCard"><div><b>🌈 다 같이 보상</b><small>다 같이 50만 점을 모으면 모두에게 열려요</small><small id="coopCardState"></small></div><div class="coopbtns"><button id="bCoopSkin">판</button><button id="bCoopFx">효과</button></div></div>
   <p class="note" id="skinMsg"></p>
   <label style="margin-top:6px">판</label>
   <div class="skins" id="skinBox"></div>
@@ -798,6 +847,12 @@ function playFx(id,power){
   const row=board.children[Math.max(0,rows.length-1)];
   if(row&&rows.length)[...row.children].forEach((t,i)=>{t.classList.remove('bounce');void t.offsetWidth;t.style.animationDelay=(i*70)+'ms';t.classList.add('bounce');});
   if(id==='bounce')return;
+  if(id==='together'){
+    const w=document.createElement('div');w.className='fx-word';w.textContent='다 같이!';w.style.color='#FF7FC4';w.style.textShadow='0 0 18px rgba(255,150,210,.9)';document.body.appendChild(w);setTimeout(()=>w.remove(),1800);
+    const tcols=['#FF6FB5','#FFC24B','#7CF2A6','#5AC8FF','#B18CFF'];
+    spawn(Math.round(46*k),(e,i)=>{e.textContent=i%4?'✦':'🌈';e.style.cssText=`left:${rnd(0,100)}vw;top:${rnd(-5,35)}vh;font-size:${rnd(16,30)}px;color:${tcols[i%tcols.length]};text-shadow:0 0 10px ${tcols[i%tcols.length]};animation:twinkle ${rnd(1.3,2.2)}s ease-in ${rnd(0,.5)}s forwards`;});
+    return;
+  }
   const JM='ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎㅏㅑㅓㅕㅗㅛㅜㅠㅡㅣ';
   const hcols=['#2E7D6B','#C0392B','#1F4E8C','#E0A33A','#6B3FA0'];
   const hword=(t,cls,ms)=>{const w=document.createElement('div');w.className='fx-word '+(cls||'');w.textContent=t;document.body.appendChild(w);setTimeout(()=>w.remove(),ms||1800);};
@@ -891,21 +946,25 @@ function checkUnlock(){
   const opened=SKINS.filter(x=>best>=x.need).length;
   const prev=store.get(skinKey('opened'),null);
   store.set(skinKey('opened'),opened);
-  if(prev!==null&&opened>prev&&justFinished){
+  if(prev!==null&&opened>prev&&justFinished&&store.get(skinKey('skin'),'')!=='together'){
     const sk=SKINS[opened-1];
     store.set(skinKey('skin'),sk.id);applySkin(sk.id);
     setTimeout(()=>{toast(`새 판이 열렸어요! '${sk.name}' 판으로 바뀌었어요`);celebrate();},400);
   }else{
-    if(store.get(skinKey('skin'),null)===null||(prev!==null&&opened>prev))store.set(skinKey('skin'),SKINS[Math.max(0,opened-1)].id);
+    const cs=store.get(skinKey('skin'),null);
+    if(cs!=='together'&&(cs===null||(prev!==null&&opened>prev)))store.set(skinKey('skin'),SKINS[Math.max(0,opened-1)].id);
     applySkin(store.get(skinKey('skin'),''));
   }
   const fxOpen=FXS.filter(x=>best>=x.need).length;
   const fxPrev=store.get(skinKey('fxOpened'),null);
   store.set(skinKey('fxOpened'),fxOpen);
-  if(fxPrev!==null&&fxOpen>fxPrev&&justFinished){
-    const f=FXS[fxOpen-1];store.set(skinKey('fx'),f.id);
-    setTimeout(()=>toast(`새 효과가 열렸어요! 이제 맞히면 '${f.name}' ${f.icon}`),opened>prev?2200:400);
-  }else if(store.get(skinKey('fx'),null)===null||(fxPrev!==null&&fxOpen>fxPrev))store.set(skinKey('fx'),FXS[Math.max(0,fxOpen-1)].id);
+  const cf=store.get(skinKey('fx'),null);
+  if(cf!=='together'){
+    if(fxPrev!==null&&fxOpen>fxPrev&&justFinished){
+      const f=FXS[fxOpen-1];store.set(skinKey('fx'),f.id);
+      setTimeout(()=>toast(`새 효과가 열렸어요! 이제 맞히면 '${f.name}' ${f.icon}`),opened>prev?2200:400);
+    }else if(cf===null||(fxPrev!==null&&fxOpen>fxPrev))store.set(skinKey('fx'),FXS[Math.max(0,fxOpen-1)].id);
+  }
 }
 function nextSkinText(){
   const best=bestScore();
@@ -921,6 +980,39 @@ function celebrate(){
     c.style.animationDelay=(Math.random()*.6)+'s';c.style.animationDuration=(1.4+Math.random())+'s';
     document.body.appendChild(c);setTimeout(()=>c.remove(),3200);
   }
+}
+/* ── 다 같이 50만 점 공동 보상 ── */
+const COOP_GOAL=500000;
+function coopTotal(){return (lastBoard&&typeof lastBoard.allTotal==='number')?lastBoard.allTotal:null;}
+function coopReached(){return store.get('coopDone',false)||(coopTotal()!==null&&coopTotal()>=COOP_GOAL);}
+function announceCoop(){toast('🌈 우리가 함께 50만 점을 모았어요! 모두에게 특별 판·효과가 열렸어요',4200);try{celebrate();}catch(e){}}
+function checkCoop(j){
+  if(!j)return;
+  const t=j.allTotal;
+  if(typeof t==='number'){
+    const was=store.get('coopDone',false);
+    if(t>=COOP_GOAL){store.set('coopDone',true);if(!was)setTimeout(announceCoop,900);}
+  }
+  if(me&&!store.get('coopIntroSeen',false)&&!coopReached()){
+    store.set('coopIntroSeen',true);
+    setTimeout(()=>toast('🌈 다 같이 50만 점을 모으면 모두 특별 판·효과를 받아요! 함께 모아요',3600),1200);
+  }
+  updateGoalBar();
+}
+function updateGoalBar(){
+  const el=document.getElementById('goalBar');if(!el)return;
+  if(coopReached()){
+    el.className='goalbar done';
+    el.innerHTML="🌈 <b>다 같이 50만 점 달성!</b> 🎨 보상에서 '다 같이' 판·효과를 쓸 수 있어요";
+    return;
+  }
+  el.className='goalbar';
+  const t=coopTotal();
+  const pct=t!=null?Math.min(100,Math.floor(t/COOP_GOAL*100)):0;
+  const now=t!=null?t.toLocaleString('ko-KR'):'…';
+  el.innerHTML=`<div class="gtop">🌈 다 같이 50만 점 모으기 — 달성하면 <b>모두</b> 특별 판·효과!</div>`+
+    `<div class="gbar"><span style="width:${pct}%"></span></div>`+
+    `<div class="gnum">${now} / 500,000점 (${pct}%)</div>`;
 }
 let pvMode=false;
 function showSkins(){
@@ -949,10 +1041,32 @@ function showSkins(){
   document.getElementById('cbSafe').checked=store.get('safeColors',false);
   document.getElementById('cbFx').checked=store.get('fxOn',true);
   document.getElementById('bPv').textContent=pvMode?'미리 보기 끝내기':'선생님 미리 보기';
+  {const on=coopReached(),cc=document.getElementById('coopCard'),cst=document.getElementById('coopCardState');
+   cc.classList.toggle('locked',!on);
+   const bcs=document.getElementById('bCoopSkin'),bcf=document.getElementById('bCoopFx');
+   bcs.classList.toggle('on',store.get(skinKey('skin'),'')==='together');
+   bcf.classList.toggle('on',store.get(skinKey('fx'),'bounce')==='together');
+   if(on){cst.textContent='열렸어요! 눌러서 써 보세요';}
+   else{const t=coopTotal();cst.textContent=t!=null?`지금 ${t.toLocaleString('ko-KR')} / 500,000점`:'50만 점에 열려요';}
+   bcs.onclick=()=>{if(!coopReached()){toast('다 같이 50만 점을 모으면 열려요');return;}store.set(skinKey('skin'),'together');applySkin('together');showSkins();};
+   bcf.onclick=()=>{if(!coopReached()){toast('다 같이 50만 점을 모으면 열려요');return;}store.set(skinKey('fx'),'together');showSkins();setTimeout(()=>playFx('together',1),150);};}
   open('ovSkin');
 }
 document.getElementById('cbSafe').addEventListener('change',e=>{store.set('safeColors',e.target.checked);applySkin(store.get(skinKey('skin'),''));});
 document.getElementById('bSkin').onclick=()=>{pvMode=false;document.getElementById('pvBox').style.display='none';showSkins();};
+document.getElementById('bSuggest').onclick=()=>{
+  if(!SCRIPT_URL){toast('아직 순위표가 연결되지 않았어요');return;}
+  if(!me){toast('먼저 닉네임을 정해 주세요');askName();return;}
+  document.getElementById('sugText').value='';document.getElementById('sugMsg').textContent='';open('ovSuggest');
+};
+document.getElementById('bSugSend').onclick=async()=>{
+  const t=document.getElementById('sugText').value.trim(),m=document.getElementById('sugMsg'),btn=document.getElementById('bSugSend');
+  if(t.length<2){m.style.color='#B4442E';m.textContent='내용을 적어 주세요.';return;}
+  btn.disabled=true;btn.textContent='보내는 중…';
+  try{await api({action:'suggest',name:me,pin,text:t});m.style.color='#2F7D5B';m.textContent='보냈어요. 고마워요!';toast('건의를 보냈어요. 고마워요!');setTimeout(()=>document.getElementById('ovSuggest').classList.remove('open'),800);}
+  catch(e){m.style.color='#B4442E';m.textContent=(e&&e.message)||'보내지 못했어요.';}
+  finally{btn.disabled=false;btn.textContent='보내기';}
+};
 document.getElementById('bPv').onclick=()=>{
   const box=document.getElementById('pvBox');
   if(pvMode){pvMode=false;box.style.display='none';showSkins();return;}
@@ -993,6 +1107,7 @@ function updateMe(){
   document.getElementById('meTotal').textContent=shownTotal();
   document.getElementById('meSub').textContent=`${rec.wins}/${rec.games} 맞힘`;
   document.getElementById('meSub').style.display=document.getElementById('crowd').textContent?'none':'';
+  updateGoalBar();
 }
 function showRec(noFetch){
   const R=srvRec||{total:shownTotal(),wins:rec.wins,games:rec.games,streak:rec.streak,best:rec.best,hist:rec.hist};
@@ -1243,12 +1358,15 @@ function renderCoop(j){
   const total=num(j.allTotal)??sum('total');
   const players=num(j.players)??list.length;
   const fmt=n=>Number(n||0).toLocaleString('ko-KR');
+  const GOAL=500000, reached=total>=GOAL, pct=Math.min(100,Math.floor(total/GOAL*100));
   el.innerHTML=`<div class="ttl">🤝 우리가 함께 만든 기록</div>
     <div class="nums">
       <div><b>${fmt(games)}</b>문제<span>다 같이 푼 문제</span></div>
       <div><b>${fmt(total)}</b>점<span>다 같이 모은 점수</span></div>
       <div><b>${fmt(players)}</b>명<span>함께한 친구</span></div>
-    </div>`;
+    </div>
+    <div class="gbar"><span style="width:${pct}%"></span></div>
+    <div class="gmsg">${reached?'🌈 50만 점 달성! 모두 특별 판·효과 사용 가능':`🌈 50만 점까지 ${pct}% · 달성하면 모두 특별 보상`}</div>`;
 }
 document.getElementById('tabWeek').onclick=()=>{rankTab='week';drawBoard();};
 document.getElementById('tabDay').onclick=()=>{rankTab='day';drawBoard();};
@@ -1260,6 +1378,7 @@ async function loadBoard(showUI){
   try{
     const j=await api(me?{action:'board',name:me}:{action:'board'});
     applyMe(j);lastBoard=j;
+    checkCoop(j);
     if(showUI)drawBoard();
     {const k1=(j.weekBestTop&&j.weekBestTop[0]&&j.weekBestTop[0].name)||'', k2=(j.top&&j.top[0]&&j.top[0].name)||'', k3=(j.dayTop&&j.dayTop[0]&&j.dayTop[0].name)||'';
      const prev=store.get('lastKings',null);
