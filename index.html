@@ -141,10 +141,11 @@ main{justify-content:flex-start!important;padding-top:4px!important;overflow-y:a
 .row{scroll-margin:8px}
 .coopbanner{margin:0 0 10px;padding:12px 14px;border-radius:10px;background:linear-gradient(135deg,#EAF7EF,#F4FAF2);border:1px solid #BFE6CF;color:#2F5A41}
 .coopbanner .ttl{font-size:.82rem;color:#2F6B45;font-weight:700;text-align:center;margin-bottom:8px}
-.coopbanner .nums{display:flex;gap:8px;justify-content:center}
-.coopbanner .nums>div{flex:1;min-width:0;text-align:center}
-.coopbanner .nums b{font-family:var(--t-font);font-weight:400;font-size:1.3rem;color:#2F7D5B;display:block}
-.coopbanner .nums span{display:block;font-size:.7rem;color:#3C6A4E;margin-top:2px}
+.coopbanner .nums{display:flex;gap:6px;justify-content:center}
+.coopbanner .nums>div{flex:1;min-width:0;text-align:center;white-space:nowrap}
+.coopbanner .nums b{font-family:var(--t-font);font-weight:400;font-size:1.02rem;color:#2F7D5B}
+.coopbanner .nums em{font-style:normal;font-size:.74rem;color:#2F7D5B;margin-left:1px}
+.coopbanner .nums span{display:block;font-size:.64rem;color:#3C6A4E;margin-top:1px}
 .coopbanner .gbar{height:8px;border-radius:999px;background:#D7EBDD;overflow:hidden;margin:10px 0 4px}
 .coopbanner .gbar>span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#FF6FB5,#FFC24B,#7CF2A6,#5AC8FF,#B18CFF);background-size:200% 100%;animation:goldShine 5s linear infinite}
 .coopbanner .gmsg{text-align:center;font-size:.74rem;color:#2F6B45;font-weight:700}
@@ -447,7 +448,6 @@ header .tools button{white-space:nowrap}
   <span class="sync" id="meSub"></span>
   <span class="sync crowd" id="crowd"></span>
 </div>
-<div class="goalbar" id="goalBar"></div>
 <div class="last5" id="last5" hidden></div>
 <div class="medalbar" id="medalBar" hidden></div>
 <div class="inforow" style="margin:6px 0 4px"><span class="info" id="info"></span></div>
@@ -1361,9 +1361,9 @@ function renderCoop(j){
   const GOAL=500000, reached=total>=GOAL, pct=Math.min(100,Math.floor(total/GOAL*100));
   el.innerHTML=`<div class="ttl">🤝 우리가 함께 만든 기록</div>
     <div class="nums">
-      <div><b>${fmt(games)}</b>문제<span>다 같이 푼 문제</span></div>
-      <div><b>${fmt(total)}</b>점<span>다 같이 모은 점수</span></div>
-      <div><b>${fmt(players)}</b>명<span>함께한 친구</span></div>
+      <div><b>${fmt(games)}</b><em>문제</em><span>다 같이 푼 문제</span></div>
+      <div><b>${fmt(total)}</b><em>점</em><span>다 같이 모은 점수</span></div>
+      <div><b>${fmt(players)}</b><em>명</em><span>함께한 친구</span></div>
     </div>
     <div class="gbar"><span style="width:${pct}%"></span></div>
     <div class="gmsg">${reached?'🌈 50만 점 달성! 모두 특별 판·효과 사용 가능':`🌈 50만 점까지 ${pct}% · 달성하면 모두 특별 보상`}</div>`;
