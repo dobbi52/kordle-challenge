@@ -460,6 +460,22 @@ header .tools button{white-space:nowrap}
 .fx-million b{display:block;font-weight:400;font-size:3.6rem;background:linear-gradient(90deg,#FF6FB5,#FFC24B,#7CF2A6,#5AC8FF,#B18CFF);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 12px rgba(255,255,255,.7))}
 .fx-million span{font-size:1.2rem;color:#fff;text-shadow:0 0 10px rgba(180,190,255,1)}
 @keyframes meteor{0%{transform:translate(0,0) rotate(-35deg);opacity:0}10%{opacity:1}100%{transform:translate(-70vw,55vh) rotate(-35deg);opacity:0}}
+.skin.coopitem:not(.lock){background:linear-gradient(135deg,rgba(255,111,181,.18),rgba(90,200,255,.18));border-color:#B18CFF}
+
+/* 100만 점 달성 축하 */
+.million-ov{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at 50% 30%,rgba(60,40,140,.85),rgba(5,8,32,.92));animation:mfade .4s ease both}
+.million-ov.out{animation:mfade .3s ease reverse both}
+@keyframes mfade{from{opacity:0}to{opacity:1}}
+.million-card{max-width:360px;width:100%;text-align:center;color:#EEF3FF;padding:24px 20px;border-radius:18px;background:linear-gradient(160deg,#1B2470,#3A2A8C 60%,#7A3AB0);border:2px solid #B9C6FF;box-shadow:0 0 30px rgba(150,140,255,.7);animation:mpop .6s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes mpop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.million-card .mc-stars{font-size:1.4rem;letter-spacing:.4em;color:#FFE08A;animation:goldTwinkle 1.6s ease-in-out infinite}
+.million-card b{display:block;margin:8px 0 10px;font-family:var(--t-font);font-weight:400;font-size:1.7rem;line-height:1.25;background:linear-gradient(90deg,#FF6FB5,#FFC24B,#7CF2A6,#5AC8FF,#B18CFF);-webkit-background-clip:text;background-clip:text;color:transparent}
+.million-card p{margin:6px 0;font-size:.95rem;line-height:1.5}
+.million-card .mc-gift{margin-top:12px;padding:8px;border-radius:10px;background:rgba(255,255,255,.1);font-size:.88rem}
+.million-card .mc-btns{display:flex;gap:8px;justify-content:center;margin-top:14px}
+.million-card button{border:0;border-radius:10px;padding:10px 14px;font-weight:700;font-family:var(--b-font);cursor:pointer}
+.million-card .mc-use{background:linear-gradient(90deg,#E28BEA,#9A4FD6);color:#fff}
+.million-card .mc-close{background:rgba(255,255,255,.85);color:#2A2470}
 </style>
 </head>
 <body>
@@ -543,7 +559,6 @@ header .tools button{white-space:nowrap}
 <div class="overlay" id="ovSkin"><div class="card">
   <h2>꾸미기</h2>
   <div class="royalcard" id="royalCard"><div><b>👑 1등 전용</b><small>어좌 판 · 옥새 자판 · 어명이오! 효과</small><small id="royalState">3콤보·오늘의 10판·누적 중 하나라도 1등이 되면 쓸 수 있어요</small></div><span class="royalcrown">👑</span></div>
-  <div class="coopcard" id="coopCard"><div><b>🌈 다 같이 보상</b><small>다 같이 50만 점을 모으면 모두에게 열려요</small><small id="coopCardState"></small></div><div class="coopbtns"><button id="bCoopSkin">판</button><button id="bCoopFx">효과</button></div></div>
   <div class="coopcard galaxycard" id="coop2Card"><div><b>🌌 다 같이 100만 보상</b><small>다 같이 100만 점을 모으면 모두에게 열려요</small><small id="coop2CardState"></small></div><div class="coopbtns"><button id="bCoop2Skin">판</button><button id="bCoop2Fx">효과</button></div></div>
   <p class="note" id="skinMsg"></p>
   <label style="margin-top:6px">판</label>
@@ -1025,7 +1040,32 @@ function celebrate(){
 const COOP_GOAL=500000, COOP2_GOAL=1000000;
 function coopTotal(){return (lastBoard&&typeof lastBoard.allTotal==='number')?lastBoard.allTotal:null;}
 function coop2Reached(){return store.get('coop2Done',false)||(coopTotal()!==null&&coopTotal()>=COOP2_GOAL);}
-function announceCoop2(){toast('🌌 우리가 함께 100만 점을 모았어요! 모두에게 은하수 판·효과가 열렸어요',4200);try{celebrate();}catch(e){}}
+function announceCoop2(){
+  /* 100만 점 달성 축하: 이 기기에서 처음 확인할 때 한 번 */
+  if(store.get('coop2Done',false))return;
+  store.set('coop2Done',true);
+  closeAll();
+  const t=coopTotal(), p=(lastBoard&&lastBoard.players)||null;
+  const ov=document.createElement('div');ov.className='million-ov';
+  ov.innerHTML=`<div class="million-card">
+    <div class="mc-stars">✦ ✧ ✦</div>
+    <b>우리가 함께<br>100만 점을 달성했어요!</b>
+    <p>${p?`${Number(p).toLocaleString('ko-KR')}명의 친구들이 `:''}함께 모은 점수가<br>${t?Number(t).toLocaleString('ko-KR'):'1,000,000'}점이 되었어요.</p>
+    <p class="mc-gift">🌌 모두에게 '한글 은하수' 판과 '100만 은하수' 효과가 열렸어요</p>
+    <div class="mc-btns"><button class="mc-use">은하수로 바꾸기</button><button class="mc-close">닫기</button></div>
+  </div>`;
+  document.body.appendChild(ov);
+  const bye=()=>{ov.classList.add('out');setTimeout(()=>ov.remove(),300);};
+  ov.querySelector('.mc-close').onclick=bye;
+  ov.querySelector('.mc-use').onclick=()=>{store.set(skinKey('skin'),'galaxy');store.set(skinKey('fx'),'million');applySkin('galaxy');bye();setTimeout(()=>playFx('million',1.6),250);};
+  try{playFx('million',1.8);}catch(e){}
+  try{celebrate();}catch(e){}
+  setTimeout(()=>{try{playFx('million',1.4);}catch(e){}},2600);
+}
+setInterval(()=>{ /* 목표 가까이(98만 점 이상)일 때만 2분마다 확인 */
+  const t=coopTotal();
+  if(!document.hidden&&t!==null&&t>=980000&&!store.get('coop2Done',false))loadBoard(false);
+},120000);
 function coopReached(){return store.get('coopDone',false)||(coopTotal()!==null&&coopTotal()>=COOP_GOAL);}
 function announceCoop(){toast('🌈 우리가 함께 50만 점을 모았어요! 모두에게 특별 판·효과가 열렸어요',4200);try{celebrate();}catch(e){}}
 function checkCoop(j){
@@ -1035,7 +1075,7 @@ function checkCoop(j){
     const was=store.get('coopDone',false);
     if(t>=COOP_GOAL){store.set('coopDone',true);if(!was)setTimeout(announceCoop,900);}
     const was2=store.get('coop2Done',false);
-    if(t>=COOP2_GOAL){store.set('coop2Done',true);if(!was2)setTimeout(announceCoop2,was?900:5400);}
+    if(t>=COOP2_GOAL&&!was2&&!window._c2sched){window._c2sched=true;setTimeout(announceCoop2,was?900:5400);}
   }
   if(me&&!store.get('coopIntroSeen',false)&&!coopReached()){
     store.set('coopIntroSeen',true);
@@ -1073,6 +1113,12 @@ function showSkins(){
       store.set(skinKey('skin'),sk.id);applySkin(sk.id);showSkins();};
     box.appendChild(b);
   });
+  {/* 다 같이 50만 보상 판 */
+   const on=coopReached(), b=document.createElement('button');
+   b.className='skin coopitem'+(on?'':' lock')+(on&&cur==='together'?' on':'');
+   b.innerHTML=`<span class="sw"><i style="background:#FF6FB5"></i><i style="background:#7CF2A6"></i><i style="background:#5AC8FF"></i></span><b>${on?'🌈':'🔒'} 다 같이</b><small>${on?(cur==='together'?'사용 중':'누르면 바꿔요'):'다 같이 50만 점에 열려요'}</small>`;
+   b.onclick=()=>{if(!coopReached()){toast('다 같이 50만 점을 모으면 열려요');return;}store.set(skinKey('skin'),'together');applySkin('together');showSkins();};
+   box.appendChild(b);}
   const fcur=store.get(skinKey('fx'),'bounce'), fbox=document.getElementById('fxBox');fbox.innerHTML='';
   FXS.forEach(f=>{
     const open=best>=f.need;
@@ -1081,18 +1127,17 @@ function showSkins(){
     b.onclick=()=>{if(!open&&!pvMode){toast(`${f.need}점을 넘으면 열려요`);return;}if(!open){toast(`미리 보기 · ${f.need}점에 열려요`);playFx(f.id,1.3);return;}store.set(skinKey('fx'),f.id);showSkins();setTimeout(()=>playFx(f.id,1),150);};
     fbox.appendChild(b);
   });
+  {/* 다 같이 50만 보상 효과 */
+   const on=coopReached(), b=document.createElement('button');
+   b.className='skin coopitem'+(on?'':' lock')+(on&&fcur==='together'?' on':'');
+   b.innerHTML=`<b>${on?'🌈':'🔒'} 다 같이</b><small>${on?(fcur==='together'?'사용 중':'누르면 바꿔요'):'다 같이 50만 점에 열려요'}</small>`;
+   b.onclick=()=>{if(!coopReached()){toast('다 같이 50만 점을 모으면 열려요');return;}store.set(skinKey('fx'),'together');showSkins();setTimeout(()=>playFx('together',1),150);};
+   fbox.appendChild(b);}
   document.getElementById('skinMsg').textContent=`최고 누적 ${best}점`+nextSkinText()+(pvMode?'. 선생님 미리 보기 중: 잠긴 것도 눌러서 볼 수 있어요.':'. 한 번 열린 판과 효과는 점수가 줄어도 계속 쓸 수 있어요.');
   document.getElementById('cbSafe').checked=store.get('safeColors',false);
   document.getElementById('cbFx').checked=store.get('fxOn',true);
   document.getElementById('bPv').textContent=pvMode?'미리 보기 끝내기':'선생님 미리 보기';
-  {const on=coopReached(),cc=document.getElementById('coopCard'),cst=document.getElementById('coopCardState');
-   cc.classList.toggle('locked',!on);
-   const bcs=document.getElementById('bCoopSkin'),bcf=document.getElementById('bCoopFx');
-   bcs.classList.toggle('on',store.get(skinKey('skin'),'')==='together');
-   bcf.classList.toggle('on',store.get(skinKey('fx'),'bounce')==='together');
-   if(on){cst.textContent='열렸어요! 눌러서 써 보세요';}
-   else{const t=coopTotal();cst.textContent=t!=null?`지금 ${t.toLocaleString('ko-KR')} / 500,000점`:'50만 점에 열려요';}
-   bcs.onclick=()=>{if(!coopReached()){toast('다 같이 50만 점을 모으면 열려요');return;}store.set(skinKey('skin'),'together');applySkin('together');showSkins();};
+  {
    {const on2=coop2Reached(),c2=document.getElementById('coop2Card'),s2=document.getElementById('coop2CardState');
     c2.classList.toggle('locked',!on2);
     const b2s=document.getElementById('bCoop2Skin'),b2f=document.getElementById('bCoop2Fx');
@@ -1102,7 +1147,7 @@ function showSkins(){
     else{const t=coopTotal();s2.textContent=t!=null?`지금 ${t.toLocaleString('ko-KR')} / 1,000,000점`:'100만 점에 열려요';}
     b2s.onclick=()=>{if(!coop2Reached()){toast('다 같이 100만 점을 모으면 열려요');return;}store.set(skinKey('skin'),'galaxy');applySkin('galaxy');showSkins();};
     b2f.onclick=()=>{if(!coop2Reached()){toast('다 같이 100만 점을 모으면 열려요');return;}store.set(skinKey('fx'),'million');showSkins();setTimeout(()=>playFx('million',1),150);};}
-   bcf.onclick=()=>{if(!coopReached()){toast('다 같이 50만 점을 모으면 열려요');return;}store.set(skinKey('fx'),'together');showSkins();setTimeout(()=>playFx('together',1),150);};}
+  }
   open('ovSkin');
 }
 document.getElementById('cbSafe').addEventListener('change',e=>{store.set('safeColors',e.target.checked);applySkin(store.get(skinKey('skin'),''));});
