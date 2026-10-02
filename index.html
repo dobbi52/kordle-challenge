@@ -426,9 +426,40 @@ header .tools button{white-space:nowrap}
 .coopcard .coopbtns button{border:0;border-radius:8px;padding:8px 12px;background:rgba(255,255,255,.92);color:#4A2E8A;font-weight:700;font-family:var(--b-font);cursor:pointer}
 .coopcard .coopbtns button.on{background:#FFE9A8;color:#6E3A00}
 .coopcard.locked{filter:grayscale(.45) brightness(.92)}
+.coopcard.galaxycard{background:linear-gradient(135deg,#1B2470,#3A2A8C 55%,#7A3AB0)!important;color:#EEF3FF}
+.coopcard.galaxycard .coopbtns button{color:#2A2470}
 .coopcard.locked .coopbtns button{background:rgba(255,255,255,.5);color:#777}
 /* 건의 입력 */
 #ovSuggest textarea{width:100%;box-sizing:border-box;font-family:var(--b-font);font-size:1rem;padding:10px;border:1.5px solid var(--line);border-radius:10px;background:var(--panel,#fff);color:var(--ink);resize:vertical}
+/* ── 100만 점 공동 보상: 한글 은하수  ── */
+@keyframes galaxyDrift{to{background-position:0 0,0 0,200px 140px,-160px 90px,0 0}}
+@keyframes starPulse{0%,100%{opacity:.45}50%{opacity:1}}
+:root[data-skin="galaxy"]{--paper:#070B24;--ink:#EEF3FF;--line:#7C8CFF;--line-soft:#1A2250;--panel:#101640;--key:#141C4A;--key-ink:#EEF3FF;--ok:#2FB27A;--near:#E8B84A;--miss:#3A4270;--shade:rgba(0,0,10,.65)}
+:root[data-skin="galaxy"] body{position:relative;z-index:0;background-color:#050820;background-image:
+  linear-gradient(160deg,transparent 30%,rgba(140,120,255,.22) 42%,rgba(255,180,230,.18) 48%,rgba(120,200,255,.20) 54%,transparent 66%),
+  radial-gradient(ellipse at 50% 120%,rgba(90,60,200,.35),transparent 60%),
+  radial-gradient(1.4px 1.4px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 90px 70px,#cfe0ff,transparent),
+  radial-gradient(1.6px 1.6px at 140px 20px,#ffe9b0,transparent);
+  background-size:100% 100%,100% 100%,170px 120px,210px 150px,230px 170px;animation:galaxyDrift 60s linear infinite}
+:root[data-skin="galaxy"] body::before{content:"ㄱ ㅎ ㅏ ㄴ ㅡ ㄹ";position:fixed;left:6%;top:16%;z-index:-1;pointer-events:none;font-family:var(--t-font);font-size:2.2rem;letter-spacing:1.4em;color:rgba(200,215,255,.10);transform:rotate(-14deg);white-space:nowrap}
+:root[data-skin="galaxy"] h1{background:linear-gradient(90deg,#B9C6FF,#FFFFFF,#FFD7F2,#9FE3FF,#B9C6FF);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:goldShine 5s linear infinite}
+:root[data-skin="galaxy"] .tile{border-radius:6px;background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.02));border-color:#3D4A99}
+:root[data-skin="galaxy"] .tile.filled{border-color:#C9D2FF;box-shadow:0 0 10px rgba(180,195,255,.55)}
+:root[data-skin="galaxy"] .tile.ok,:root[data-skin="galaxy"] .tile.near,:root[data-skin="galaxy"] .tile.miss{border-color:transparent;color:#fff;box-shadow:0 0 12px rgba(255,255,255,.35)}
+:root[data-skin="galaxy"] .tile.ok{background:linear-gradient(160deg,#6BE3A8,#2FB27A 70%)}
+:root[data-skin="galaxy"] .tile.near{background:linear-gradient(160deg,#FFE08A,#E8B84A 70%)}
+:root[data-skin="galaxy"] .tile.miss{background:linear-gradient(160deg,#5A6399,#3A4270 70%)}
+:root[data-skin="galaxy"] .key{position:relative;background:linear-gradient(180deg,#232C70,#121846);border:1px solid rgba(160,175,255,.45);border-radius:6px;color:#EEF3FF;text-shadow:0 0 6px rgba(190,205,255,.9);box-shadow:0 0 8px rgba(110,130,255,.35)}
+:root[data-skin="galaxy"] .key::before{content:"";position:absolute;top:5px;right:7px;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 6px 2px rgba(255,255,255,.8);animation:starPulse 2.2s ease-in-out infinite}
+:root[data-skin="galaxy"] .krow:nth-child(2) .key::before{animation-delay:.7s}
+:root[data-skin="galaxy"] .krow:nth-child(3) .key::before{animation-delay:1.4s}
+:root[data-skin="galaxy"] .key.main{background:linear-gradient(180deg,#E28BEA,#9A4FD6);color:#fff;border-color:#FFD7F2}
+:root[data-skin] .key.ok{background:var(--ok)!important}:root[data-skin] .key.near{background:var(--near)!important}:root[data-skin] .key.miss{background:var(--miss)!important}
+/* 100만 효과 */
+.fx-million{position:fixed;left:50%;top:34%;z-index:53;pointer-events:none;text-align:center;font-family:var(--t-font);white-space:nowrap;animation:bigword 2.6s ease-out forwards}
+.fx-million b{display:block;font-weight:400;font-size:3.6rem;background:linear-gradient(90deg,#FF6FB5,#FFC24B,#7CF2A6,#5AC8FF,#B18CFF);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 12px rgba(255,255,255,.7))}
+.fx-million span{font-size:1.2rem;color:#fff;text-shadow:0 0 10px rgba(180,190,255,1)}
+@keyframes meteor{0%{transform:translate(0,0) rotate(-35deg);opacity:0}10%{opacity:1}100%{transform:translate(-70vw,55vh) rotate(-35deg);opacity:0}}
 </style>
 </head>
 <body>
@@ -513,6 +544,7 @@ header .tools button{white-space:nowrap}
   <h2>꾸미기</h2>
   <div class="royalcard" id="royalCard"><div><b>👑 1등 전용</b><small>어좌 판 · 옥새 자판 · 어명이오! 효과</small><small id="royalState">3콤보·오늘의 10판·누적 중 하나라도 1등이 되면 쓸 수 있어요</small></div><span class="royalcrown">👑</span></div>
   <div class="coopcard" id="coopCard"><div><b>🌈 다 같이 보상</b><small>다 같이 50만 점을 모으면 모두에게 열려요</small><small id="coopCardState"></small></div><div class="coopbtns"><button id="bCoopSkin">판</button><button id="bCoopFx">효과</button></div></div>
+  <div class="coopcard galaxycard" id="coop2Card"><div><b>🌌 다 같이 100만 보상</b><small>다 같이 100만 점을 모으면 모두에게 열려요</small><small id="coop2CardState"></small></div><div class="coopbtns"><button id="bCoop2Skin">판</button><button id="bCoop2Fx">효과</button></div></div>
   <p class="note" id="skinMsg"></p>
   <label style="margin-top:6px">판</label>
   <div class="skins" id="skinBox"></div>
@@ -847,6 +879,14 @@ function playFx(id,power){
   const row=board.children[Math.max(0,rows.length-1)];
   if(row&&rows.length)[...row.children].forEach((t,i)=>{t.classList.remove('bounce');void t.offsetWidth;t.style.animationDelay=(i*70)+'ms';t.classList.add('bounce');});
   if(id==='bounce')return;
+  if(id==='million'){
+    {const f=document.createElement('div');f.className='fx-flash';f.style.background='radial-gradient(circle at 50% 35%,rgba(190,160,255,.75),rgba(120,180,255,.25) 35%,transparent 65%)';document.body.appendChild(f);setTimeout(()=>f.remove(),1300);}
+    const tcols=['#FF6FB5','#FFC24B','#7CF2A6','#5AC8FF','#B18CFF'],JM2='ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎㅏㅓㅗㅜㅡㅣ';
+    for(let b=0;b<3;b++){const cx=rnd(15,85),cy=rnd(12,45);spawn(16,(e,i)=>{const a=i/16*Math.PI*2,r=rnd(80,150);e.textContent=JM2[(i+b*5)%JM2.length];e.style.cssText=`left:${cx}vw;top:${cy}vh;font-family:var(--t-font);font-size:22px;color:${tcols[(i+b)%5]};text-shadow:0 0 8px ${tcols[(i+b)%5]};--dx:${Math.cos(a)*r}px;--dy:${Math.sin(a)*r}px;animation:burst 1.2s ease-out ${b*.35}s forwards`;});}
+    spawn(Math.round(10*k),(e,i)=>{e.style.cssText=`left:${rnd(55,115)}vw;top:${rnd(-15,35)}vh;width:${rnd(90,160)}px;height:2px;border-radius:2px;background:linear-gradient(90deg,#fff,rgba(255,255,255,0));box-shadow:0 0 8px #fff;animation:meteor 1.4s ease-in ${i*.25}s forwards`;});
+    spawn(Math.round(40*k),(e,i)=>{e.textContent='✦';e.style.cssText=`left:${rnd(0,100)}vw;top:${rnd(-5,40)}vh;font-size:${rnd(12,24)}px;color:${i%3?'#FFFFFF':'#FFE08A'};text-shadow:0 0 10px #fff;animation:twinkle ${rnd(1.3,2.4)}s ease-in ${rnd(0,.6)}s forwards`;});
+    return;
+  }
   if(id==='together'){
     const w=document.createElement('div');w.className='fx-word';w.textContent='다 같이!';w.style.color='#FF7FC4';w.style.textShadow='0 0 18px rgba(255,150,210,.9)';document.body.appendChild(w);setTimeout(()=>w.remove(),1800);
     const tcols=['#FF6FB5','#FFC24B','#7CF2A6','#5AC8FF','#B18CFF'];
@@ -946,20 +986,20 @@ function checkUnlock(){
   const opened=SKINS.filter(x=>best>=x.need).length;
   const prev=store.get(skinKey('opened'),null);
   store.set(skinKey('opened'),opened);
-  if(prev!==null&&opened>prev&&justFinished&&store.get(skinKey('skin'),'')!=='together'){
+  if(prev!==null&&opened>prev&&justFinished&&!['together','galaxy'].includes(store.get(skinKey('skin'),''))){
     const sk=SKINS[opened-1];
     store.set(skinKey('skin'),sk.id);applySkin(sk.id);
     setTimeout(()=>{toast(`새 판이 열렸어요! '${sk.name}' 판으로 바뀌었어요`);celebrate();},400);
   }else{
     const cs=store.get(skinKey('skin'),null);
-    if(cs!=='together'&&(cs===null||(prev!==null&&opened>prev)))store.set(skinKey('skin'),SKINS[Math.max(0,opened-1)].id);
+    if(!['together','galaxy'].includes(cs)&&(cs===null||(prev!==null&&opened>prev)))store.set(skinKey('skin'),SKINS[Math.max(0,opened-1)].id);
     applySkin(store.get(skinKey('skin'),''));
   }
   const fxOpen=FXS.filter(x=>best>=x.need).length;
   const fxPrev=store.get(skinKey('fxOpened'),null);
   store.set(skinKey('fxOpened'),fxOpen);
   const cf=store.get(skinKey('fx'),null);
-  if(cf!=='together'){
+  if(!['together','million'].includes(cf)){
     if(fxPrev!==null&&fxOpen>fxPrev&&justFinished){
       const f=FXS[fxOpen-1];store.set(skinKey('fx'),f.id);
       setTimeout(()=>toast(`새 효과가 열렸어요! 이제 맞히면 '${f.name}' ${f.icon}`),opened>prev?2200:400);
@@ -982,8 +1022,10 @@ function celebrate(){
   }
 }
 /* ── 다 같이 50만 점 공동 보상 ── */
-const COOP_GOAL=500000;
+const COOP_GOAL=500000, COOP2_GOAL=1000000;
 function coopTotal(){return (lastBoard&&typeof lastBoard.allTotal==='number')?lastBoard.allTotal:null;}
+function coop2Reached(){return store.get('coop2Done',false)||(coopTotal()!==null&&coopTotal()>=COOP2_GOAL);}
+function announceCoop2(){toast('🌌 우리가 함께 100만 점을 모았어요! 모두에게 은하수 판·효과가 열렸어요',4200);try{celebrate();}catch(e){}}
 function coopReached(){return store.get('coopDone',false)||(coopTotal()!==null&&coopTotal()>=COOP_GOAL);}
 function announceCoop(){toast('🌈 우리가 함께 50만 점을 모았어요! 모두에게 특별 판·효과가 열렸어요',4200);try{celebrate();}catch(e){}}
 function checkCoop(j){
@@ -992,6 +1034,8 @@ function checkCoop(j){
   if(typeof t==='number'){
     const was=store.get('coopDone',false);
     if(t>=COOP_GOAL){store.set('coopDone',true);if(!was)setTimeout(announceCoop,900);}
+    const was2=store.get('coop2Done',false);
+    if(t>=COOP2_GOAL){store.set('coop2Done',true);if(!was2)setTimeout(announceCoop2,was?900:5400);}
   }
   if(me&&!store.get('coopIntroSeen',false)&&!coopReached()){
     store.set('coopIntroSeen',true);
@@ -1049,6 +1093,15 @@ function showSkins(){
    if(on){cst.textContent='열렸어요! 눌러서 써 보세요';}
    else{const t=coopTotal();cst.textContent=t!=null?`지금 ${t.toLocaleString('ko-KR')} / 500,000점`:'50만 점에 열려요';}
    bcs.onclick=()=>{if(!coopReached()){toast('다 같이 50만 점을 모으면 열려요');return;}store.set(skinKey('skin'),'together');applySkin('together');showSkins();};
+   {const on2=coop2Reached(),c2=document.getElementById('coop2Card'),s2=document.getElementById('coop2CardState');
+    c2.classList.toggle('locked',!on2);
+    const b2s=document.getElementById('bCoop2Skin'),b2f=document.getElementById('bCoop2Fx');
+    b2s.classList.toggle('on',store.get(skinKey('skin'),'')==='galaxy');
+    b2f.classList.toggle('on',store.get(skinKey('fx'),'bounce')==='million');
+    if(on2)s2.textContent='열렸어요! 눌러서 써 보세요';
+    else{const t=coopTotal();s2.textContent=t!=null?`지금 ${t.toLocaleString('ko-KR')} / 1,000,000점`:'100만 점에 열려요';}
+    b2s.onclick=()=>{if(!coop2Reached()){toast('다 같이 100만 점을 모으면 열려요');return;}store.set(skinKey('skin'),'galaxy');applySkin('galaxy');showSkins();};
+    b2f.onclick=()=>{if(!coop2Reached()){toast('다 같이 100만 점을 모으면 열려요');return;}store.set(skinKey('fx'),'million');showSkins();setTimeout(()=>playFx('million',1),150);};}
    bcf.onclick=()=>{if(!coopReached()){toast('다 같이 50만 점을 모으면 열려요');return;}store.set(skinKey('fx'),'together');showSkins();setTimeout(()=>playFx('together',1),150);};}
   open('ovSkin');
 }
@@ -1358,7 +1411,7 @@ function renderCoop(j){
   const total=num(j.allTotal)??sum('total');
   const players=num(j.players)??list.length;
   const fmt=n=>Number(n||0).toLocaleString('ko-KR');
-  const GOAL=500000, reached=total>=GOAL, pct=Math.min(100,Math.floor(total/GOAL*100));
+  const second=total>=500000, GOAL=second?1000000:500000, reached=total>=GOAL, pct=Math.min(100,Math.floor(total/GOAL*100));
   el.innerHTML=`<div class="ttl">🤝 우리가 함께 만든 기록</div>
     <div class="nums">
       <div><b>${fmt(games)}</b><em>문제</em><span>다 같이 푼 문제</span></div>
@@ -1366,7 +1419,7 @@ function renderCoop(j){
       <div><b>${fmt(players)}</b><em>명</em><span>함께한 친구</span></div>
     </div>
     <div class="gbar"><span style="width:${pct}%"></span></div>
-    <div class="gmsg">${reached?'🌈 50만 점 달성! 모두 특별 판·효과 사용 가능':`🌈 50만 점까지 ${pct}% · 달성하면 모두 특별 보상`}</div>`;
+    <div class="gmsg">${second?(reached?'🌌 100만 점 달성! 모두 은하수 판·효과 사용 가능':`🌌 100만 점까지 ${pct}% · 달성하면 모두 은하수 판·효과`):`🌈 50만 점까지 ${pct}% · 달성하면 모두 특별 보상`}</div>`;
 }
 document.getElementById('tabWeek').onclick=()=>{rankTab='week';drawBoard();};
 document.getElementById('tabDay').onclick=()=>{rankTab='day';drawBoard();};
