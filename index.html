@@ -619,14 +619,35 @@ body.app .overlay.page .card{position:relative;padding-top:20px}
 body.app .overlay.page .pgback{position:absolute;top:14px;right:16px;margin:0;border:0;background:#1C2335;color:#E9EDF7;border-radius:999px;padding:8px 14px;font-family:inherit;font-weight:700;font-size:.95rem;transition:transform .35s var(--spring);z-index:2}
 body.app .overlay.page .pgback:active{transform:scale(.9);transition-duration:.08s}
 body.app .overlay.page h2{margin-top:2px;padding-right:110px}
+
+/* 게임 화면 윗부분 줄이기: 누적 점수 + 3콤보·단계 한 줄 */
+.hd-total{display:none}
+body.at-game header h1{display:none}
+body.at-game .hd-total{display:block;color:#E9EDF7;font-family:"Pretendard",var(--b-font),sans-serif;font-size:1.05rem}
+body.at-game .hd-total b{font-family:var(--t-font);font-weight:400;font-size:1.5rem;color:#45C486;margin:0 2px}
+body.at-game .scorebar,body.at-game .medalbar,body.at-game .inforow{display:none!important}
+body.at-game .last5 .wb{display:none}
+body.at-game .last5{gap:4px;margin:10px 0 6px;flex-wrap:nowrap;font-size:.85rem}
+body.at-game .last5 .c{min-width:32px}
+body.at-game .last5 .inf{margin-left:8px;white-space:nowrap;opacity:.85}
+@media (max-width:380px){body.at-game .last5{font-size:.78rem}body.at-game .last5 .c{min-width:28px;font-size:.85rem}body.at-game .last5 .inf{margin-left:5px}}
+.last5 .inf{display:none}
+body.at-game .last5 .inf{display:inline}
+
+/* 큰 카드: 제목 옆 등급 (제목과 같은 높이) */
+.mh-head{display:flex;align-items:stretch;justify-content:space-between;margin:2px 0 4px}
+.mh-head .mh-title{margin:0}
+.mh-rank{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:72px}
+.mh-ic{font-size:2.1rem;line-height:1}
+.mh-rank .mh-tier{background:none;padding:0;border-radius:0;color:#fff;font-weight:800;font-size:.9rem;line-height:1.1;white-space:nowrap}
+#scMenu.enter .mh-rank{animation:badgeBounce .6s var(--spring) .35s both}
 </style>
 </head>
 <body>
 <section id="scMenu" class="screen" aria-label="메뉴">
   <div class="mn-top"><p class="mn-hi"><b id="mName">닉네임</b>님, 반가워요.</p><button id="mLogout" class="mn-out">로그아웃</button></div>
   <div class="mn-hero">
-    <div class="mh-row"><span class="mh-date" id="mDate"></span><span class="mh-tier" id="mTier">새내기</span></div>
-    <h2 class="mh-title">꼬들</h2>
+    <div class="mh-head"><h2 class="mh-title">꼬들</h2><div class="mh-rank"><span class="mh-ic" id="mTierIc">🐣</span><span class="mh-tier" id="mTier">새내기</span></div></div>
     <p class="mh-desc" id="mDesc">자음과 모음으로 숨은 낱말을 맞혀요.</p>
     <div class="mh-goal" id="mGoal" hidden><div class="mg-row"><span id="mGoalLbl">함께하는 목표</span><b id="mGoalTxt"></b></div><div class="mg-bar"><i id="mGoalBar"></i></div></div>
     <button class="mh-btn press" id="mPlay">꼬들 하기</button>
@@ -643,6 +664,7 @@ body.app .overlay.page h2{margin-top:2px;padding-right:110px}
 </section>
 <header>
   <h1>꼬들</h1>
+  <div class="hd-total" id="hdTotal">누적 <b>0</b>점</div>
   <div class="tools">
     <button id="bBack" class="backbtn">← 메뉴</button>
     <button id="bRank">순위</button>
@@ -919,6 +941,7 @@ function newGame(){
 function drawAll(){board.style.setProperty('--n',LEN);renderBoard();renderKbd();renderPreview();fit();}
 function renderBoard(flipRow=-1){
   document.getElementById('info').textContent=done?'문제 끝':`${LV}단계 · 기회 ${MAX-rows.length}번 · 맞히면 ${pointsFor(rows.length+1)}점`;
+  {const im=document.getElementById('infoMini');if(im)im.textContent=done?'문제 끝':`${LV}단계 · 기회 ${MAX-rows.length}번 · ${pointsFor(rows.length+1)}점`;}
   board.innerHTML='';
   for(let r=0;r<MAX;r++){
     const row=document.createElement('div');row.className='row';
@@ -1367,6 +1390,7 @@ function checkTier(){
   }
 }
 function updateMe(){
+  {const ht=document.getElementById('hdTotal');if(ht)ht.innerHTML=`누적 <b>${Number(shownTotal()||0).toLocaleString('ko-KR')}</b>점`;}
   renderLast5();
   checkUnlock();
   checkTier();
@@ -1515,7 +1539,7 @@ function renderLast5(){
   const el=document.getElementById('last5');if(!el)return;
   if(!me&&SCRIPT_URL){el.hidden=true;return;}
   const L=s5||localLast5();
-  let h='<span class="lab">최근 3판</span>';
+  let h='<span class="lab">3콤보</span>';
   for(let i=0;i<RN;i++){
     const v=L[i];
     if(v===undefined){h+='<span class="c empty">-</span>';continue;}
@@ -1525,7 +1549,7 @@ function renderLast5(){
   h+=`<span class="sum">= <b>${sum5(L)}</b>점</span>`;
   if(wBest!==null)h+=`<span class="wb">이번 주 최고점 <b>${Math.max(wBest,sum5(L))}</b></span>`;
   if(dayN!==null)h+=`<span class="wb">오늘 <b>${dayN}</b>/10판 <b>${daySum}</b>점</span>`;
-  el.innerHTML=h;el.hidden=false;
+  h+=`<span class="inf" id="infoMini">${document.getElementById('info').textContent.replace('맞히면 ','')}</span>`;el.innerHTML=h;el.hidden=false;
 }
 function renderMedals(m){
   const el=document.getElementById('medalBar');if(!el)return;
@@ -1717,12 +1741,13 @@ function setScreen(name){
   const el=name==='menu'?document.getElementById('scMenu'):name==='game'?document.querySelector('main'):null;
   if(el){el.classList.remove('enter');void el.offsetWidth;el.classList.add('enter');}
   if(name==='menu')renderMenu();
+  if(name==='game'){requestAnimationFrame(()=>{try{fit();}catch(e){}});setTimeout(()=>{try{fit();}catch(e){}},350);}
   if(name==='login'){closeAll();askName();}
 }
 function renderMenu(){
   const tot=shownTotal(), T=TIERS[tierOf(tot)], d=new Date();
   document.getElementById('mName').textContent=me||'친구';
-  document.getElementById('mDate').textContent=`${d.getMonth()+1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`;
+  document.getElementById('mTierIc').textContent=T.i;
   document.getElementById('mTier').textContent=T.n;
   document.getElementById('mTotal').textContent=`${Number(tot||0).toLocaleString('ko-KR')}점`;
   const R=(typeof srvRec!=='undefined'&&srvRec)||rec;
