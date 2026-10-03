@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&family=Nanum+Brush+Script&family=Song+Myung&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 :root{
   --paper:#F6F8F3; --ink:#1F2A24; --line:#7FB59A; --line-soft:#CFE3D6;
@@ -476,12 +477,174 @@ header .tools button{white-space:nowrap}
 .million-card button{border:0;border-radius:10px;padding:10px 14px;font-weight:700;font-family:var(--b-font);cursor:pointer}
 .million-card .mc-use{background:linear-gradient(90deg,#E28BEA,#9A4FD6);color:#fff}
 .million-card .mc-close{background:rgba(255,255,255,.85);color:#2A2470}
+
+/* ── 앱 화면 구성 (로그인 · 메뉴 · 게임) ── */
+@keyframes scIn{from{transform:translateX(36px);opacity:0}to{transform:none;opacity:1}}
+@keyframes pgIn{from{transform:translateX(100%)}to{transform:none}}
+.screen{display:none}
+body.app header .tools button{display:none}
+body.app header .tools #bBack{display:inline-flex}
+#bBack{display:none}
+body.at-menu header,body.at-menu .scorebar,body.at-menu .last5,body.at-menu .medalbar,body.at-menu .inforow,body.at-menu main,body.at-menu #kbd{display:none!important}
+body.at-login header,body.at-login .scorebar,body.at-login .last5,body.at-login .medalbar,body.at-login .inforow,body.at-login main,body.at-login #kbd{visibility:hidden}
+body.at-menu #scMenu{display:flex}
+.enter{animation:scIn .32s cubic-bezier(.2,.9,.3,1.2) both}
+/* 메뉴 (꼬맨틀 스타일) */
+body.at-menu,body.at-login{background:#141A2A!important;background-image:none!important}
+body.at-menu::before,body.at-menu::after,body.at-login::before,body.at-login::after{display:none!important}
+#scMenu{flex-direction:column;gap:14px;width:100%;max-width:560px;margin:0 auto;padding:22px 18px 28px;box-sizing:border-box;height:100%;overflow-y:auto;font-family:"Pretendard",var(--b-font),sans-serif;color:#E9EDF7}
+.mn-top{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 6px}
+.mn-hi{margin:0;font-size:1.15rem;color:#E9EDF7}.mn-hi b{font-weight:800}
+.mn-out{border:0;background:transparent;color:#9AA3B8;font-family:inherit;font-size:1rem;cursor:pointer}
+.mn-hero{background:#25325A;border-radius:28px;padding:22px 22px 20px}
+.mh-row{display:flex;align-items:center;justify-content:space-between}
+.mh-date{color:#B7C0D8;font-size:1rem}
+.mh-tier{background:#B8650F;color:#fff;font-weight:800;font-size:.95rem;padding:6px 14px;border-radius:999px}
+.mh-title{margin:12px 0 10px;font-family:var(--t-font);font-weight:400;font-size:3.4rem;line-height:1;color:#fff;letter-spacing:.02em}
+.mh-bars{display:flex;gap:6px;margin:0 0 14px}.mh-bars i{width:48px;height:11px;border-radius:999px;display:block}
+.mh-bars .g{background:#45C486}.mh-bars .y{background:#F2A93B}.mh-bars .k{background:#8E9AB0}
+.mh-desc{margin:0 0 16px;color:#C9D1E6;font-size:1.05rem;line-height:1.5}
+.mh-btn{width:100%;border:0;border-radius:999px;background:#fff;color:#1E2A4A;font-family:inherit;font-weight:800;font-size:1.15rem;padding:15px 0;cursor:pointer}
+.mn-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mtile{display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:16px;min-height:150px;padding:22px 20px;border:0;border-radius:28px;background:#1C2335;color:#E9EDF7;font-family:inherit;text-align:left;cursor:pointer;transition:transform .14s cubic-bezier(.3,1.6,.5,1)}
+.mtile b{font-family:var(--t-font);font-weight:400;font-size:2rem;line-height:1.05;color:#E9EDF7}
+.mtile small{font-size:.95rem;color:#9AA3B8;line-height:1.45}
+.mtile .t-org{color:#F2A93B}.mtile .t-grn{color:#45C486}.mtile .t-blu{color:#6BB6F0}.mtile .t-num{color:#fff}
+.mtile.wide{grid-column:1/-1;min-height:110px}
+.press:active{transform:scale(.96)}
+.mn-coop:empty{display:none}
+.mn-coop{border-radius:24px!important;background:#1C2335!important;border:0!important;color:#E9EDF7!important}
+.mn-coop *{color:inherit}
+.mn-crowd{margin:0;text-align:center;font-size:.85rem;color:#7E879C}
+/* 순위표·보상·내 기록·방법·건의함: 한 화면 페이지로 */
+body.app .overlay.page.open{display:block;padding:0;background:var(--paper);overflow-y:auto;animation:pgIn .32s cubic-bezier(.2,.9,.3,1) both}
+body.app .overlay.page .card{max-width:560px;width:100%;margin:0 auto;min-height:100%;border-radius:0;box-shadow:none;box-sizing:border-box;padding-top:8px}
+.pgback{display:none}
+body.app .overlay.page .pgback{display:inline-block;margin:0 0 6px;border:0;background:transparent;color:var(--ink);font-family:var(--b-font);font-size:1rem;font-weight:700;padding:6px 2px;cursor:pointer}
+/* 로그인 화면 */
+.lg-hero{display:none;text-align:center;margin:6px 0 14px}
+.lg-logo{font-family:var(--t-font);font-size:3.4rem;color:#fff;line-height:1.1}
+.lg-hero p{margin:4px 0 0;opacity:.8}
+body.at-login #ovName{display:flex;background:#141A2A}
+body.at-login #ovName .card{background:#1C2335;color:#E9EDF7;border:0;border-radius:28px;font-family:'Pretendard',var(--b-font),sans-serif}
+body.at-login #ovName .card .note{color:#9AA3B8}
+body.at-login #ovName input{background:#141A2A;color:#fff;border-color:#33405F;border-radius:14px}
+body.at-login #ovName .main{background:#fff;color:#1E2A4A;border-radius:999px;width:100%;font-weight:800}
+body.at-login #ovName .actions{display:block}
+body.at-login #ovName .lg-hero{display:block}
+body.at-login #ovName h2{font-size:1.1rem}
+
+/* 통통 튀는 느낌 */
+:root{--spring:cubic-bezier(.3,1.7,.5,1)}
+@keyframes popIn{0%{transform:translateY(18px) scale(.94);opacity:0}60%{transform:translateY(-4px) scale(1.02);opacity:1}100%{transform:none;opacity:1}}
+@keyframes badgeBounce{0%{transform:scale(.4);opacity:0}55%{transform:scale(1.18)}75%{transform:scale(.95)}100%{transform:scale(1);opacity:1}}
+#scMenu.enter .mn-top,#scMenu.enter .mn-hero,#scMenu.enter .mtile,#scMenu.enter .mn-coop,#scMenu.enter .mn-crowd{animation:popIn .55s var(--spring) both}
+#scMenu.enter .mn-hero{animation-delay:.05s}
+#scMenu.enter .mtile:nth-child(1){animation-delay:.12s}
+#scMenu.enter .mtile:nth-child(2){animation-delay:.18s}
+#scMenu.enter .mtile:nth-child(3){animation-delay:.24s}
+#scMenu.enter .mtile:nth-child(4){animation-delay:.30s}
+#scMenu.enter .mtile:nth-child(5){animation-delay:.36s}
+#scMenu.enter .mn-coop{animation-delay:.42s}
+#scMenu.enter .mn-crowd{animation-delay:.48s}
+#scMenu.enter .mh-tier{animation:badgeBounce .6s var(--spring) .35s both}
+#scMenu.enter{animation:none}
+.mtile,.mh-btn,.mn-out{transition:transform .35s var(--spring)}
+.mtile:active,.mh-btn:active{transform:scale(.93);transition-duration:.08s}
+.mn-out:active{transform:scale(.9);transition-duration:.08s}
+body.at-login #ovName .card{animation:popIn .55s var(--spring) both}
+body.at-login #ovName .lg-logo{animation:badgeBounce .7s var(--spring) .15s both}
+
+.guestbtn{display:none}
+body.at-login #ovName .guestbtn{display:block;width:100%;margin-top:10px;border:1px solid #33405F;background:transparent;color:#9AA3B8;border-radius:999px;padding:12px 0;font-family:inherit;font-size:.95rem;cursor:pointer}
+
+/* ── 메뉴에서 들어가는 화면도 메뉴와 같은 모습으로 ── */
+body.app .overlay.page{--paper:#141A2A;--ink:#E9EDF7;--line:#33405F;--line-soft:#232C44;--panel:#1C2335;--key:#232C44;--key-ink:#E9EDF7;--ok:#45C486;--near:#F2A93B;--miss:#5A6378;--shade:rgba(0,0,0,.5)}
+body.app .overlay.page.open{background:#141A2A!important;color:#E9EDF7;font-family:"Pretendard",var(--b-font),sans-serif}
+body.app .overlay.page .card{background:transparent!important;color:#E9EDF7;border:0!important;padding:18px 18px 28px;font-family:inherit}
+body.app .overlay.page .card::before,body.app .overlay.page .card::after{display:none!important}
+body.app .overlay.page h2{font-family:var(--t-font);font-weight:400;font-size:2.2rem;color:#fff;margin:6px 0 14px}
+body.app .overlay.page h3,body.app .overlay.page label{color:#E9EDF7}
+body.app .overlay.page .note,body.app .overlay.page p{color:#9AA3B8}
+body.app .overlay.page .pgback{color:#9AA3B8;font-family:inherit;font-weight:600;font-size:1rem}
+/* 버튼 */
+body.app .overlay.page .actions button,body.app .overlay.page button.main{border-radius:999px;font-family:inherit;font-weight:800}
+body.app .overlay.page .actions button{background:#1C2335;color:#E9EDF7;border:0;padding:12px 18px}
+body.app .overlay.page .actions button.main,body.app .overlay.page button.main{background:#fff!important;color:#1E2A4A!important;border:0}
+/* 탭 */
+body.app .overlay.page .rtabs{gap:6px}
+body.app .overlay.page .rtabs button{background:#1C2335;color:#9AA3B8;border:0;border-radius:999px;font-family:inherit;font-weight:700}
+body.app .overlay.page .rtabs button.on{background:#fff;color:#1E2A4A}
+/* 순위표 */
+body.app .overlay.page .lb{background:#1C2335;border-radius:22px;overflow:hidden;border-collapse:separate;border-spacing:0}
+body.app .overlay.page .lb th{color:#7E879C;background:transparent;border-bottom:1px solid #2A334B}
+body.app .overlay.page .lb td{border-bottom:1px solid #232C44;color:#E9EDF7}
+body.app .overlay.page .lb td.pts{color:#45C486}
+body.app .overlay.page .lb tr.me td{background:rgba(255,255,255,.07)}
+body.app .overlay.page .lb tr.top2 td{background:rgba(200,210,230,.12)}
+body.app .overlay.page .lb tr.top3 td{background:rgba(190,130,80,.12)}
+body.app .overlay.page .coopbanner{background:#1C2335!important;border:0!important;border-radius:22px;color:#E9EDF7!important}
+body.app .overlay.page .coopbanner *{color:inherit}
+/* 보상 */
+body.app .overlay.page .skin{background:#1C2335;border:2px solid transparent;border-radius:18px;color:#E9EDF7}
+body.app .overlay.page .skin.on{border-color:#45C486}
+body.app .overlay.page .skin small{color:#9AA3B8}
+body.app .overlay.page .skin.lock{opacity:.55}
+/* 내 기록 */
+body.app .overlay.page .stats>div,body.app .overlay.page .stat{background:#1C2335;border:0;border-radius:18px}
+body.app .overlay.page .tierline{background:#1C2335;color:#E9EDF7;border-radius:18px}
+body.app .overlay.page table.hist td{border-bottom:1px solid #232C44;color:#E9EDF7}
+/* 하는 방법·건의함 */
+body.app .overlay.page table.rule td{border-bottom:1px solid #232C44;color:#E9EDF7}
+body.app .overlay.page input,body.app .overlay.page textarea,body.app .overlay.page select{background:#1C2335;color:#fff;border:1px solid #33405F;border-radius:14px}
+
+body.app .overlay.page .lb tr.royalrow td{color:#4A2E00!important}
+body.app .overlay.page .lb tr.royalrow td.pts{color:#8A1C12!important}
+/* 게임 화면 윗줄도 메뉴와 같은 모습 */
+body.at-game header{background:#141A2A;border-bottom:0!important;padding:10px 14px;margin:0;font-family:"Pretendard",var(--b-font),sans-serif}
+body.at-game header h1{color:#fff!important;-webkit-text-fill-color:#fff;background:none!important;animation:none!important;font-size:1.6rem}
+body.at-game header #bBack{border:0;background:#1C2335;color:#E9EDF7;border-radius:999px;padding:8px 14px;font-family:inherit;font-weight:700;font-size:.95rem;transition:transform .35s var(--spring)}
+body.at-game header #bBack:active{transform:scale(.9);transition-duration:.08s}
+body.at-game header{order:-1}
+
+/* 함께하는 목표 (큰 카드 안) */
+.mh-goal{margin:0 0 16px}
+.mh-goal[hidden]{display:none}
+.mg-row{display:flex;justify-content:space-between;align-items:baseline;font-size:.9rem;color:#B7C0D8;margin-bottom:6px}
+.mg-row b{color:#fff;font-weight:800}
+.mg-bar{height:10px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
+.mg-bar i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#FF6FB5,#FFC24B,#7CF2A6,#5AC8FF,#B18CFF);transition:width .9s var(--spring)}
+/* 메뉴로 돌아가는 버튼: 모든 화면 우측 상단 */
+body.app .overlay.page .card{position:relative;padding-top:20px}
+body.app .overlay.page .pgback{position:absolute;top:14px;right:16px;margin:0;border:0;background:#1C2335;color:#E9EDF7;border-radius:999px;padding:8px 14px;font-family:inherit;font-weight:700;font-size:.95rem;transition:transform .35s var(--spring);z-index:2}
+body.app .overlay.page .pgback:active{transform:scale(.9);transition-duration:.08s}
+body.app .overlay.page h2{margin-top:2px;padding-right:110px}
 </style>
 </head>
 <body>
+<section id="scMenu" class="screen" aria-label="메뉴">
+  <div class="mn-top"><p class="mn-hi"><b id="mName">닉네임</b>님, 반가워요.</p><button id="mLogout" class="mn-out">로그아웃</button></div>
+  <div class="mn-hero">
+    <div class="mh-row"><span class="mh-date" id="mDate"></span><span class="mh-tier" id="mTier">새내기</span></div>
+    <h2 class="mh-title">꼬들</h2>
+    <p class="mh-desc" id="mDesc">자음과 모음으로 숨은 낱말을 맞혀요.</p>
+    <div class="mh-goal" id="mGoal" hidden><div class="mg-row"><span id="mGoalLbl">함께하는 목표</span><b id="mGoalTxt"></b></div><div class="mg-bar"><i id="mGoalBar"></i></div></div>
+    <button class="mh-btn press" id="mPlay">꼬들 하기</button>
+  </div>
+  <div class="mn-grid">
+    <button class="mtile press" id="mRec"><b class="t-num" id="mTotal">0점</b><small id="mRecSub">내 기록 보기</small></button>
+    <button class="mtile press" id="mRank"><b class="t-org">순위표</b><small>3콤보 · 오늘의 10판 · 누적 순위 보기</small></button>
+    <button class="mtile press" id="mSkin"><b class="t-grn">보상</b><small>판과 정답 효과 꾸미기</small></button>
+    <button class="mtile press" id="mHelp"><b>하는 방법</b><small>색 힌트와 점수 규칙</small></button>
+    <button class="mtile press wide" id="mSuggest"><b class="t-blu">건의함</b><small>선생님께 하고 싶은 말 보내기</small></button>
+  </div>
+  <div class="mn-coop coopbanner" id="mCoop"></div>
+  <p class="mn-crowd" id="mCrowd"></p>
+</section>
 <header>
   <h1>꼬들</h1>
   <div class="tools">
+    <button id="bBack" class="backbtn">← 메뉴</button>
     <button id="bRank">순위</button>
     <button id="bSkin" aria-label="보상 꾸미기">🎨</button>
     <button id="bRec">내 기록</button>
@@ -505,7 +668,8 @@ header .tools button{white-space:nowrap}
 <div id="kbd"></div>
 <div id="toast" role="status"></div>
 
-<div class="overlay" id="ovHelp"><div class="card">
+<div class="overlay page" id="ovHelp"><div class="card">
+  <button class="pgback" data-close>← 메뉴</button>
   <h2>하는 방법</h2>
   <p>낱말을 자음과 모음으로 풀어 한 칸에 하나씩 넣어요. 낱말은 모두 자모 6칸이고, 기회는 10번이에요.</p>
   <div class="legend"><span style="background:var(--ok)">ㄱ</span> 자리까지 맞음</div>
@@ -530,7 +694,8 @@ header .tools button{white-space:nowrap}
   <div class="actions"><button class="main" data-close>시작하기</button></div>
 </div></div>
 
-<div class="overlay" id="ovSuggest"><div class="card">
+<div class="overlay page" id="ovSuggest"><div class="card">
+  <button class="pgback" data-close>← 메뉴</button>
   <h2>💬 건의 · 요청</h2>
   <p class="note">선생님께 전할 건의나 요청을 남겨 주세요. 닉네임과 함께 전달돼요.</p>
   <textarea id="sugText" rows="4" maxlength="300" placeholder="예: 낱말에 '무지개'도 넣어 주세요"></textarea>
@@ -538,7 +703,8 @@ header .tools button{white-space:nowrap}
   <div class="actions"><button class="main" id="bSugSend">보내기</button><button data-close>닫기</button></div>
 </div></div>
 
-<div class="overlay" id="ovRec"><div class="card">
+<div class="overlay page" id="ovRec"><div class="card">
+  <button class="pgback" data-close>← 메뉴</button>
   <h2>내 기록</h2>
   <div class="stat">
     <div><b id="rTotal">0</b>누적 점수</div>
@@ -556,7 +722,8 @@ header .tools button{white-space:nowrap}
   <div class="actions"><button id="bRestart">처음부터 다시 하기</button><button id="bRecSkin">꾸미기</button><button class="main" data-close>닫기</button></div>
 </div></div>
 
-<div class="overlay" id="ovSkin"><div class="card">
+<div class="overlay page" id="ovSkin"><div class="card">
+  <button class="pgback" data-close>← 메뉴</button>
   <h2>꾸미기</h2>
   <div class="royalcard" id="royalCard"><div><b>👑 1등 전용</b><small>어좌 판 · 옥새 자판 · 어명이오! 효과</small><small id="royalState">3콤보·오늘의 10판·누적 중 하나라도 1등이 되면 쓸 수 있어요</small></div><span class="royalcrown">👑</span></div>
   <div class="coopcard galaxycard" id="coop2Card"><div><b>🌌 다 같이 100만 보상</b><small>다 같이 100만 점을 모으면 모두에게 열려요</small><small id="coop2CardState"></small></div><div class="coopbtns"><button id="bCoop2Skin">판</button><button id="bCoop2Fx">효과</button></div></div>
@@ -599,6 +766,7 @@ header .tools button{white-space:nowrap}
 </div></div>
 
 <div class="overlay" id="ovName"><div class="card">
+  <div class="lg-hero"><div class="lg-logo">꼬들</div><p>자음·모음으로 숨은 낱말을 맞혀요</p></div>
   <h2>닉네임으로 들어가기</h2>
   <p class="note">처음이면 새로 만들어지고, 전에 쓴 닉네임이면 점수가 이어져요. 진짜 이름 대신 닉네임을 써 주세요.</p>
   <label for="nickInput">닉네임 (한글·영어·숫자 2~10자)</label>
@@ -610,7 +778,8 @@ header .tools button{white-space:nowrap}
   <div class="actions"><button class="main" id="bNameOk">들어가기</button></div>
 </div></div>
 
-<div class="overlay" id="ovRank"><div class="card">
+<div class="overlay page" id="ovRank"><div class="card">
+  <button class="pgback" data-close>← 메뉴</button>
   <h2>순위 (50위까지)</h2>
   <div class="coopbanner" id="coopBanner"></div>
   <div class="rtabs"><button id="tabWeek" class="on">3콤보 최고점</button><button id="tabDay">오늘의 10판</button><button id="tabAll">누적 (노력왕)</button></div>
@@ -785,7 +954,7 @@ function score(g){
 function submit(){
   if(done)return;
   if(!ticket)getTicket();
-  if(SCRIPT_URL&&!me){askName();return;}
+  if(SCRIPT_URL&&!me&&!window.__guest){askName();return;}
   if(cur.length<LEN){shake();toast(`${LEN}칸을 모두 채워 주세요.`);return;}
   if(!compose(cur).valid){shake();toast('글자가 되지 않는 조합이에요.');return;}
   if(strict&&!parseWords(wordText).some(x=>x.j.join('')===cur.join(''))){shake();toast('목록에 없는 낱말이에요.');return;}
@@ -1537,10 +1706,61 @@ if(SCRIPT_URL){
   if(pending)sendPending().then(()=>{if(!pending)toast('밀린 점수를 보냈어요.');});
 }
 if(!restoreGame())newGame();else drawAll();
-if(!store.get('seenHelp',false)){open('ovHelp');store.set('seenHelp',true);}
-else if(SCRIPT_URL&&!me)askName();
-document.querySelector('#ovHelp [data-close]').addEventListener('click',()=>{if(SCRIPT_URL&&!me)setTimeout(askName,50);});
+if(!store.get('seenHelp',false)&&me){setTimeout(()=>open('ovHelp'),400);store.set('seenHelp',true);}
+document.querySelector('#ovHelp [data-close]').addEventListener('click',()=>{if(SCRIPT_URL&&!me)setTimeout(()=>setScreen('login'),50);});
 
+
+/* ── 화면 이동: 로그인 → 메뉴 → 게임 ── */
+function setScreen(name){
+  document.body.classList.remove('at-login','at-menu','at-game');
+  document.body.classList.add('app','at-'+name);
+  const el=name==='menu'?document.getElementById('scMenu'):name==='game'?document.querySelector('main'):null;
+  if(el){el.classList.remove('enter');void el.offsetWidth;el.classList.add('enter');}
+  if(name==='menu')renderMenu();
+  if(name==='login'){closeAll();askName();}
+}
+function renderMenu(){
+  const tot=shownTotal(), T=TIERS[tierOf(tot)], d=new Date();
+  document.getElementById('mName').textContent=me||'친구';
+  document.getElementById('mDate').textContent=`${d.getMonth()+1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`;
+  document.getElementById('mTier').textContent=T.n;
+  document.getElementById('mTotal').textContent=`${Number(tot||0).toLocaleString('ko-KR')}점`;
+  const R=(typeof srvRec!=='undefined'&&srvRec)||rec;
+  document.getElementById('mRecSub').textContent=`내 기록 보기 · ${Number(R.games||0).toLocaleString('ko-KR')}판 도전`;
+  const lb=lastBoard&&lastBoard.me, parts=[];
+  if(typeof dayN!=='undefined'&&dayN!==null)parts.push(`오늘 ${dayN}/10판 ${daySum}점`);
+  if(lb){if(lb.weekBestRank>=1&&lb.weekBestRank<=3)parts.push(`3콤보 ${lb.weekBestRank}등`);if(lb.todayRank>=1&&lb.todayRank<=3)parts.push(`오늘의 10판 ${lb.todayRank}등`);if(lb.rank>=1&&lb.rank<=3)parts.push(`누적 ${lb.rank}등`);}
+  document.getElementById('mDesc').textContent=parts.length?parts.join(' · '):'자음과 모음으로 숨은 낱말을 맞혀요.';
+  try{if(lastBoard)renderCoop(lastBoard);}catch(e){}
+  {const j=lastBoard, g=document.getElementById('mGoal');
+   const t=j&&typeof j.allTotal==='number'?j.allTotal:(typeof coopTotal==='function'?coopTotal():null);
+   if(t!=null){const second=t>=500000, G=second?1000000:500000, pct=Math.min(100,Math.floor(t/G*100));
+     document.getElementById('mGoalLbl').textContent=second?'다 같이 100만 점 목표':'다 같이 50만 점 목표';
+     document.getElementById('mGoalTxt').textContent=t>=G?'달성!':`${pct}% · ${Number(t).toLocaleString('ko-KR')}점`;
+     document.getElementById('mGoalBar').style.width=pct+'%';g.hidden=false;}}
+  const cb=document.getElementById('coopBanner');document.getElementById('mCoop').innerHTML=cb?cb.innerHTML.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]\uFE0F?/gu,'').trim():'';
+  document.getElementById('mCrowd').textContent=document.getElementById('crowd').textContent.replace(/\s+/g,' ').trim();
+}
+document.getElementById('mPlay').onclick=()=>setScreen('game');
+document.getElementById('bBack').onclick=()=>setScreen('menu');
+document.getElementById('mRank').onclick=()=>showRank();
+document.getElementById('mSkin').onclick=()=>document.getElementById('bSkin').click();
+document.getElementById('mRec').onclick=()=>document.getElementById('bRec').click();
+document.getElementById('mHelp').onclick=()=>open('ovHelp');
+document.getElementById('mSuggest').onclick=()=>document.getElementById('bSuggest').click();
+document.getElementById('mLogout').onclick=()=>{
+  if(!confirm('로그아웃할까요? 다음에 들어올 때 닉네임과 비밀번호를 다시 입력해요.'))return;
+  store.set('name','');store.set('pin','');location.reload();
+};
+/* 로그인 성공하면 메뉴로 */
+{const orig=doJoin;
+ const wrapped=async()=>{await orig();if(me&&pin&&document.body.classList.contains('at-login'))setScreen('menu');else if(document.body.classList.contains('at-menu'))renderMenu();};
+ document.getElementById('bNameOk').onclick=wrapped;
+ const pi=document.getElementById('pinInput');const pc=pi.cloneNode(true);pi.replaceWith(pc);
+ pc.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();wrapped();}});}
+/* 순위표를 불러오면 메뉴 정보도 새로 */
+setInterval(()=>{if(document.body.classList.contains('at-menu'))renderMenu();},3000);
+setScreen(SCRIPT_URL&&!me?'login':'menu');
 })();
 </script>
 </body>
