@@ -655,9 +655,8 @@ body.at-game .last5 .inf{display:inline}
   <div class="mn-grid">
     <button class="mtile press" id="mRec"><b class="t-num" id="mTotal">0점</b><small id="mRecSub">내 기록 보기</small></button>
     <button class="mtile press" id="mRank"><b class="t-org">순위표</b><small>3콤보 · 오늘의 10판 · 누적 순위 보기</small></button>
-    <button class="mtile press" id="mSkin"><b class="t-grn">보상</b><small>판과 정답 효과 꾸미기</small></button>
+    <button class="mtile press" id="mSkin"><b class="t-grn">꾸미기</b><small>판과 정답 효과 바꾸기</small></button>
     <button class="mtile press" id="mHelp"><b>하는 방법</b><small>색 힌트와 점수 규칙</small></button>
-    <button class="mtile press wide" id="mSuggest"><b class="t-blu">건의함</b><small>선생님께 하고 싶은 말 보내기</small></button>
   </div>
   <div class="mn-coop coopbanner" id="mCoop"></div>
   <p class="mn-crowd" id="mCrowd"></p>
@@ -1308,7 +1307,7 @@ function showSkins(){
   {/* 다 같이 50만 보상 판 */
    const on=coopReached(), b=document.createElement('button');
    b.className='skin coopitem'+(on?'':' lock')+(on&&cur==='together'?' on':'');
-   b.innerHTML=`<span class="sw"><i style="background:#FF6FB5"></i><i style="background:#7CF2A6"></i><i style="background:#5AC8FF"></i></span><b>${on?'🌈':'🔒'} 다 같이</b><small>${on?(cur==='together'?'사용 중':'누르면 바꿔요'):'다 같이 50만 점에 열려요'}</small>`;
+   b.innerHTML=`<span class="sw"><i style="background:#FF6FB5"></i><i style="background:#7CF2A6"></i><i style="background:#5AC8FF"></i></span><b>${on?'🌈':'🔒'} 50만 꾸미기</b><small>${on?(cur==='together'?'사용 중':'누르면 바꿔요'):'다 같이 50만 점에 열려요'}</small>`;
    b.onclick=()=>{if(!coopReached()){toast('다 같이 50만 점을 모으면 열려요');return;}store.set(skinKey('skin'),'together');applySkin('together');showSkins();};
    box.appendChild(b);}
   const fcur=store.get(skinKey('fx'),'bounce'), fbox=document.getElementById('fxBox');fbox.innerHTML='';
@@ -1322,7 +1321,7 @@ function showSkins(){
   {/* 다 같이 50만 보상 효과 */
    const on=coopReached(), b=document.createElement('button');
    b.className='skin coopitem'+(on?'':' lock')+(on&&fcur==='together'?' on':'');
-   b.innerHTML=`<b>${on?'🌈':'🔒'} 다 같이</b><small>${on?(fcur==='together'?'사용 중':'누르면 바꿔요'):'다 같이 50만 점에 열려요'}</small>`;
+   b.innerHTML=`<b>${on?'🌈':'🔒'} 50만 꾸미기</b><small>${on?(fcur==='together'?'사용 중':'누르면 바꿔요'):'다 같이 50만 점에 열려요'}</small>`;
    b.onclick=()=>{if(!coopReached()){toast('다 같이 50만 점을 모으면 열려요');return;}store.set(skinKey('fx'),'together');showSkins();setTimeout(()=>playFx('together',1),150);};
    fbox.appendChild(b);}
   document.getElementById('skinMsg').textContent=`최고 누적 ${best}점`+nextSkinText()+(pvMode?'. 선생님 미리 보기 중: 잠긴 것도 눌러서 볼 수 있어요.':'. 한 번 열린 판과 효과는 점수가 줄어도 계속 쓸 수 있어요.');
@@ -1772,7 +1771,6 @@ document.getElementById('mRank').onclick=()=>showRank();
 document.getElementById('mSkin').onclick=()=>document.getElementById('bSkin').click();
 document.getElementById('mRec').onclick=()=>document.getElementById('bRec').click();
 document.getElementById('mHelp').onclick=()=>open('ovHelp');
-document.getElementById('mSuggest').onclick=()=>document.getElementById('bSuggest').click();
 document.getElementById('mLogout').onclick=()=>{
   if(!confirm('로그아웃할까요? 다음에 들어올 때 닉네임과 비밀번호를 다시 입력해요.'))return;
   store.set('name','');store.set('pin','');location.reload();
