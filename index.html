@@ -641,6 +641,88 @@ body.at-game .last5 .inf{display:inline}
 .mh-ic{font-size:2.1rem;line-height:1}
 .mh-rank .mh-tier{background:none;padding:0;border-radius:0;color:#fff;font-weight:800;font-size:.9rem;line-height:1.1;white-space:nowrap}
 #scMenu.enter .mh-rank{animation:badgeBounce .6s var(--spring) .35s both}
+
+/* ── 주간 함께 목표 (메뉴) ── */
+.mh-goal.wk{background:rgba(0,0,0,.18);border-radius:18px;padding:12px 14px}
+.wg1{display:flex;justify-content:space-between;align-items:baseline;font-size:.85rem;color:#B7C0D8}
+.wg1 b{color:#fff;font-size:.95rem;font-weight:800}
+.wg2{font-family:var(--t-font);font-size:1.7rem;color:#fff;margin:4px 0 8px;line-height:1}
+.wg2 small{font-family:"Pretendard",var(--b-font),sans-serif;font-size:.9rem;color:#9AA3B8;font-weight:600;margin-left:4px}
+.wgbar{position:relative;height:12px;border-radius:999px;background:rgba(255,255,255,.12)}
+.wgbar i{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:linear-gradient(90deg,#FF8A5B,#FFC24B);transition:width .9s var(--spring)}
+.wgbar .mk{position:absolute;top:-4px;bottom:-4px;width:2px;background:#fff;opacity:.85}
+.wgmk{position:relative;height:16px;font-size:.72rem;color:#9AA3B8;margin-top:4px}
+.wgmk span{position:absolute;white-space:nowrap;transform:translateX(calc(-100% + 2px));padding-right:4px}
+.wgmk span.r{right:0;transform:none;padding:0}
+.wgme{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:.85rem;color:#C9D1E6;line-height:1.4}
+.wgme .ms{width:24px;height:24px;border-radius:50%;border:2px dashed #55608A;flex:none}
+.wgme .ms.ok{border:2px solid #E8483C;background:radial-gradient(circle,rgba(255,106,92,.25),transparent 70%)}
+/* ── 꾸미기 탭 ── */
+.sktabs{margin:4px 0 12px!important}
+.skpane[hidden]{display:none!important}
+/* ── 도장판 ── */
+.stboard{background:#F4EBDD;border-radius:24px;padding:16px 12px 12px;box-shadow:inset 0 0 0 5px #E6D9C3;margin:6px 0 12px}
+.stbt{color:#5B4A35;font-weight:800;font-size:.9rem;margin:0 4px 12px;display:flex;justify-content:space-between}
+.stgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 4px}
+.stc{display:flex;flex-direction:column;align-items:center;gap:4px}
+.stc em{font-style:normal;font-size:.7rem;color:#7A6A52;font-weight:700;min-height:1em}
+.stc.now em{color:#C0392B}
+.sts{width:66px;height:66px;max-width:100%;aspect-ratio:1;border-radius:50%;border:2px dashed #CDBFA6;display:flex;align-items:center;justify-content:center;color:#B9A98C;font-family:var(--t-font);font-size:1.1rem}
+.sts.gift{border-color:#C9A24A;border-style:solid;color:#B98B2A;background:#FFF6E0}
+.sts.now{border-color:#E8483C;animation:stpulse 1.6s ease-in-out infinite}
+@keyframes stpulse{50%{transform:scale(1.06)}}
+.sts .st{width:60px;height:60px;border-radius:50%;border:3px solid #E8483C;color:#E8483C;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(var(--r,-10deg));line-height:1;background:radial-gradient(circle,rgba(232,72,60,.06),transparent 70%)}
+.sts .st b{font-family:var(--t-font);font-weight:400;font-size:1.2rem}
+.sts .st small{font-family:"Pretendard",var(--b-font),sans-serif;font-size:.58rem;font-weight:800;margin-top:2px}
+.strw{display:flex;flex-direction:column;gap:10px}
+.strw button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#1C2335;border:2px solid transparent;border-radius:20px;padding:12px 14px;color:#E9EDF7;font-family:inherit;cursor:pointer}
+.strw button.on{border-color:#45C486}
+.strw button.lock{opacity:.7}
+.strw .ic{width:44px;height:44px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;font-family:var(--t-font);font-size:1.2rem}
+.strw b{display:block;font-size:.98rem}
+.strw small{color:#9AA3B8;font-size:.8rem}
+.strw .tag{margin-left:auto;font-size:.78rem;font-weight:800;color:#F2A93B;white-space:nowrap}
+.strw .tag.ok{color:#45C486}
+.stnote{line-height:1.6}
+/* ── 도장 찍힘 축하 ── */
+.stamp-ov{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(10,14,26,.9);font-family:"Pretendard",var(--b-font),sans-serif;animation:mfade .3s ease both}
+.stamp-ov.out{animation:mfade .3s ease reverse both}
+.stamp-card{max-width:360px;width:100%;text-align:center;color:#E9EDF7}
+.stamp-card h3{font-family:var(--t-font);font-weight:400;font-size:2rem;margin:0 0 6px;color:#fff}
+.stamp-card p{margin:0;color:#C9D1E6;line-height:1.5}
+.stamp-card p b{color:#fff}
+.st-paper{margin:22px auto 18px;width:230px;height:230px;border-radius:26px;background:#F4EBDD;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:inset 0 0 0 6px #E6D9C3;animation:stshake .35s .38s both}
+.st-paper::before{content:"";position:absolute;inset:16px;border:2px dashed #CDBFA6;border-radius:50%}
+.st-big{width:164px;height:164px;border-radius:50%;border:7px solid #E8483C;color:#E8483C;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;animation:stslam .7s var(--spring) both}
+.st-big::after{content:"";position:absolute;inset:7px;border:2px solid #E8483C;border-radius:50%;opacity:.8}
+.st-big span{font-size:.9rem;font-weight:800}
+.st-big b{font-family:var(--t-font);font-weight:400;font-size:2.9rem;line-height:1.05}
+@keyframes stslam{0%{transform:rotate(-30deg) scale(2.4);opacity:0}55%{transform:rotate(-10deg) scale(.92);opacity:1}100%{transform:rotate(-12deg) scale(1)}}
+@keyframes stshake{0%,100%{transform:none}30%{transform:translateY(4px)}60%{transform:translateY(-2px)}}
+.st-dots{display:flex;gap:6px;justify-content:center;margin:10px 0 12px}
+.st-dots i{width:14px;height:14px;border-radius:50%;border:2px solid #55608A}
+.st-dots i.on{background:#E8483C;border-color:#E8483C}
+.st-next{font-size:.92rem}
+.st-next b{color:#F2A93B!important}
+.st-btns{display:flex;gap:8px;justify-content:center;margin-top:16px}
+.st-btns button{border:0;border-radius:999px;padding:12px 18px;font-weight:800;font-family:inherit;font-size:1rem;cursor:pointer}
+.st-btns .use{background:#fff;color:#1E2A4A}.st-btns .cl{background:#1C2335;color:#E9EDF7}
+/* ── '쾅! 도장' 효과 ── */
+.fx-kwang{position:fixed;left:50%;top:38%;z-index:52;pointer-events:none;width:170px;height:170px;border-radius:50%;border:8px solid #E8483C;color:#E8483C;background:rgba(255,248,240,.82);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--t-font);animation:kwangin 1.9s ease-out forwards}
+.fx-kwang::after{content:"";position:absolute;inset:8px;border:2px solid #E8483C;border-radius:50%;opacity:.8}
+.fx-kwang b{font-weight:400;font-size:3.4rem;line-height:1}
+.fx-kwang span{font-size:1.15rem}
+@keyframes kwangin{0%{transform:translate(-50%,-50%) rotate(-30deg) scale(2.6);opacity:0}22%{transform:translate(-50%,-50%) rotate(-10deg) scale(.9);opacity:1}32%{transform:translate(-50%,-50%) rotate(-12deg) scale(1)}82%{opacity:1}100%{transform:translate(-50%,-50%) rotate(-12deg) scale(1);opacity:0}}
+/* ── '인주와 낙관' 판 (도장 8개) ── */
+:root[data-skin="inju"]{--paper:#F4EBDD;--ink:#2B2118;--line:#C9473D;--line-soft:#E6D3C0;--panel:#FBF5EA;--key:#EFE3CC;--key-ink:#2B2118;--ok:#2E7D5B;--near:#D9A51E;--miss:#8C8274}
+:root[data-skin="inju"] body{background-color:#F4EBDD;background-image:radial-gradient(ellipse 18px 2px at 20% 30%,rgba(140,110,60,.18),transparent),radial-gradient(ellipse 14px 1.5px at 70% 60%,rgba(140,110,60,.15),transparent),radial-gradient(ellipse 22px 2px at 45% 85%,rgba(140,110,60,.12),transparent);background-size:90px 70px,110px 90px,130px 100px}
+:root[data-skin="inju"] .tile{border-radius:50%;border:2px dashed #D9B8A6;background:rgba(255,255,255,.35)}
+:root[data-skin="inju"] .tile.filled{border:3px solid #C9473D;color:#B03A2E;transform:rotate(-4deg)}
+:root[data-skin="inju"] .tile.ok,:root[data-skin="inju"] .tile.near,:root[data-skin="inju"] .tile.miss{border-color:transparent;color:#fff;transform:none}
+:root[data-skin="inju"] .tile.ok{background:var(--ok)}:root[data-skin="inju"] .tile.near{background:var(--near)}:root[data-skin="inju"] .tile.miss{background:var(--miss)}
+:root[data-skin="inju"] .key{position:relative;background:linear-gradient(160deg,#FFFBF2,#EFE3CC);border:1px solid #D7B9A4;border-radius:10px;box-shadow:0 2px 0 #D7B9A4,0 3px 6px rgba(120,50,30,.12);color:#3B2A18}
+:root[data-skin="inju"] .key.ok{background:var(--ok)!important;color:#fff}:root[data-skin="inju"] .key.near{background:var(--near)!important;color:#fff}:root[data-skin="inju"] .key.miss{background:#7A6E5E!important;color:#fff}
+:root[data-skin="inju"] .key.main{background:#C9473D!important;color:#fff;border-color:#A8352C;box-shadow:0 2px 0 #8E2A22}
 </style>
 </head>
 <body>
@@ -655,7 +737,7 @@ body.at-game .last5 .inf{display:inline}
   <div class="mn-grid">
     <button class="mtile press" id="mRec"><b class="t-num" id="mTotal">0점</b><small id="mRecSub">내 기록 보기</small></button>
     <button class="mtile press" id="mRank"><b class="t-org">순위표</b><small>3콤보 · 오늘의 10판 · 누적 순위 보기</small></button>
-    <button class="mtile press" id="mSkin"><b class="t-grn">꾸미기</b><small>판과 정답 효과 바꾸기</small></button>
+    <button class="mtile press" id="mSkin"><b class="t-grn">꾸미기</b><small>판 · 정답 효과 · 도장판</small></button>
     <button class="mtile press" id="mHelp"><b>하는 방법</b><small>색 힌트와 점수 규칙</small></button>
   </div>
   <div class="mn-coop coopbanner" id="mCoop"></div>
@@ -746,16 +828,25 @@ body.at-game .last5 .inf{display:inline}
 <div class="overlay page" id="ovSkin"><div class="card">
   <button class="pgback" data-close>← 메뉴</button>
   <h2>꾸미기</h2>
-  <div class="royalcard" id="royalCard"><div><b>👑 1등 전용</b><small>어좌 판 · 옥새 자판 · 어명이오! 효과</small><small id="royalState">3콤보·오늘의 10판·누적 중 하나라도 1등이 되면 쓸 수 있어요</small></div><span class="royalcrown">👑</span></div>
-  <div class="coopcard galaxycard" id="coop2Card"><div><b>🌌 다 같이 100만 보상</b><small>다 같이 100만 점을 모으면 모두에게 열려요</small><small id="coop2CardState"></small></div><div class="coopbtns"><button id="bCoop2Skin">판</button><button id="bCoop2Fx">효과</button></div></div>
-  <p class="note" id="skinMsg"></p>
-  <label style="margin-top:6px">판</label>
-  <div class="skins" id="skinBox"></div>
-  <label style="margin-top:6px">맞힐 때 효과</label>
-  <div class="skins" id="fxBox"></div>
-  <p class="note">빨리 맞힐수록 효과가 더 크게 나와요. 효과를 누르면 미리 볼 수 있어요.</p>
-  <div class="check"><input type="checkbox" id="cbFx"><label for="cbFx" style="margin:0;font-weight:400">맞힐 때 효과 보기</label></div>
-  <div class="check"><input type="checkbox" id="cbSafe"><label for="cbSafe" style="margin:0;font-weight:400">잘 보이는 색 (초록·노랑 구분이 어려울 때)</label></div>
+  <div class="rtabs sktabs" id="skTabs"><button data-t="skin" class="on">판</button><button data-t="fx">정답 효과</button><button data-t="stamp">도장판</button></div>
+  <div class="skpane" data-p="skin">
+    <div class="royalcard" id="royalCard"><div><b>👑 1등 전용</b><small>어좌 판 · 옥새 자판 · 어명이오! 효과</small><small id="royalState">3콤보·오늘의 10판·누적 중 하나라도 1등이 되면 쓸 수 있어요</small></div><span class="royalcrown">👑</span></div>
+    <p class="note" id="skinMsg"></p>
+    <div class="skins" id="skinBox"></div>
+    <div class="check"><input type="checkbox" id="cbSafe"><label for="cbSafe" style="margin:0;font-weight:400">잘 보이는 색 (초록·노랑 구분이 어려울 때)</label></div>
+  </div>
+  <div class="skpane" data-p="fx" hidden>
+    <p class="note" id="fxMsg">빨리 맞힐수록 효과가 더 크게 나와요. 효과를 누르면 미리 볼 수 있어요.</p>
+    <div class="skins" id="fxBox"></div>
+    <div class="check"><input type="checkbox" id="cbFx"><label for="cbFx" style="margin:0;font-weight:400">맞힐 때 효과 보기</label></div>
+  </div>
+  <div class="skpane" data-p="stamp" hidden>
+    <p class="note" id="stWeek"></p>
+    <div class="stboard"><div class="stbt"><span>함께 모은 도장</span><span id="stCount">0 / 8</span></div><div class="stgrid" id="stGrid"></div></div>
+    <div class="strw" id="stRw"></div>
+    <p class="note stnote">· 목표를 달성한 주에 정답을 1개 이상 낸 사람만 그 주 도장을 받아요.<br>· 초과 지점까지 넘기면 '초과' 도장이 찍혀요.<br>· 못 채운 주는 도장 없이 다음 주에 다시 도전해요.</p>
+  </div>
+  <div class="coopcard galaxycard" id="coop2Card" style="display:none"><div><b>🌌 다 같이 100만 보상</b><small id="coop2CardState"></small></div><div class="coopbtns"><button id="bCoop2Skin">판</button><button id="bCoop2Fx">효과</button></div></div>
   <div class="actions"><button id="bPv" style="font-size:.85rem">선생님 미리 보기</button><button class="main" data-close>닫기</button></div>
   <div id="pvBox" style="display:none;margin-top:10px">
     <input type="password" id="pvPw" inputmode="numeric" maxlength="8" autocomplete="off" placeholder="선생님 비밀번호">
@@ -1104,6 +1195,12 @@ function playFx(id,power){
     spawn(Math.round(46*k),(e,i)=>{e.textContent=i%4?'✦':'🌈';e.style.cssText=`left:${rnd(0,100)}vw;top:${rnd(-5,35)}vh;font-size:${rnd(16,30)}px;color:${tcols[i%tcols.length]};text-shadow:0 0 10px ${tcols[i%tcols.length]};animation:twinkle ${rnd(1.3,2.2)}s ease-in ${rnd(0,.5)}s forwards`;});
     return;
   }
+  if(id==='kwang'){
+    const w=document.createElement('div');w.className='fx-kwang';w.innerHTML=`<b>쾅!</b><span>${done&&answer?answer:'정답'}</span>`;document.body.appendChild(w);setTimeout(()=>w.remove(),2000);
+    setTimeout(()=>{try{board.animate([{transform:'translateY(0)'},{transform:'translateY(6px)'},{transform:'translateY(-3px)'},{transform:'translateY(0)'}],{duration:300});}catch(e){}
+      spawn(Math.round(14*k),(e,i)=>{const a=i/14*Math.PI*2+rnd(-.2,.2),r=rnd(110,190),d=rnd(8,18);e.style.cssText=`left:50vw;top:38vh;width:${d}px;height:${d}px;border-radius:50%;background:#E8483C;opacity:.85;--dx:${Math.cos(a)*r}px;--dy:${Math.sin(a)*r}px;animation:burst .9s ease-out forwards`;});},380);
+    return;
+  }
   const JM='ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎㅏㅑㅓㅕㅗㅛㅜㅠㅡㅣ';
   const hcols=['#2E7D6B','#C0392B','#1F4E8C','#E0A33A','#6B3FA0'];
   const hword=(t,cls,ms)=>{const w=document.createElement('div');w.className='fx-word '+(cls||'');w.textContent=t;document.body.appendChild(w);setTimeout(()=>w.remove(),ms||1800);};
@@ -1197,20 +1294,20 @@ function checkUnlock(){
   const opened=SKINS.filter(x=>best>=x.need).length;
   const prev=store.get(skinKey('opened'),null);
   store.set(skinKey('opened'),opened);
-  if(prev!==null&&opened>prev&&justFinished&&!['together','galaxy'].includes(store.get(skinKey('skin'),''))){
+  if(prev!==null&&opened>prev&&justFinished&&!['together','galaxy','inju'].includes(store.get(skinKey('skin'),''))){
     const sk=SKINS[opened-1];
     store.set(skinKey('skin'),sk.id);applySkin(sk.id);
     setTimeout(()=>{toast(`새 판이 열렸어요! '${sk.name}' 판으로 바뀌었어요`);celebrate();},400);
   }else{
     const cs=store.get(skinKey('skin'),null);
-    if(!['together','galaxy'].includes(cs)&&(cs===null||(prev!==null&&opened>prev)))store.set(skinKey('skin'),SKINS[Math.max(0,opened-1)].id);
+    if(!['together','galaxy','inju'].includes(cs)&&(cs===null||(prev!==null&&opened>prev)))store.set(skinKey('skin'),SKINS[Math.max(0,opened-1)].id);
     applySkin(store.get(skinKey('skin'),''));
   }
   const fxOpen=FXS.filter(x=>best>=x.need).length;
   const fxPrev=store.get(skinKey('fxOpened'),null);
   store.set(skinKey('fxOpened'),fxOpen);
   const cf=store.get(skinKey('fx'),null);
-  if(!['together','million'].includes(cf)){
+  if(!['together','million','kwang'].includes(cf)){
     if(fxPrev!==null&&fxOpen>fxPrev&&justFinished){
       const f=FXS[fxOpen-1];store.set(skinKey('fx'),f.id);
       setTimeout(()=>toast(`새 효과가 열렸어요! 이제 맞히면 '${f.name}' ${f.icon}`),opened>prev?2200:400);
@@ -1294,6 +1391,87 @@ function updateGoalBar(){
     `<div class="gbar"><span style="width:${pct}%"></span></div>`+
     `<div class="gnum">${now} / 500,000점 (${pct}%)</div>`;
 }
+/* ── 주간 함께 목표 · 도장판 ── */
+const STAMP_RW=[
+  {n:4,kind:'fx',id:'kwang',name:"'쾅! 도장' 정답 효과",short:'쾅! 도장',desc:'맞히면 화면에 빨간 도장이 쾅',ic:'쾅',bg:'#3A2230',col:'#FF7A6B'},
+  {n:8,kind:'skin',id:'inju',name:"'인주와 낙관' 판",short:'인주와 낙관',desc:'한지 판 + 동그란 도장 칸',ic:'印',bg:'#F4EBDD',col:'#C0392B'}
+];
+const fmtN=n=>Number(n||0).toLocaleString('ko-KR');
+function myStampList(){return (lastBoard&&Array.isArray(lastBoard.stamps))?lastBoard.stamps.filter(x=>x.mine):null;}
+function stampN(){const l=myStampList();if(l){store.set(skinKey('stampN'),l.length);return l.length;}return store.get(skinKey('stampN'),0);}
+function stampOpen(id){const r=STAMP_RW.find(x=>x.id===id);return !!r&&stampN()>=r.n;}
+function weekGoalHTML(w){
+  if(w.pre)return `<div class="wg1"><span>주간 함께 목표</span><b>${w.startLabel}(월) 시작</b></div><div class="wgme"><span class="ms"></span>일주일 동안 다 같이 정답을 모아 도장을 받아요.</div>`;
+  if(!w.goal)return `<div class="wg1"><span>주간 함께 목표</span><b>이번 주는 쉬어요</b></div><div class="wgme"><span class="ms"></span>쉬는 주라 목표가 없어요. 다음 주에 다시 모아요.</div>`;
+  const max=Math.max(w.bonus,w.wins,1), pct=Math.min(100,w.wins/max*100), gp=w.goal/max*100, rate=Math.floor(w.wins/Math.max(1,w.goal)*100);
+  const st=w.wins>=w.bonus?'초과 달성!':w.wins>=w.goal?'달성!':rate+'%';
+  const mine=w.myWins>0?`나도 이번 주 정답 ${fmtN(w.myWins)}개를 보탰어요.`+(w.wins>=w.goal?' 도장을 받았어요!':' 달성하면 도장을 받아요.'):(w.wins>=w.goal?'목표 달성! 정답 1개만 맞히면 나도 도장을 받아요.':'정답 1개만 맞혀도 함께한 사람이 돼요.');
+  return `<div class="wg1"><span>이번 주 함께 목표 · ${w.daysLeft<=1?'오늘까지':w.daysLeft+'일 남음'}</span><b>${st}</b></div>`+
+    `<div class="wg2">${fmtN(w.wins)} <small>/ ${fmtN(w.goal)} 정답</small></div>`+
+    `<div class="wgbar"><i style="width:${pct}%"></i><span class="mk" style="left:${gp}%"></span></div>`+
+    `<div class="wgmk"><span style="left:${gp}%">${fmtN(w.goal)} 달성</span><span class="r">${fmtN(w.bonus)} 초과</span></div>`+
+    `<div class="wgme"><span class="ms${w.myWins>0?' ok':''}"></span>${mine}</div>`;
+}
+function checkStamps(j){
+  if(!j||!me||!Array.isArray(j.stamps))return;
+  const mine=j.stamps.filter(x=>x.mine), seen=store.get(skinKey('stSeen'),[]);
+  store.set(skinKey('stampN'),mine.length);
+  const fresh=mine.filter(x=>!seen.includes(x.i));
+  if(fresh.length){store.set(skinKey('stSeen'),mine.map(x=>x.i));setTimeout(()=>announceStamp(fresh[fresh.length-1],mine.length,j.wk),900);return;}
+  const w=j.wk;
+  if(w&&!w.pre&&w.wins>=w.goal&&!w.myWins&&store.get(skinKey('stNudge'),-1)!==w.i){store.set(skinKey('stNudge'),w.i);setTimeout(()=>toast('이번 주 함께 목표를 달성했어요! 정답 1개만 맞히면 나도 도장을 받아요',3800),1200);}
+}
+function announceStamp(st,N,w){
+  if(document.querySelector('.stamp-ov'))return;
+  const thisWeek=w&&w.i===st.i, got=STAMP_RW.find(r=>r.n===N), next=STAMP_RW.find(r=>r.n>N);
+  const goal=next?next.n:N, dots=Array.from({length:Math.min(goal,12)},(_,i)=>`<i class="${i<N?'on':''}"></i>`).join('');
+  const nx=got?`새 꾸미기 <b>${got.short}</b>이 열렸어요!`:next?`${next.n-N}개 더 모으면 <b>${next.short}</b>이 열려요.`:`지금까지 도장 ${N}개를 모았어요.`;
+  const ov=document.createElement('div');ov.className='stamp-ov';
+  ov.innerHTML=`<div class="stamp-card"><h3>${thisWeek?'이번 주':'지난주'} 목표 달성!</h3><p>우리 모두 정답 <b>${fmtN(st.wins)}개</b>를 모았어요.</p>
+    <div class="st-paper"><div class="st-big"><span>${st.label}</span><b>${st.over?'초과':'달성'}</b><span>정답 ${fmtN(st.wins)}</span></div></div>
+    <p>도장판에 도장이 찍혔어요.</p><div class="st-dots">${dots}</div><p class="st-next">${nx}</p>
+    <div class="st-btns"><button class="use">${got?'바로 써 보기':'도장판 보기'}</button><button class="cl">닫기</button></div></div>`;
+  document.body.appendChild(ov);
+  const bye=()=>{ov.classList.add('out');setTimeout(()=>ov.remove(),300);};
+  ov.querySelector('.cl').onclick=bye;
+  ov.querySelector('.use').onclick=()=>{bye();
+    if(got){if(got.kind==='fx'){store.set(skinKey('fx'),got.id);setTimeout(()=>playFx(got.id,1.4),300);}else{store.set(skinKey('skin'),got.id);applySkin(got.id);}}
+    setTimeout(()=>{showSkins();setSkTab(got?(got.kind==='fx'?'fx':'skin'):'stamp');},got?1500:300);};
+  try{celebrate();}catch(e){}
+}
+function renderStampBoard(){
+  const j=lastBoard||{}, w=j.wk, list=myStampList(), N=list?list.length:stampN();
+  document.getElementById('stWeek').textContent=!w?'':w.pre?`주간 함께 목표는 ${w.startLabel}(월)에 시작해요. 일주일 동안 다 같이 정답을 모아요.`:`이번 주(${w.label}) ${fmtN(w.wins)} / ${fmtN(w.goal)} 정답 · 나는 ${fmtN(w.myWins)}개 보탰어요`;
+  const slots=Math.max(8,Math.ceil((N+1)/8)*8), rot=[-12,8,-4,10,-8,5,-14,3];
+  const nowDone=list&&w&&list.some(x=>x.i===w.i);
+  let h='';
+  for(let i=0;i<slots;i++){
+    const n=i+1, gift=STAMP_RW.some(r=>r.n===n);
+    if(i<N){const x=list?list[i]:null;h+=`<div class="stc"><div class="sts"><div class="st" style="--r:${rot[i%8]}deg"><b>${x&&x.over?'초과':'달성'}</b><small>${x?fmtN(x.wins):''}</small></div></div><em>${x?x.label:''}</em></div>`;}
+    else if(i===N&&w&&!w.pre&&!nowDone)h+=`<div class="stc now"><div class="sts now${gift?' gift':''}">${n}</div><em>이번 주</em></div>`;
+    else h+=`<div class="stc"><div class="sts${gift?' gift':''}">${n}</div><em></em></div>`;
+  }
+  document.getElementById('stGrid').innerHTML=h;
+  document.getElementById('stCount').textContent=`${N} / ${slots}`;
+  const box=document.getElementById('stRw');box.innerHTML='';
+  const cs=store.get(skinKey('skin'),''), cf=store.get(skinKey('fx'),'bounce');
+  STAMP_RW.forEach(r=>{
+    const open=N>=r.n, using=r.kind==='fx'?cf===r.id:cs===r.id;
+    const b=document.createElement('button');b.className=(open?'':'lock')+(open&&using?' on':'');
+    b.innerHTML=`<span class="ic" style="background:${r.bg};color:${r.col}">${r.ic}</span><span><b>${r.name}</b><small>${r.desc}</small></span><span class="tag${open?' ok':''}">${open?(using?'사용 중':'누르면 써요'):'도장 '+r.n+'개'}</span>`;
+    b.onclick=()=>{
+      if(!open&&!pvMode){toast(`함께 모은 도장이 ${r.n}개가 되면 열려요`);return;}
+      if(!open){if(r.kind==='fx')playFx(r.id,1.3);else{applySkin(r.id);clearTimeout(window._pv);window._pv=setTimeout(()=>applySkin(store.get(skinKey('skin'),'')),2500);}toast(`미리 보기 · 도장 ${r.n}개에 열려요`);return;}
+      if(r.kind==='fx'){store.set(skinKey('fx'),r.id);setTimeout(()=>playFx(r.id,1),150);}else{store.set(skinKey('skin'),r.id);applySkin(r.id);}
+      renderStampBoard();};
+    box.appendChild(b);
+  });
+}
+function setSkTab(t){
+  document.querySelectorAll('#skTabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  document.querySelectorAll('#ovSkin .skpane').forEach(p=>p.hidden=p.dataset.p!==t);
+}
+document.querySelectorAll('#skTabs button').forEach(b=>b.onclick=()=>setSkTab(b.dataset.t));
 let pvMode=false;
 function showSkins(){
   {const el=document.getElementById('royalState');if(el)el.textContent=myMedal===1?'지금 1등이라 사용 중이에요!':'3콤보·오늘의 10판·누적 중 하나라도 1등이 되면 쓸 수 있어요';}
@@ -1315,6 +1493,16 @@ function showSkins(){
    b.innerHTML=`<span class="sw"><i style="background:#FF6FB5"></i><i style="background:#7CF2A6"></i><i style="background:#5AC8FF"></i></span><b>${on?'🌈':'🔒'} 50만 꾸미기</b><small>${on?(cur==='together'?'사용 중':'누르면 바꿔요'):'다 같이 50만 점에 열려요'}</small>`;
    b.onclick=()=>{if(!coopReached()){toast('다 같이 50만 점을 모으면 열려요');return;}store.set(skinKey('skin'),'together');applySkin('together');showSkins();};
    box.appendChild(b);}
+  {/* 다 같이 100만 · 도장 보상 판 */
+   const extra=[{id:'galaxy',name:'100만 은하수',sw:['#1B2470','#7A3AB0','#FFE08A'],on:coop2Reached(),lockMsg:'다 같이 100만 점에 열려요'},
+     {id:'inju',name:'인주와 낙관',sw:['#F4EBDD','#C9473D','#2B2118'],on:stampOpen('inju'),lockMsg:'함께 모은 도장 8개에 열려요'}];
+   extra.forEach(x=>{const b=document.createElement('button');
+     b.className='skin coopitem'+(x.on?'':' lock')+(x.on&&cur===x.id?' on':'');
+     b.innerHTML=`<span class="sw">${x.sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><b>${x.on?'':'🔒 '}${x.name}</b><small>${x.on?(cur===x.id?'사용 중':'누르면 바꿔요'):x.lockMsg}</small>`;
+     b.onclick=()=>{if(!x.on&&!pvMode){toast(x.lockMsg);return;}
+       if(!x.on){applySkin(x.id);toast('미리 보기 · '+x.lockMsg);clearTimeout(window._pv);window._pv=setTimeout(()=>applySkin(store.get(skinKey('skin'),'')),2500);return;}
+       store.set(skinKey('skin'),x.id);applySkin(x.id);showSkins();};
+     box.appendChild(b);});}
   const fcur=store.get(skinKey('fx'),'bounce'), fbox=document.getElementById('fxBox');fbox.innerHTML='';
   FXS.forEach(f=>{
     const open=best>=f.need;
@@ -1329,6 +1517,16 @@ function showSkins(){
    b.innerHTML=`<b>${on?'🌈':'🔒'} 50만 꾸미기</b><small>${on?(fcur==='together'?'사용 중':'누르면 바꿔요'):'다 같이 50만 점에 열려요'}</small>`;
    b.onclick=()=>{if(!coopReached()){toast('다 같이 50만 점을 모으면 열려요');return;}store.set(skinKey('fx'),'together');showSkins();setTimeout(()=>playFx('together',1),150);};
    fbox.appendChild(b);}
+  {/* 다 같이 100만 · 도장 보상 효과 */
+   const extra=[{id:'million',name:'100만 은하수',icon:'🌌',on:coop2Reached(),lockMsg:'다 같이 100만 점에 열려요'},
+     {id:'kwang',name:'쾅! 도장',icon:'⭕',on:stampOpen('kwang'),lockMsg:'함께 모은 도장 4개에 열려요'}];
+   extra.forEach(x=>{const b=document.createElement('button');
+     b.className='skin coopitem'+(x.on?'':' lock')+(x.on&&fcur===x.id?' on':'');
+     b.innerHTML=`<b>${x.on?x.icon:'🔒'} ${x.name}</b><small>${x.on?(fcur===x.id?'사용 중':'누르면 바꿔요'):x.lockMsg}</small>`;
+     b.onclick=()=>{if(!x.on&&!pvMode){toast(x.lockMsg);return;}
+       if(!x.on){toast('미리 보기 · '+x.lockMsg);playFx(x.id,1.3);return;}
+       store.set(skinKey('fx'),x.id);showSkins();setTimeout(()=>playFx(x.id,1),150);};
+     fbox.appendChild(b);});}
   document.getElementById('skinMsg').textContent=`최고 누적 ${best}점`+nextSkinText()+(pvMode?'. 선생님 미리 보기 중: 잠긴 것도 눌러서 볼 수 있어요.':'. 한 번 열린 판과 효과는 점수가 줄어도 계속 쓸 수 있어요.');
   document.getElementById('cbSafe').checked=store.get('safeColors',false);
   document.getElementById('cbFx').checked=store.get('fxOn',true);
@@ -1344,10 +1542,11 @@ function showSkins(){
     b2s.onclick=()=>{if(!coop2Reached()){toast('다 같이 100만 점을 모으면 열려요');return;}store.set(skinKey('skin'),'galaxy');applySkin('galaxy');showSkins();};
     b2f.onclick=()=>{if(!coop2Reached()){toast('다 같이 100만 점을 모으면 열려요');return;}store.set(skinKey('fx'),'million');showSkins();setTimeout(()=>playFx('million',1),150);};}
   }
+  try{renderStampBoard();}catch(e){}
   open('ovSkin');
 }
 document.getElementById('cbSafe').addEventListener('change',e=>{store.set('safeColors',e.target.checked);applySkin(store.get(skinKey('skin'),''));});
-document.getElementById('bSkin').onclick=()=>{pvMode=false;document.getElementById('pvBox').style.display='none';showSkins();};
+document.getElementById('bSkin').onclick=()=>{pvMode=false;document.getElementById('pvBox').style.display='none';setSkTab('skin');showSkins();};
 document.getElementById('bSuggest').onclick=()=>{
   if(!SCRIPT_URL){toast('아직 순위표가 연결되지 않았어요');return;}
   if(!me){toast('먼저 닉네임을 정해 주세요');askName();return;}
@@ -1594,6 +1793,7 @@ function applyMe(j){
   if(j&&j.me&&j.me.name===me&&Array.isArray(j.me.hist))srvRec={total:j.me.total,wins:j.me.wins,games:j.me.games,streak:j.me.streak,best:j.me.bestStreak,hist:j.me.hist};
   if(j&&j.me&&j.me.name===me){renderMedals(j.me);if(Array.isArray(j.me.recentLast5))s5=j.me.recentLast5.slice();if(typeof j.me.weekBest==='number')wBest=j.me.weekBest;if(typeof j.me.todayN==='number'){dayN=j.me.todayN;daySum=j.me.todaySum;}renderLast5();}
   if(j&&typeof j.players==='number'){crowd.total=j.players;if(typeof j.todayPlayers==='number')crowd.today=j.todayPlayers;renderCrowd();}
+  if(j&&j.wk&&lastBoard&&j!==lastBoard){lastBoard.wk=j.wk;if(j.stamps)lastBoard.stamps=j.stamps;try{checkStamps(j);}catch(e){}}
   if(j&&j.me&&j.me.name===me){serverTotal=j.me.total;serverWins=j.me.wins||0;updateMe();}
   if(answer&&!done&&!rows.length&&!cur.length&&levelOf(curWins())!==LV){setLevel(levelOf(curWins()));saveGame();drawAll();}
 }
@@ -1709,6 +1909,7 @@ async function loadBoard(showUI){
     const j=await api(me?{action:'board',name:me}:{action:'board'});
     applyMe(j);lastBoard=j;
     checkCoop(j);
+    try{checkStamps(j);}catch(e){}
     if(showUI)drawBoard();
     {const k1=(j.weekBestTop&&j.weekBestTop[0]&&j.weekBestTop[0].name)||'', k2=(j.top&&j.top[0]&&j.top[0].name)||'', k3=(j.dayTop&&j.dayTop[0]&&j.dayTop[0].name)||'';
      const prev=store.get('lastKings',null);
@@ -1797,11 +1998,12 @@ function renderMenu(){
   document.getElementById('mDesc').textContent=parts.length?parts.join(' · '):'자음과 모음으로 숨은 낱말을 맞혀요.';
   try{if(lastBoard)renderCoop(lastBoard);}catch(e){}
   {const j=lastBoard, g=document.getElementById('mGoal');
-   const t=j&&typeof j.allTotal==='number'?j.allTotal:(typeof coopTotal==='function'?coopTotal():null);
-   if(t!=null){const second=t>=500000, G=second?1000000:500000, pct=Math.min(100,Math.floor(t/G*100));
+   if(j&&j.wk){g.className='mh-goal wk';g.innerHTML=weekGoalHTML(j.wk);g.hidden=false;}
+   else{const t=j&&typeof j.allTotal==='number'?j.allTotal:(typeof coopTotal==='function'?coopTotal():null);
+   if(t!=null&&document.getElementById('mGoalLbl')){const second=t>=500000, G=second?1000000:500000, pct=Math.min(100,Math.floor(t/G*100));
      document.getElementById('mGoalLbl').textContent=second?'다 같이 100만 점 목표':'다 같이 50만 점 목표';
      document.getElementById('mGoalTxt').textContent=t>=G?'달성!':`${pct}% · ${Number(t).toLocaleString('ko-KR')}점`;
-     document.getElementById('mGoalBar').style.width=pct+'%';g.hidden=false;}}
+     document.getElementById('mGoalBar').style.width=pct+'%';g.hidden=false;}}}
   const cb=document.getElementById('coopBanner');document.getElementById('mCoop').innerHTML=cb?cb.innerHTML.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]\uFE0F?/gu,'').trim():'';
   document.getElementById('mCrowd').textContent=document.getElementById('crowd').textContent.replace(/\s+/g,' ').trim();
 }
