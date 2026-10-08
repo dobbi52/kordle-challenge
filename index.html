@@ -895,7 +895,12 @@ let wordText=store.get('words2',DEFAULT_WORDS); /* 예전 기기에 저장된 �
 let strict=store.get('strict',false);
 const EMPTY={total:0,games:0,wins:0,streak:0,best:0,hist:[]};
 let me=store.get('name',''), pin=store.get('pin','');
-let serverTotal=null, roster=[], pending=store.get('pending',null);
+let serverTotal=null, roster=[];
+// 보낼 점수 줄: 다음 문제로 넘어가도 앞 판 점수가 사라지지 않게 차례로 보냄
+let pendQ=store.get('pendQ',null);
+if(!Array.isArray(pendQ)){pendQ=[];const old=store.get('pending',null);if(old&&old.id)pendQ.push(old);}
+store.set('pending',null);
+const saveQ=()=>store.set('pendQ',pendQ.slice(-30));
 const recKey=()=>'rec:'+(me||'_');
 let rec=Object.assign({},EMPTY,store.get(recKey(),{}));
 function saveRec(){store.set(recKey(),rec);}
@@ -1004,8 +1009,8 @@ function finish(win){
   if(s5){s5=s5.concat([delta]).slice(-RN);if(wBest!==null)wBest=Math.max(wBest,sum5(s5));}
   updateMe();
   countPlay('hit');
-  pending={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name:me,pin,delta,win:win?1:0,tries,lv:LV,word:answer,tk:ticket||''};ticket=null;
-  store.set('pending',pending);
+  pendQ.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name:me,pin,delta,win:win?1:0,tries,lv:LV,word:answer,tk:ticket||''});ticket=null;
+  saveQ();
   document.getElementById('endTitle').textContent=win?'정답이에요!':'아쉬워요';
   document.getElementById('endWord').textContent=answer;
   const g=document.getElementById('endGain');
@@ -1596,28 +1601,48 @@ async function getTicket(){
   if(!SCRIPT_URL||!me||!pin||done||ticket)return;
   try{const j=await api({action:'start',name:me,pin});if(j.tk&&!done&&!ticket){ticket=j.tk;saveGame();}}catch(e){}
 }
-async function sendPending(){
+let sending=false, retryT=null, retryN=0;
+function endMsg(t,showRetry){
   const es=document.getElementById('endSync'), rt=document.getElementById('bRetry');
-  rt.style.display='none';
-  if(!pending){es.textContent='';return;}
-  if(!SCRIPT_URL||!pending.name){pending=null;store.set('pending',null);es.textContent='';return;}
-  es.textContent='순위표에 점수를 보내는 중…';
-  try{
-    const j=await api({action:'add',...pending});
-    pending=null;store.set('pending',null);
-    applyMe(j);
-    document.getElementById('endTotal').textContent=`누적 ${shownTotal()}점`+nextSkinText();
-    es.textContent=j.me&&j.me.rank?'순위표에 저장됐어요. '+[j.me.weekBestRank?`3콤보 최고점 ${j.me.weekBestRank}등`:'',j.me.todayRank?`오늘의 10판 ${j.me.todayRank}등 (${j.me.todayN}/10판)`:'',`누적 ${j.me.rank}등`].filter(Boolean).join(' · '):'순위표에 저장됐어요.';
-  }catch(e){
-    const m=String(e.message||'');
-    if(/비밀번호|없는 닉네임|막아 둔|입장권|너무 빨리 끝난|로그아웃/.test(m)){
-      pending=null;store.set('pending',null);
-      es.textContent=/입장권|너무 빨리|로그아웃/.test(m)?m+(/로그아웃/.test(m)?' 이 판 점수는 저장되지 않았어요.':''):m+' 닉네임으로 다시 들어가 주세요.';
-    }else{
-      es.textContent='점수를 보내지 못했어요. 인터넷을 확인하고 다시 보내 주세요.'+(m&&!/abort|Failed to fetch|NetworkError|Load failed/i.test(m)?` (${m.slice(0,60)})`:'');rt.style.display='';
-    }
-  }
+  if(es)es.textContent=t; if(rt)rt.style.display=showRetry?'':'none';
 }
+function laterSend(ms){clearTimeout(retryT);retryT=setTimeout(()=>sendPending(),ms);}
+async function sendPending(){
+  if(sending)return; // 이미 보내는 중이면 그 흐름이 줄 끝까지 이어서 보냄
+  if(!SCRIPT_URL){pendQ=[];saveQ();endMsg('',false);return;}
+  pendQ=pendQ.filter(x=>x&&x.name);
+  if(!pendQ.length){return;}
+  sending=true;clearTimeout(retryT);
+  endMsg('순위표에 점수를 보내는 중…',false);
+  try{
+    while(pendQ.length){
+      const it=pendQ[0];
+      try{
+        const j=await api({action:'add',...it});
+        pendQ.shift();saveQ();retryN=0;
+        if(it.name===me){
+          applyMe(j);
+          const et=document.getElementById('endTotal');if(et)et.textContent=`누적 ${shownTotal()}점`+nextSkinText();
+          if(!pendQ.length)endMsg(j.me&&j.me.rank?'순위표에 저장됐어요. '+[j.me.weekBestRank?`3콤보 최고점 ${j.me.weekBestRank}등`:'',j.me.todayRank?`오늘의 10판 ${j.me.todayRank}등 (${j.me.todayN}/10판)`:'',`누적 ${j.me.rank}등`].filter(Boolean).join(' · '):'순위표에 저장됐어요.',false);
+        }
+      }catch(e){
+        const m=String(e.message||'');
+        if(/너무 빨라요/.test(m)){await new Promise(r=>setTimeout(r,5500));continue;} // 연속 저장 제한: 잠깐 기다렸다 다시
+        if(/비밀번호|없는 닉네임|막아 둔|입장권|너무 빨리 끝난|로그아웃|잘못된/.test(m)){
+          pendQ.shift();saveQ(); // 서버가 받지 않는 점수는 줄에서 뺌
+          endMsg(/입장권|너무 빨리|잘못된/.test(m)?m:m+' 닉네임으로 다시 들어가 주세요.',false);
+          continue;
+        }
+        // 인터넷·서버 문제: 줄에 그대로 두고 잠시 뒤 자동으로 다시 보냄
+        retryN++;
+        endMsg('점수를 아직 못 보냈어요. 잠시 뒤 자동으로 다시 보내요.'+(m&&!/abort|Failed to fetch|NetworkError|Load failed/i.test(m)?` (${m.slice(0,60)})`:''),true);
+        laterSend(Math.min(60000,5000*retryN));
+        break;
+      }
+    }
+  }finally{sending=false;}
+}
+window.addEventListener('online',()=>sendPending());
 let rankTab='week', lastBoard=null;
 const MEDAL=['','🥇','🥈','🥉'];
 const medalCell=rk=>rk>=1&&rk<=3?MEDAL[rk]:rk;
@@ -1734,14 +1759,14 @@ document.getElementById('bRank').onclick=showRank;
 document.getElementById('bEndRank').onclick=()=>{closeAll();showRank();};
 document.getElementById('bRankRefresh').onclick=()=>loadBoard(true);
 document.getElementById('bRetry').onclick=sendPending;
-document.getElementById('bNext').onclick=()=>{closeAll();newGame();if(SCRIPT_URL&&!me)askName();};
+document.getElementById('bNext').onclick=()=>{closeAll();newGame();if(SCRIPT_URL&&!me)askName();if(pendQ.length)sendPending();};
 
 updateMe();
 countPlay('get');
 if(SCRIPT_URL){
   loadBoard(false);
   setTimeout(getTicket,300);
-  if(pending)sendPending().then(()=>{if(!pending)toast('밀린 점수를 보냈어요.');});
+  if(pendQ.length){const k=pendQ.length;sendPending().then(()=>{if(!pendQ.length)toast(k>1?`밀린 점수 ${k}개를 보냈어요.`:'밀린 점수를 보냈어요.');});}
 }
 if(!restoreGame())newGame();else drawAll();
 if(!store.get('seenHelp',false)&&me){setTimeout(()=>open('ovHelp'),400);store.set('seenHelp',true);}
