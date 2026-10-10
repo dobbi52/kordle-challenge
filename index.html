@@ -1692,8 +1692,13 @@ document.addEventListener('keydown',e=>{
 });
 
 let tt;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1600);}
-function open(id){document.getElementById(id).classList.add('open');}
-function closeAll(){document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('open'));}
+function open(id){const o=document.getElementById(id);
+  const pb=o.querySelector('.pgback');if(pb)pb.textContent=document.body.classList.contains('at-game')?'← 돌아가기':'← 메뉴';
+  o.classList.add('open');}
+function closeAll(){document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('open'));
+  /* 다 푼 판으로 돌아왔는데 아무 창도 없으면 끝 화면(다음 문제 버튼)을 다시 띄움 */
+  clearTimeout(window._endBack);window._endBack=setTimeout(()=>{
+    if(done&&document.body.classList.contains('at-game')&&!document.querySelector('.overlay.open')&&!document.querySelector('.million-ov,.stamp-ov'))open('ovEnd');},80);}
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closeAll));
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o&&o.id!=='ovEnd'&&o.id!=='ovName')closeAll();}));
 
@@ -2031,7 +2036,7 @@ function renderMenu(){
   const cb=document.getElementById('coopBanner');document.getElementById('mCoop').innerHTML=cb?cb.innerHTML.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]\uFE0F?/gu,'').trim():'';
   document.getElementById('mCrowd').textContent=document.getElementById('crowd').textContent.replace(/\s+/g,' ').trim();
 }
-document.getElementById('mPlay').onclick=()=>setScreen('game');
+document.getElementById('mPlay').onclick=()=>{if(done){closeAll();newGame();}setScreen('game');};
 document.getElementById('bBack').onclick=()=>setScreen('menu');
 document.getElementById('mRank').onclick=()=>showRank();
 document.getElementById('mSkin').onclick=()=>document.getElementById('bSkin').click();
