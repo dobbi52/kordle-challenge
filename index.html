@@ -736,6 +736,12 @@ body.at-game .last5 .inf{display:inline}
 :root[data-skin="inju"] .key{position:relative;background:linear-gradient(160deg,#FFFBF2,#EFE3CC);border:1px solid #D7B9A4;border-radius:10px;box-shadow:0 2px 0 #D7B9A4,0 3px 6px rgba(120,50,30,.12);color:#3B2A18}
 :root[data-skin="inju"] .key.ok{background:var(--ok)!important;color:#fff}:root[data-skin="inju"] .key.near{background:var(--near)!important;color:#fff}:root[data-skin="inju"] .key.miss{background:#7A6E5E!important;color:#fff}
 :root[data-skin="inju"] .key.main{background:#C9473D!important;color:#fff;border-color:#A8352C;box-shadow:0 2px 0 #8E2A22}
+.mtile.mlink{position:relative;text-decoration:none;min-height:96px;background:#0B0F1E;border:3px solid #39FF88;border-radius:14px;box-shadow:0 0 0 3px #0B0F1E,0 0 0 6px #FF4FD8,0 0 26px rgba(57,255,136,.45);margin:6px 3px 3px}
+.mtile.mlink b{color:#39FF88;text-shadow:3px 3px 0 #FF4FD8;letter-spacing:.06em}
+.mtile.mlink small{color:#FFE14D;font-weight:800;letter-spacing:.04em}
+.mtile.mlink .mstart{position:absolute;right:20px;bottom:20px;color:#FFE14D;font-weight:900;font-size:.95rem;letter-spacing:.1em;animation:mblink 1s steps(1) infinite}
+@keyframes mblink{50%{opacity:0}}
+#scMenu.enter .mtile:nth-child(5){animation-delay:.36s}
 </style>
 </head>
 <body>
@@ -752,6 +758,7 @@ body.at-game .last5 .inf{display:inline}
     <button class="mtile press" id="mRank"><b class="t-org">순위표</b><small>3콤보 · 오늘의 10판 · 누적 순위 보기</small></button>
     <button class="mtile press" id="mSkin"><b class="t-grn">꾸미기</b><small>판 · 정답 효과 · 도장판</small></button>
     <button class="mtile press" id="mHelp"><b>하는 방법</b><small>색 힌트와 점수 규칙</small></button>
+    <a class="mtile wide press mlink" id="mArcade" href="https://dobbi52.github.io/games/"><b class="t-blu">생각 오락실</b><small>다른 게임도 해 보기</small><span class="mstart">▶ START</span></a>
   </div>
   <div class="mn-coop coopbanner" id="mCoop"></div>
   <p class="mn-crowd" id="mCrowd"></p>
