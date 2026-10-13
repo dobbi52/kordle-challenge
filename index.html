@@ -742,11 +742,24 @@ body.at-game .last5 .inf{display:inline}
 .mtile.mlink .mstart{position:absolute;right:20px;bottom:20px;color:#FFE14D;font-weight:900;font-size:.95rem;letter-spacing:.1em;animation:mblink 1s steps(1) infinite}
 @keyframes mblink{50%{opacity:0}}
 #scMenu.enter .mtile:nth-child(5){animation-delay:.36s}
+/* ── 생각 오락실 통합 계정 ── */
+#hubLogin[hidden],#oldLogin[hidden],.mn-hubnag[hidden]{display:none!important}
+.hubbtn{width:100%;margin-top:6px}
+.hubnote b{color:inherit;font-weight:700}
+#hubLogin:not([hidden])+#oldLogin{margin-top:18px;padding-top:12px;border-top:1px dashed var(--line-soft)}
+#hubLogin:not([hidden])+#oldLogin h2{font-size:1rem;opacity:.85}
+body.at-login #ovName .hubbtn{background:#45C486;color:#0E1F17;border:0;border-radius:999px;font-weight:800;padding:14px 0;font-size:1.05rem}
+body.at-login #ovName .hubnote{color:#C9D1E6;margin-top:10px;line-height:1.6}
+body.at-login #ovName .hubnote b{color:#45C486}
+body.at-login #hubLogin:not([hidden])+#oldLogin{border-top-color:#33405F}
+.mn-hubnag{display:block;width:100%;text-align:left;border:2px solid #45C486;background:#173327;color:#E9EDF7;border-radius:22px;padding:14px 18px;font-family:inherit;font-size:.92rem;line-height:1.5;cursor:pointer}
+.mn-hubnag b{color:#45C486}
 </style>
 </head>
 <body>
 <section id="scMenu" class="screen" aria-label="메뉴">
   <div class="mn-top"><p class="mn-hi"><b id="mName">닉네임</b>님, 반가워요.</p><button id="mLogout" class="mn-out">로그아웃</button></div>
+  <button class="mn-hubnag press" id="mHubNag" type="button" hidden><b>생각 오락실 통합 계정으로 바꿔 주세요!</b><br>예전 꼬들 로그인은 10월 31일까지예요. 지금 닉네임과 비밀번호로 가입하면 점수가 그대로 이어져요.</button>
   <div class="mn-hero">
     <div class="mh-head"><h2 class="mh-title">꼬들</h2><div class="mh-rank"><span class="mh-ic" id="mTierIc">🐣</span><span class="mh-tier" id="mTier">새내기</span></div></div>
     <p class="mh-desc" id="mDesc">자음과 모음으로 숨은 낱말을 맞혀요.</p>
@@ -899,15 +912,20 @@ body.at-game .last5 .inf{display:inline}
 
 <div class="overlay" id="ovName"><div class="card">
   <div class="lg-hero"><div class="lg-logo">꼬들</div><p>자음·모음으로 숨은 낱말을 맞혀요</p></div>
-  <h2>닉네임으로 들어가기</h2>
-  <p class="note">처음이면 새로 만들어지고, 전에 쓴 닉네임이면 점수가 이어져요. 진짜 이름 대신 닉네임을 써 주세요.</p>
+  <div id="hubLogin" hidden>
+    <button class="main hubbtn" id="bHub" type="button">생각 오락실 계정으로 로그인</button>
+    <p class="note hubnote" id="hubNote">계정 하나로 꼬들·셈들·가락 꼬들·퀸즈를 모두 해요. <b>예전 꼬들 닉네임과 비밀번호 그대로</b> 가입하면 점수가 이어져요.</p>
+  </div>
+  <div id="oldLogin">
+  <h2 id="oldTitle">닉네임으로 들어가기</h2>
+  <p class="note" id="oldNote">처음이면 새로 만들어지고, 전에 쓴 닉네임이면 점수가 이어져요. 진짜 이름 대신 닉네임을 써 주세요.</p>
   <label for="nickInput">닉네임 (한글·영어·숫자 2~10자)</label>
   <input type="text" id="nickInput" maxlength="10" autocomplete="off" autocapitalize="off" spellcheck="false">
   <label for="pinInput">비밀번호 (숫자 4자리)</label>
   <input type="password" id="pinInput" inputmode="numeric" maxlength="4" autocomplete="off">
-  <p class="note" style="margin-top:6px">다른 기기에서 이어 하려면 같은 닉네임과 비밀번호를 쓰면 돼요. 비밀번호를 잊으면 점수를 이어 갈 수 없으니 꼭 기억해 두세요.</p>
   <p class="note" id="nameMsg" style="min-height:1.4em;color:#B4442E"></p>
   <div class="actions"><button class="main" id="bNameOk">들어가기</button></div>
+  </div>
 </div></div>
 
 <div class="overlay page" id="ovRank"><div class="card">
@@ -931,6 +949,7 @@ body.at-game .last5 .inf{display:inline}
   <div class="actions"><button id="bRetry" style="display:none">점수 다시 보내기</button><button id="bEndRank">순위</button><button id="bEndRec">내 기록</button><button class="main" id="bNext">다음 문제</button></div>
 </div></div>
 
+<script src="https://dobbi52.github.io/games/arcade-auth.js?v=1"></script>
 <script>
 (()=>{ /* 정답 등 게임 정보가 바깥(개발자 도구)에서 바로 보이지 않도록 감쌈 */
 
@@ -1006,6 +1025,12 @@ let wordText=store.get('words2',DEFAULT_WORDS); /* 예전 기기에 저장된 �
 let strict=store.get('strict',false);
 const EMPTY={total:0,games:0,wins:0,streak:0,best:0,hist:[]};
 let me=store.get('name',''), pin=store.get('pin','');
+/* 생각 오락실 통합 계정: 로그인돼 있으면 그 닉네임으로 */
+const AA=window.ArcadeAuth||null;
+const OLD_END_DAY='2026-11-01'; /* 이날부터 예전 꼬들 로그인 막음 */
+const OLD_CLOSED=new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Seoul'})>=OLD_END_DAY;
+let HUB=false;
+{const a=AA&&AA.get();if(a){me=a.nick;pin=a.pin;HUB=true;}else if(OLD_CLOSED){me='';pin='';}}
 let serverTotal=null, roster=[];
 // 보낼 점수 줄: 다음 문제로 넘어가도 앞 판 점수가 사라지지 않게 차례로 보냄
 let pendQ=store.get('pendQ',null);
@@ -1120,7 +1145,7 @@ function finish(win){
   if(s5){s5=s5.concat([delta]).slice(-RN);if(wBest!==null)wBest=Math.max(wBest,sum5(s5));}
   updateMe();
   countPlay('hit');
-  pendQ.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name:me,pin,delta,win:win?1:0,tries,lv:LV,word:answer,tk:ticket||''});ticket=null;
+  pendQ.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name:me,pin,hub:HUB?'1':'',delta,win:win?1:0,tries,lv:LV,word:answer,tk:ticket||''});ticket=null;
   saveQ();
   document.getElementById('endTitle').textContent=win?'정답이에요!':'아쉬워요';
   document.getElementById('endWord').textContent=answer;
@@ -1766,6 +1791,7 @@ window.addEventListener('orientationchange',()=>setTimeout(fit,200));
 /* ── 순위표 (구글 시트) ── */
 const BUSY_RE=/잠금|lock|시간초과|timed out|사람이 많아요|too many|너무 많|서비스|service|Failed to fetch|NetworkError|JSON|Unexpected token/i;
 async function api(params){
+  if(HUB&&!('hub' in params)&&params.name&&params.name===me)params=Object.assign({hub:'1'},params);
   const url=SCRIPT_URL+'?'+new URLSearchParams(params).toString();
   const waits=[1200,2500,4000];
   for(let i=0;;i++){
@@ -1965,6 +1991,8 @@ function showRank(){
 }
 function askName(){
   if(!SCRIPT_URL){toast('순위표가 연결되면 닉네임으로 들어올 수 있어요.');return;}
+  if(HUB&&AA){AA.open({});return;}
+  hubUI();
   document.getElementById('nickInput').value=me;
   document.getElementById('pinInput').value='';
   document.getElementById('nameMsg').textContent='';
@@ -2023,6 +2051,7 @@ function setScreen(name){
 function renderMenu(){
   const tot=shownTotal(), T=TIERS[tierOf(tot)], d=new Date();
   document.getElementById('mName').textContent=me||'친구';
+  document.getElementById('mHubNag').hidden=!(AA&&!HUB&&me);
   document.getElementById('mTierIc').textContent=T.i;
   document.getElementById('mTier').textContent=T.n;
   document.getElementById('mTotal').textContent=`${Number(tot||0).toLocaleString('ko-KR')}점`;
@@ -2050,7 +2079,8 @@ document.getElementById('mSkin').onclick=()=>document.getElementById('bSkin').cl
 document.getElementById('mRec').onclick=()=>document.getElementById('bRec').click();
 document.getElementById('mHelp').onclick=()=>open('ovHelp');
 document.getElementById('mLogout').onclick=()=>{
-  if(!confirm('로그아웃할까요? 다음에 들어올 때 닉네임과 비밀번호를 다시 입력해요.'))return;
+  if(!confirm(HUB?'로그아웃할까요? 생각 오락실의 다른 게임에서도 함께 로그아웃돼요.':'로그아웃할까요? 다음에 들어올 때 닉네임과 비밀번호를 다시 입력해요.'))return;
+  if(HUB&&AA)AA.logout();
   store.set('name','');store.set('pin','');location.reload();
 };
 /* 로그인 성공하면 메뉴로 */
@@ -2061,6 +2091,39 @@ document.getElementById('mLogout').onclick=()=>{
  pc.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();wrapped();}});}
 /* 순위표를 불러오면 메뉴 정보도 새로 */
 setInterval(()=>{if(document.body.classList.contains('at-menu'))renderMenu();},3000);
+/* ── 생각 오락실 통합 계정 ── */
+function hubUI(){
+  const hl=document.getElementById('hubLogin'), ol=document.getElementById('oldLogin');
+  hl.hidden=!AA;
+  if(!AA)return;
+  document.getElementById('oldTitle').textContent=OLD_CLOSED?'':'예전 꼬들 닉네임으로 들어가기';
+  document.getElementById('oldNote').textContent='예전에 꼬들에서 만든 닉네임만 들어갈 수 있어요. 10월 31일까지만 쓸 수 있으니 위의 생각 오락실 계정으로 바꿔 주세요.';
+  ol.hidden=OLD_CLOSED;
+}
+function openHub(){if(AA)AA.open({gameName:'꼬들',color:'#45C486',onPlay:()=>{}});}
+function enterHub(a){
+  if(!a)return;
+  const changed=a.nick!==me;
+  me=a.nick;pin=a.pin;HUB=true;
+  if(changed){rec=Object.assign({},EMPTY,store.get(recKey(),{}));serverTotal=null;serverWins=null;s5=null;wBest=null;dayN=null;daySum=0;srvRec=null;myMedal=0;}
+  ticket=null;
+  closeAll();
+  updateMe();
+  setScreen('menu');
+  toast(`${me}님, 어서 와요!`);
+  api({action:'join',name:me,pin}).then(j=>{applyMe(j);lastBoard=j;updateMe();if(document.body.classList.contains('at-menu'))renderMenu();getTicket();if(pendQ.length)sendPending();})
+    .catch(e=>toast(e.message||'연결하지 못했어요.',2600));
+}
+if(AA){
+  document.getElementById('bHub').onclick=openHub;
+  document.getElementById('mHubNag').onclick=openHub;
+  AA.onChange(a=>{
+    if(a&&(!HUB||a.nick!==me))enterHub(a);
+    else if(!a&&HUB){HUB=false;me='';pin='';updateMe();setScreen('login');}
+  });
+  if(HUB)AA.refresh();   /* 선생님이 비밀번호를 바꿨거나 막았으면 로그아웃됨 */
+}
+hubUI();
 setScreen(SCRIPT_URL&&!me?'login':'menu');
 })();
 </script>
