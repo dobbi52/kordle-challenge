@@ -1792,12 +1792,12 @@ window.addEventListener('orientationchange',()=>setTimeout(fit,200));
 const BUSY_RE=/잠금|lock|시간초과|timed out|사람이 많아요|too many|너무 많|서비스|service|Failed to fetch|NetworkError|JSON|Unexpected token/i;
 async function api(params){
   if(HUB&&!('hub' in params)&&params.name&&params.name===me)params=Object.assign({hub:'1'},params);
-  const url=SCRIPT_URL+'?'+new URLSearchParams(params).toString();
   const waits=[1200,2500,4000];
   for(let i=0;;i++){
     let err;
     try{
-      const r=await fetch(url);
+      /* POST로 보내서 비밀번호가 주소에 남지 않게 */
+      const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(params)});
       const j=await r.json();
       if(j.ok)return j;
       err=new Error(j.error||'error');
